@@ -6,6 +6,7 @@ export const CATEGORIES = {
   fallacy: "Logical fallacy",
   bias: "Cognitive bias",
   assumption: "Unsupported assumption",
+  tactic: "Persuasion tactic",
 };
 
 export const FALLACIES = {
@@ -235,6 +236,32 @@ export const FALLACIES = {
     name: "Hidden assumption",
     blurb: "The argument depends on an unstated premise that may not hold.",
     question: "What would have to be true for this to follow, and is it?",
+  },
+  misleading_statistic: {
+    category: "assumption",
+    name: "Statistic without context",
+    blurb: "A number presented without the baseline, sample or comparison needed to judge it.",
+    question: "Compared to what? What would this number need alongside it to mean something?",
+  },
+
+  // --- Persuasion tactics (mostly in things you read) -----------------------
+  false_urgency: {
+    category: "tactic",
+    name: "False urgency",
+    blurb: "Pressure to act immediately, which leaves no time to think it through.",
+    question: "What would actually happen if you took a day to check this first?",
+  },
+  appeal_to_fear: {
+    category: "tactic",
+    name: "Appeal to fear",
+    blurb: "Using fear of a bad outcome in place of evidence that it's likely.",
+    question: "How likely is the outcome being described, and what's the evidence for it?",
+  },
+  loaded_language: {
+    category: "tactic",
+    name: "Loaded language",
+    blurb: "Emotionally charged wording that does the persuading instead of the facts.",
+    question: "How would this read if it were described in neutral words?",
   },
 };
 

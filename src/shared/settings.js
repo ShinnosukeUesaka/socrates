@@ -1,5 +1,10 @@
 export const DEFAULT_SETTINGS = {
   enabled: true,
+  // What Socrates looks at: things you read, and optionally what you write.
+  checkEmails: true,
+  checkArticles: true,
+  checkDocs: true,
+  checkWriting: false,
   // An OpenAI or Anthropic key; the provider is worked out from its prefix.
   apiKey: "",
   // "auto" uses the AI model when an API key is set and falls back to patterns.
@@ -12,7 +17,9 @@ export const DEFAULT_SETTINGS = {
   checkPastes: false,
   mutedTypes: [],
   blockedSites: [],
-  debounceMs: 1400,
+  debounceMs: 800,
+  // Upper bound on how much of one article or email is analyzed.
+  maxReadChars: 20000,
   // Not exposed in the UI; lets tests (or a proxy) point at another endpoint.
   apiBaseUrl: "",
 };

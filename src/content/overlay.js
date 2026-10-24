@@ -10,9 +10,10 @@ const ICON_SVG =
   '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.2" fill="currentColor" opacity=".25"/><path fill="currentColor" d="M7.1 10.2v-.5c0-.9.4-1.5 1.2-2 .6-.4.9-.7.9-1.2 0-.6-.5-1-1.2-1-.7 0-1.2.4-1.3 1.1H5.1C5.2 5 6.4 4 8.1 4c1.7 0 2.8.9 2.8 2.3 0 1-.5 1.6-1.3 2.1-.6.4-.8.6-.8 1.2v.6H7.1Zm-.1 1.1h1.8V13H7v-1.7Z"/></svg>';
 
 export class Overlay {
-  constructor({ onDismiss, onMute }) {
+  constructor({ onDismiss, onMute, onNext }) {
     this.onDismiss = onDismiss;
     this.onMute = onMute;
+    this.onNext = onNext;
     this.host = null;
     this.views = new Map();
     this.card = null;
@@ -235,7 +236,32 @@ export class Overlay {
     setTimeout(() => el.remove(), 6000);
   }
 
+  // A small pill counting the questions on the page; clicking it scrolls to
+  // the next flagged passage.
+  navigator(count) {
+    if (!this.host) return;
+    if (!count) {
+      this.navEl?.remove();
+      this.navEl = null;
+      return;
+    }
+    if (!this.navEl) {
+      this.navEl = document.createElement("button");
+      this.navEl.type = "button";
+      this.navEl.className = "ctp-nav";
+      this.navEl.addEventListener("click", () => this.onNext?.());
+      this.layer.appendChild(this.navEl);
+    }
+    const label = `${count} question${count === 1 ? "" : "s"} on this page`;
+    if (this.navEl.dataset.label !== label) {
+      this.navEl.dataset.label = label;
+      this.navEl.innerHTML = ICON_SVG;
+      this.navEl.append(label, Object.assign(document.createElement("span"), { textContent: "Next ↓" }));
+    }
+  }
+
   clear() {
     for (const id of [...this.views.keys()]) this.removeView(id);
+    this.navigator(0);
   }
 }

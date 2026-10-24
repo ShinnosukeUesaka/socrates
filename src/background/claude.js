@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { AnalysisError, buildUserMessage, mapFindings, RESULT_SCHEMA, SYSTEM_PROMPT } from "./prompt.js";
+import { AnalysisError, buildUserMessage, mapFindings, RESULT_SCHEMA, systemPrompt } from "./prompt.js";
 
 export function createClient({ apiKey, apiBaseUrl }) {
   return new Anthropic({
@@ -12,13 +12,13 @@ export function createClient({ apiKey, apiBaseUrl }) {
   });
 }
 
-export function buildRequest({ model, effort, passages }) {
+export function buildRequest({ model, effort, passages, mode = "write" }) {
   return {
     model,
     max_tokens: 16000,
     betas: ["server-side-fallback-2026-07-01"],
     fallbacks: "default",
-    system: SYSTEM_PROMPT,
+    system: systemPrompt(mode),
     output_config: {
       effort,
       format: { type: "json_schema", schema: RESULT_SCHEMA },
@@ -43,11 +43,11 @@ export function parseResponse(response, passages) {
   return mapFindings(text, passages);
 }
 
-export async function analyzeWithClaude({ client, model, effort, passages }) {
+export async function analyzeWithClaude({ client, model, effort, passages, mode }) {
   if (!passages.length) return [];
   let response;
   try {
-    response = await client.beta.messages.create(buildRequest({ model, effort, passages }));
+    response = await client.beta.messages.create(buildRequest({ model, effort, passages, mode }));
   } catch (error) {
     if (error instanceof Anthropic.AuthenticationError) throw new AnalysisError("auth", "Your Anthropic API key was rejected.");
     if (error instanceof Anthropic.PermissionDeniedError) throw new AnalysisError("auth", "This API key can't use that model.");

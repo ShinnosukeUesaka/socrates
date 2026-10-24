@@ -22,27 +22,29 @@ const NARRATOR = 'JBFqnCBsd6RMkjVDRZzb'; // George: warm, captivating storytelle
 const ANNOUNCER = 'SOYHLrjzK2X1ezoPC6cr'; // Harry: fierce warrior (ElevenLabs premade voice), shouts the fallacy name
 
 export const LINES = [
-  // A specific example first: Leo's late-night comment war.
-  ['leo1', NARRATOR, "[whispers] Take Leo. It's one in the morning, [pause] and someone on the internet is wrong."],
-  ['leo2', NARRATOR, '[mischievously] So he types the perfect comeback. [quickly] Type. Post. Win.'],
-  ['leo3', NARRATOR, '[sighs] By morning: two hundred replies. [pause] Not one about his point. [dramatically] All about his logic.'],
+  // A specific example first: Leo's late-night headline, and the morning after.
+  ['leo1', NARRATOR, "[whispers] Take Leo. It's one in the morning, [pause] and a headline just made him furious."],
+  ['leo2', NARRATOR, "[mischievously] He doesn't question a word. [pause] Read. [pause] Believe. [pause] Repost."],
+  ['leo3', NARRATOR, '[sighs] By morning, two hundred people have shared it. [pause] Nobody asked if the argument held up.'],
   // The general picture.
-  ['cold1', NARRATOR, "[serious] Leo isn't alone. Every day, billions of us post, comment and reply, [pause] and almost nobody checks their own reasoning."],
+  ['cold1', NARRATOR, "[serious] Leo isn't alone. Every day, billions of us read, share and reply, [pause] and almost nobody stops to check the argument."],
   ['mit', NARRATOR, '[gravely] On Twitter, false stories were seventy percent more likely to be retweeted than true ones.'],
   ['wef', NARRATOR, '[ominous] And in 2024, and again in 2025, the World Economic Forum ranked misinformation the number one global risk for the next two years.'],
-  ['pivot', NARRATOR, '[intensely] We have spell-check. We have grammar-check. [long pause] But nothing checks our logic.'],
-  ['vision', NARRATOR, '[hopeful] What if something caught the flaw in your argument, [pause] before the whole world did?'],
-  ['intro', NARRATOR, '[confident] Meet Ember, your critical thinking partner: a Chrome extension that reads only what you write, and flags fallacies right where they happen.'],
-  // The product.
-  ['d1', NARRATOR, '[calm] It ignores everything you read. [pause] It only watches what you type.'],
-  ['d2', NARRATOR, "[suspenseful] Slip into a fallacy, and it's tagged right on the words that did it."],
+  ['pivot', NARRATOR, '[intensely] We have spam filters. We have spell-check. [long pause] But nothing checks our logic.'],
+  ['vision', NARRATOR, "[hopeful] What if a partner questioned the argument, [pause] whether you're reading it, or writing it?"],
+  ['intro', NARRATOR, '[confident] Meet Socrates: critical thinking, built into your browser. It flags weak arguments in what you read, and in what you write.'],
+  // The product: reading an article, the card, the inbox, then your own reply.
+  ['d1', NARRATOR, '[calm] Open an article, and it reads along with you.'],
+  ['d2', NARRATOR, '[suspenseful] When the reasoning slips, the exact words get tagged.'],
+  ['d3', NARRATOR, "Click the tag. [pause] Socrates won't tell you what to think. It asks the question that helps you decide."],
+  ['d4', NARRATOR, '[serious] In your inbox, pressure tactics get caught before you click.'],
+  ['d5a', NARRATOR, '[amused] And it checks your own replies too.'],
   ['shout', ANNOUNCER, '[shouting] Slippery slope!'],
-  ['d3', NARRATOR, "[amused] Subtle, it is not. [pause] Every flag lands with drama, so you can't miss it."],
-  ['d4', NARRATOR, 'Click the tag: Claude explains why, and asks one question to make your argument stronger. [pause] Fix it, and the flag clears.'],
-  ['science', NARRATOR, '[confident] It knows twenty-six classic fallacies, [pause] and stays quiet when your reasoning holds.'],
-  ['privacy', NARRATOR, "[warmly] It reads your words, never your feed: [pause] no passwords, no pasted text, nothing you didn't write yourself."],
-  ['impact', NARRATOR, 'For students, for work, for anyone in a comment section: [pause] every message becomes a chance to think twice.'],
-  ['outro', NARRATOR, '[warmly] Ember. [pause] Catch the fallacy. [pause] Keep the argument.'],
+  ['d5b', NARRATOR, '[amused] Subtle, it is not. [pause] Rethink it, and the flag clears.'],
+  ['science', NARRATOR, '[confident] It knows dozens of fallacies, biases and pressure tactics, [pause] and stays quiet when the reasoning holds.'],
+  ['privacy', NARRATOR, '[warmly] It reads only the article, email or reply in front of you, [pause] and it never tells you what to believe.'],
+  ['impact', NARRATOR, 'For students, for families, for anyone with an inbox: [pause] every headline becomes a chance to think twice.'],
+  ['outro', NARRATOR, '[warmly] Socrates. [pause] Critical thinking, built into your browser.'],
 ];
 
 const key = process.env.ELEVENLABS_API_KEY;

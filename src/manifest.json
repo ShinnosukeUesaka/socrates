@@ -2,9 +2,9 @@
   "manifest_version": 3,
   "name": "Socrates — Reasoning Companion",
   "short_name": "Socrates",
-  "version": "0.2.0",
-  "description": "Grammarly for your thinking. Flags possible reasoning errors in what you write and asks a Socratic question about each.",
-  "permissions": ["storage"],
+  "version": "0.3.0",
+  "description": "Read critically. Flags possible reasoning errors and persuasion tactics in the news and emails you read, and asks a Socratic question about each.",
+  "permissions": ["storage", "contextMenus"],
   "host_permissions": ["https://api.openai.com/*", "https://api.anthropic.com/*"],
   "background": { "service_worker": "background.js" },
   "content_scripts": [

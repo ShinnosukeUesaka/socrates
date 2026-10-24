@@ -53,10 +53,11 @@ function skipElement(el) {
   );
 }
 
-// Returns the field's text plus, for contenteditable, a list of
-// {node, start} segments mapping text offsets back to DOM text nodes.
-// Quoted replies (blockquote, Gmail quotes) are left out entirely.
-export function readField(el) {
+// Returns the field's text plus, for contenteditable (or any other element
+// being read), a list of {node, start} segments mapping text offsets back to
+// DOM text nodes. Quoted replies (blockquote, Gmail quotes) are left out
+// entirely, as is anything `skip(element)` returns true for.
+export function readField(el, { skip } = {}) {
   const kind = fieldKind(el);
   if (kind !== "ce") return { text: el.value ?? "", segments: null };
 
@@ -77,7 +78,7 @@ export function readField(el) {
           continue;
         }
         const block = BLOCK_TAGS.has(child.tagName);
-        if (skipElement(child)) {
+        if (skipElement(child) || skip?.(child)) {
           if (block) breakLine();
           continue;
         }

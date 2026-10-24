@@ -1,23 +1,23 @@
 {
   "leo1": {
-    "text": "[whispers] Take Leo. It's one in the morning, [pause] and someone on the internet is wrong.",
+    "text": "[whispers] Take Leo. It's one in the morning, [pause] and a headline just made him furious.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 5.09
+    "duration": 5.15
   },
   "leo2": {
-    "text": "[mischievously] So he types the perfect comeback. [quickly] Type. Post. Win.",
+    "text": "[mischievously] He doesn't question a word. [pause] Read. [pause] Believe. [pause] Repost.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 4.18
+    "duration": 5.72
   },
   "leo3": {
-    "text": "[sighs] By morning: two hundred replies. [pause] Not one about his point. [dramatically] All about his logic.",
+    "text": "[sighs] By morning, two hundred people have shared it. [pause] Nobody asked if the argument held up.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 7.42
+    "duration": 6.35
   },
   "cold1": {
-    "text": "[serious] Leo isn't alone. Every day, billions of us post, comment and reply, [pause] and almost nobody checks their own reasoning.",
+    "text": "[serious] Leo isn't alone. Every day, billions of us read, share and reply, [pause] and almost nobody stops to check the argument.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 8.52
+    "duration": 8.59
   },
   "mit": {
     "text": "[gravely] On Twitter, false stories were seventy percent more likely to be retweeted than true ones.",
@@ -30,63 +30,73 @@
     "duration": 9.4
   },
   "pivot": {
-    "text": "[intensely] We have spell-check. We have grammar-check. [long pause] But nothing checks our logic.",
+    "text": "[intensely] We have spam filters. We have spell-check. [long pause] But nothing checks our logic.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 5.41
+    "duration": 5.36
   },
   "vision": {
-    "text": "[hopeful] What if something caught the flaw in your argument, [pause] before the whole world did?",
+    "text": "[hopeful] What if a partner questioned the argument, [pause] whether you're reading it, or writing it?",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 4.34
+    "duration": 4.55
   },
   "intro": {
-    "text": "[confident] Meet Ember, your critical thinking partner: a Chrome extension that reads only what you write, and flags fallacies right where they happen.",
+    "text": "[confident] Meet Socrates: critical thinking, built into your browser. It flags weak arguments in what you read, and in what you write.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 7.31
+    "duration": 7.24
   },
   "d1": {
-    "text": "[calm] It ignores everything you read. [pause] It only watches what you type.",
+    "text": "[calm] Open an article, and it reads along with you.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 4.08
+    "duration": 2.43
   },
   "d2": {
-    "text": "[suspenseful] Slip into a fallacy, and it's tagged right on the words that did it.",
+    "text": "[suspenseful] When the reasoning slips, the exact words get tagged.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 3.81
+    "duration": 3.42
+  },
+  "d3": {
+    "text": "Click the tag. [pause] Socrates won't tell you what to think. It asks the question that helps you decide.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 7
+  },
+  "d4": {
+    "text": "[serious] In your inbox, pressure tactics get caught before you click.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 3.63
+  },
+  "d5a": {
+    "text": "[amused] And it checks your own replies too.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 2.06
   },
   "shout": {
     "text": "[shouting] Slippery slope!",
     "voice": "eleven_v4:SOYHLrjzK2X1ezoPC6cr:1.1",
     "duration": 1.25
   },
-  "d3": {
-    "text": "[amused] Subtle, it is not. [pause] Every flag lands with drama, so you can't miss it.",
+  "d5b": {
+    "text": "[amused] Subtle, it is not. [pause] Rethink it, and the flag clears.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 5.46
-  },
-  "d4": {
-    "text": "Click the tag: Claude explains why, and asks one question to make your argument stronger. [pause] Fix it, and the flag clears.",
-    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 8.39
+    "duration": 4.36
   },
   "science": {
-    "text": "[confident] It knows twenty-six classic fallacies, [pause] and stays quiet when your reasoning holds.",
+    "text": "[confident] It knows dozens of fallacies, biases and pressure tactics, [pause] and stays quiet when the reasoning holds.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 4.91
+    "duration": 5.96
   },
   "privacy": {
-    "text": "[warmly] It reads your words, never your feed: [pause] no passwords, no pasted text, nothing you didn't write yourself.",
+    "text": "[warmly] It reads only the article, email or reply in front of you, [pause] and it never tells you what to believe.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 7.08
+    "duration": 5.75
   },
   "impact": {
-    "text": "For students, for work, for anyone in a comment section: [pause] every message becomes a chance to think twice.",
+    "text": "For students, for families, for anyone with an inbox: [pause] every headline becomes a chance to think twice.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 7.08
+    "duration": 6.97
   },
   "outro": {
-    "text": "[warmly] Ember. [pause] Catch the fallacy. [pause] Keep the argument.",
+    "text": "[warmly] Socrates. [pause] Critical thinking, built into your browser.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 3.89
+    "duration": 4.08
   }
 }

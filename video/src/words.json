@@ -1,296 +1,301 @@
 {
  "leo1": {
-  "stamp": "[whispers] Take Leo. It's one in the morning, [pause] and someone on the internet is wrong.|102444",
+  "stamp": "[whispers] Take Leo. It's one in the morning, [pause] and a headline just made him furious.|103488",
   "words": [
    [
     "Take",
     0,
-    0.26
+    0.24
    ],
    [
     "Leo.",
-    0.34,
+    0.32,
     0.74
    ],
    [
     "It's",
     1.24,
-    1.42
+    1.44
    ],
    [
     "1:00",
-    1.6,
-    1.62
+    1.58,
+    1.6
    ],
    [
     "in",
-    1.66,
-    1.72
+    1.64,
+    1.7
    ],
    [
     "the",
-    1.76,
-    1.82
+    1.74,
+    1.78
    ],
    [
-    "morning",
+    "morning,",
     1.86,
-    2.3
+    2.28
    ],
    [
     "and",
-    2.96,
-    3.08
+    2.94,
+    3.02
    ],
    [
-    "someone",
-    3.24,
-    3.52
+    "a",
+    3.1,
+    3.14
    ],
    [
-    "on",
-    3.56,
-    3.62
+    "headline",
+    3.2,
+    3.66
    ],
    [
-    "the",
-    3.66,
-    3.76
+    "just",
+    3.74,
+    3.96
    ],
    [
-    "internet",
-    3.82,
+    "made",
+    4,
+    4.12
+   ],
+   [
+    "him",
+    4.16,
     4.26
    ],
    [
-    "is",
-    4.42,
-    4.58
-   ],
-   [
-    "wrong",
-    4.62,
-    4.96
+    "furious",
+    4.46,
+    5.04
    ]
   ]
  },
  "leo2": {
-  "stamp": "[mischievously] So he types the perfect comeback. [quickly] Type. Post. Win.|84158",
+  "stamp": "[mischievously] He doesn't question a word. [pause] Read. [pause] Believe. [pause] Repost.|114982",
   "words": [
    [
-    "So",
-    0.18,
-    0.32
+    "He",
+    0.1,
+    0.3
    ],
    [
-    "he",
-    0.36,
-    0.5
+    "doesn't",
+    0.34,
+    0.7
    ],
    [
-    "types",
-    0.58,
-    0.9
+    "question",
+    0.78,
+    1.14
    ],
    [
-    "the",
-    0.94,
-    1.12
+    "a",
+    1.22,
+    1.3
    ],
    [
-    "perfect",
-    1.2,
-    1.62
+    "word.",
+    1.34,
+    1.8
    ],
    [
-    "comeback.",
-    1.74,
-    2.26
+    "Read,",
+    2.62,
+    2.96
    ],
    [
-    "Type,",
-    2.66,
-    2.9
+    "believe,",
+    3.76,
+    4.34
    ],
    [
-    "post,",
-    3.22,
-    3.54
-   ],
-   [
-    "win",
-    3.86,
-    4.08
+    "repost",
+    5.12,
+    5.64
    ]
   ]
  },
  "leo3": {
-  "stamp": "[sighs] By morning: two hundred replies. [pause] Not one about his point. [dramatically] All about his logic.|148942",
+  "stamp": "[sighs] By morning, two hundred people have shared it. [pause] Nobody asked if the argument held up.|127521",
   "words": [
    [
     "By",
-    0.92,
-    1.1
+    0.74,
+    0.88
    ],
    [
     "morning,",
-    1.14,
-    1.46
+    1,
+    1.34
    ],
    [
     "200",
-    2.3,
-    2.9
+    1.84,
+    2.38
    ],
    [
-    "replies.",
-    2.92,
-    3.48
+    "people",
+    2.44,
+    2.72
    ],
    [
-    "Not",
-    4.06,
-    4.22
+    "have",
+    2.76,
+    2.88
    ],
    [
-    "one",
-    4.46,
-    4.66
+    "shared",
+    2.94,
+    3.2
    ],
    [
-    "about",
-    4.72,
-    4.94
+    "it.",
+    3.26,
+    3.38
    ],
    [
-    "his",
-    4.96,
-    5.12
+    "Nobody",
+    4.26,
+    4.64
    ],
    [
-    "point.",
-    5.18,
-    5.5
+    "asked",
+    4.74,
+    5.08
    ],
    [
-    "All",
-    6.08,
-    6.32
+    "if",
+    5.14,
+    5.22
    ],
    [
-    "about",
-    6.38,
-    6.62
+    "the",
+    5.26,
+    5.34
    ],
    [
-    "his",
-    6.66,
-    6.84
+    "argument",
+    5.42,
+    5.76
    ],
    [
-    "logic",
-    6.96,
-    7.32
+    "held",
+    5.84,
+    6.02
+   ],
+   [
+    "up",
+    6.14,
+    6.28
    ]
   ]
  },
  "cold1": {
-  "stamp": "[serious] Leo isn't alone. Every day, billions of us post, comment and reply, [pause] and almost nobody checks their own reasoning.|170884",
+  "stamp": "[serious] Leo isn't alone. Every day, billions of us read, share and reply, [pause] and almost nobody stops to check the argument.|172452",
   "words": [
    [
     "Leo",
-    0.08,
+    0.06,
     0.34
    ],
    [
     "isn't",
-    0.52,
-    0.78
+    0.54,
+    0.8
    ],
    [
     "alone.",
-    0.84,
-    1.2
+    0.86,
+    1.24
    ],
    [
     "Every",
-    1.84,
-    2.04
+    1.8,
+    2
    ],
    [
     "day,",
-    2.14,
-    2.36
+    2.1,
+    2.32
    ],
    [
     "billions",
     2.76,
-    3.16
+    3.14
    ],
    [
     "of",
-    3.2,
+    3.18,
     3.26
    ],
    [
     "us",
-    3.32,
-    3.48
+    3.3,
+    3.46
    ],
    [
-    "post,",
+    "read,",
     3.54,
-    3.86
+    3.84
    ],
    [
-    "comment,",
+    "share,",
     4.12,
-    4.46
+    4.42
    ],
    [
     "and",
-    4.56,
-    4.66
+    4.58,
+    4.68
    ],
    [
     "reply,",
-    4.7,
-    5.16
+    4.72,
+    5.2
    ],
    [
     "and",
-    6.08,
-    6.22
+    6.22,
+    6.32
    ],
    [
     "almost",
-    6.28,
-    6.56
+    6.38,
+    6.7
    ],
    [
     "nobody",
-    6.74,
-    7.12
+    6.82,
+    7.18
    ],
    [
-    "checks",
-    7.26,
-    7.48
+    "stops",
+    7.32,
+    7.56
    ],
    [
-    "their",
-    7.52,
+    "to",
+    7.6,
     7.68
    ],
    [
-    "own",
-    7.76,
-    7.96
+    "check",
+    7.74,
+    7.92
    ],
    [
-    "reasoning",
-    8.02,
-    8.44
+    "the",
+    7.96,
+    8.04
+   ],
+   [
+    "argument",
+    8.12,
+    8.5
    ]
   ]
  },
@@ -490,12 +495,12 @@
   ]
  },
  "pivot": {
-  "stamp": "[intensely] We have spell-check. We have grammar-check. [long pause] But nothing checks our logic.|108713",
+  "stamp": "[intensely] We have spam filters. We have spell-check. [long pause] But nothing checks our logic.|107668",
   "words": [
    [
     "We",
     0.08,
-    0.18
+    0.2
    ],
    [
     "have",
@@ -503,44 +508,44 @@
     0.4
    ],
    [
-    "spell",
+    "spam",
     0.54,
-    0.78
+    0.84
    ],
    [
-    "check,",
-    0.84,
-    1.08
+    "filters.",
+    0.9,
+    1.3
    ],
    [
-    "we",
-    1.46,
-    1.58
+    "We",
+    1.62,
+    1.72
    ],
    [
     "have",
-    1.62,
-    1.8
+    1.76,
+    1.94
    ],
    [
-    "grammar",
-    1.88,
-    2.24
+    "spell",
+    2.08,
+    2.32
    ],
    [
-    "check,",
-    2.3,
-    2.56
+    "check.",
+    2.38,
+    2.66
    ],
    [
-    "but",
-    3.64,
-    3.86
+    "But",
+    3.72,
+    3.92
    ],
    [
     "nothing",
-    3.98,
-    4.4
+    4.02,
+    4.42
    ],
    [
     "checks",
@@ -550,337 +555,487 @@
    [
     "our",
     4.74,
-    4.88
+    4.86
    ],
    [
     "logic",
-    4.96,
-    5.32
+    4.9,
+    5.26
    ]
   ]
  },
  "vision": {
-  "stamp": "[hopeful] What if something caught the flaw in your argument, [pause] before the whole world did?|87293",
+  "stamp": "[hopeful] What if a partner questioned the argument, [pause] whether you're reading it, or writing it?|91472",
   "words": [
    [
     "What",
-    0.08,
-    0.18
+    0.1,
+    0.2
    ],
    [
     "if",
-    0.24,
-    0.36
+    0.26,
+    0.32
    ],
    [
-    "something",
-    0.4,
-    0.74
+    "a",
+    0.38,
+    0.42
    ],
    [
-    "caught",
-    0.8,
-    0.96
+    "partner",
+    0.48,
+    0.82
+   ],
+   [
+    "questioned",
+    0.9,
+    1.32
    ],
    [
     "the",
-    1,
-    1.16
+    1.36,
+    1.42
    ],
    [
-    "floor",
-    1.2,
-    1.46
-   ],
-   [
-    "in",
+    "argument?",
     1.5,
-    1.58
+    1.92
    ],
    [
-    "your",
-    1.62,
-    1.74
+    "Whether",
+    2.64,
+    2.82
    ],
    [
-    "argument",
-    1.82,
-    2.26
+    "you're",
+    2.86,
+    3.04
    ],
    [
-    "before",
-    2.9,
-    3.18
+    "reading",
+    3.08,
+    3.34
    ],
    [
-    "the",
-    3.22,
-    3.32
+    "it",
+    3.38,
+    3.54
    ],
    [
-    "whole",
-    3.4,
-    3.56
+    "or",
+    3.84,
+    3.96
    ],
    [
-    "world",
-    3.72,
-    4.04
+    "writing",
+    3.98,
+    4.32
    ],
    [
-    "did?",
-    4.08,
-    4.26
+    "it",
+    4.36,
+    4.44
    ]
   ]
  },
  "intro": {
-  "stamp": "[confident] Meet Ember, your critical thinking partner: a Chrome extension that reads only what you write, and flags fallacies right where they happen.|146852",
+  "stamp": "[confident] Meet Socrates: critical thinking, built into your browser. It flags weak arguments in what you read, and in what you write.|145284",
   "words": [
    [
     "Meet",
-    0.08,
+    0.06,
     0.22
    ],
    [
-    "Ember,",
-    0.38,
-    0.68
+    "Socrates.",
+    0.34,
+    0.94
    ],
    [
-    "your",
-    1,
-    1.14
-   ],
-   [
-    "critical",
-    1.2,
-    1.54
+    "Critical",
+    1.3,
+    1.64
    ],
    [
     "thinking",
-    1.66,
-    1.94
+    1.72,
+    2.1
    ],
    [
-    "partner.",
-    2.04,
-    2.4
+    "built",
+    2.42,
+    2.64
    ],
    [
-    "A",
-    2.8,
-    2.88
+    "into",
+    2.68,
+    2.86
    ],
    [
-    "Chrome",
-    2.92,
-    3.14
+    "your",
+    2.9,
+    2.98
    ],
    [
-    "extension",
-    3.18,
-    3.66
+    "browser.",
+    3.04,
+    3.46
    ],
    [
-    "that",
-    3.7,
-    3.78
-   ],
-   [
-    "reads",
-    3.84,
-    4.12
-   ],
-   [
-    "only",
-    4.18,
-    4.42
-   ],
-   [
-    "what",
-    4.46,
-    4.6
-   ],
-   [
-    "you",
-    4.62,
-    4.68
-   ],
-   [
-    "write",
-    4.74,
-    5.06
-   ],
-   [
-    "and",
-    5.24,
-    5.34
+    "It",
+    3.9,
+    3.96
    ],
    [
     "flags",
-    5.46,
-    5.72
+    4.06,
+    4.36
    ],
    [
-    "fallacies",
-    5.8,
-    6.22
+    "weak",
+    4.48,
+    4.64
    ],
    [
-    "right",
-    6.4,
-    6.58
+    "arguments",
+    4.72,
+    5.12
    ],
    [
-    "where",
-    6.6,
+    "in",
+    5.16,
+    5.24
+   ],
+   [
+    "what",
+    5.26,
+    5.38
+   ],
+   [
+    "you",
+    5.42,
+    5.48
+   ],
+   [
+    "read",
+    5.56,
+    5.86
+   ],
+   [
+    "and",
+    6.14,
+    6.38
+   ],
+   [
+    "in",
+    6.48,
+    6.56
+   ],
+   [
+    "what",
+    6.58,
     6.72
    ],
    [
-    "they",
+    "you",
     6.76,
-    6.88
+    6.8
    ],
    [
-    "happen",
-    6.92,
-    7.22
+    "write",
+    6.86,
+    7.14
    ]
   ]
  },
  "d1": {
-  "stamp": "[calm] It ignores everything you read. [pause] It only watches what you type.|82068",
+  "stamp": "[calm] Open an article, and it reads along with you.|49154",
   "words": [
    [
-    "It",
-    0,
-    0.12
+    "Open",
+    0.06,
+    0.26
    ],
    [
-    "ignores",
-    0.16,
-    0.76
+    "an",
+    0.3,
+    0.38
    ],
    [
-    "everything",
-    0.84,
-    1.28
+    "article",
+    0.46,
+    0.86
    ],
    [
-    "you",
-    1.32,
-    1.42
+    "and",
+    1.14,
+    1.22
    ],
    [
-    "read.",
-    1.48,
-    1.8
+    "it",
+    1.28,
+    1.4
    ],
    [
-    "It",
-    2.44,
-    2.56
+    "reads",
+    1.46,
+    1.7
    ],
    [
-    "only",
-    2.64,
-    2.9
+    "along",
+    1.74,
+    2
    ],
    [
-    "watches",
-    2.96,
-    3.36
-   ],
-   [
-    "what",
-    3.38,
-    3.5
+    "with",
+    2.06,
+    2.2
    ],
    [
     "you",
-    3.56,
-    3.66
-   ],
-   [
-    "type",
-    3.72,
-    3.98
+    2.28,
+    2.34
    ]
   ]
  },
  "d2": {
-  "stamp": "[suspenseful] Slip into a fallacy, and it's tagged right on the words that did it.|76844",
+  "stamp": "[suspenseful] When the reasoning slips, the exact words get tagged.|69007",
   "words": [
    [
-    "Slip",
-    0.18,
-    0.36
-   ],
-   [
-    "into",
-    0.4,
-    0.62
-   ],
-   [
-    "a",
-    0.66,
-    0.78
-   ],
-   [
-    "fallacy",
-    0.86,
-    1.34
-   ],
-   [
-    "and",
-    1.7,
-    1.76
-   ],
-   [
-    "it's",
-    1.8,
-    1.98
-   ],
-   [
-    "tagged",
-    2.06,
-    2.3
-   ],
-   [
-    "right",
-    2.46,
-    2.64
-   ],
-   [
-    "on",
-    2.68,
-    2.76
+    "When",
+    0,
+    0.14
    ],
    [
     "the",
-    2.8,
-    2.88
+    0.16,
+    0.28
+   ],
+   [
+    "reasoning",
+    0.32,
+    0.72
+   ],
+   [
+    "slips,",
+    0.9,
+    1.3
+   ],
+   [
+    "the",
+    1.7,
+    1.78
+   ],
+   [
+    "exact",
+    1.82,
+    2.24
    ],
    [
     "words",
-    2.92,
-    3.2
+    2.36,
+    2.7
+   ],
+   [
+    "get",
+    2.74,
+    2.9
+   ],
+   [
+    "tagged",
+    2.96,
+    3.34
+   ]
+  ]
+ },
+ "d3": {
+  "stamp": "Click the tag. [pause] Socrates won't tell you what to think. It asks the question that helps you decide.|140582",
+  "words": [
+   [
+    "Click",
+    0,
+    0.24
+   ],
+   [
+    "the",
+    0.28,
+    0.36
+   ],
+   [
+    "tag.",
+    0.42,
+    0.74
+   ],
+   [
+    "Socrates",
+    2.06,
+    2.58
+   ],
+   [
+    "won't",
+    2.64,
+    2.88
+   ],
+   [
+    "tell",
+    2.96,
+    3.12
+   ],
+   [
+    "you",
+    3.2,
+    3.3
+   ],
+   [
+    "what",
+    3.32,
+    3.46
+   ],
+   [
+    "to",
+    3.5,
+    3.6
+   ],
+   [
+    "think.",
+    3.66,
+    3.94
+   ],
+   [
+    "It",
+    4.5,
+    4.6
+   ],
+   [
+    "asks",
+    4.68,
+    4.96
+   ],
+   [
+    "the",
+    5,
+    5.08
+   ],
+   [
+    "question",
+    5.16,
+    5.6
    ],
    [
     "that",
-    3.26,
-    3.42
+    5.72,
+    5.84
    ],
    [
-    "did",
-    3.44,
-    3.58
+    "helps",
+    5.88,
+    6.1
+   ],
+   [
+    "you",
+    6.26,
+    6.44
+   ],
+   [
+    "decide",
+    6.48,
+    6.94
+   ]
+  ]
+ },
+ "d4": {
+  "stamp": "[serious] In your inbox, pressure tactics get caught before you click.|73186",
+  "words": [
+   [
+    "In",
+    0.04,
+    0.12
+   ],
+   [
+    "your",
+    0.18,
+    0.32
+   ],
+   [
+    "inbox,",
+    0.38,
+    0.84
+   ],
+   [
+    "pressure",
+    1.32,
+    1.66
+   ],
+   [
+    "tactics",
+    1.7,
+    2.1
+   ],
+   [
+    "get",
+    2.14,
+    2.32
+   ],
+   [
+    "caught",
+    2.38,
+    2.72
+   ],
+   [
+    "before",
+    2.76,
+    3.06
+   ],
+   [
+    "you",
+    3.1,
+    3.22
+   ],
+   [
+    "click",
+    3.26,
+    3.54
+   ]
+  ]
+ },
+ "d5a": {
+  "stamp": "[amused] And it checks your own replies too.|41840",
+  "words": [
+   [
+    "And",
+    0.2,
+    0.3
    ],
    [
     "it",
-    3.62,
-    3.72
+    0.34,
+    0.46
+   ],
+   [
+    "checks",
+    0.54,
+    0.78
+   ],
+   [
+    "your",
+    0.84,
+    0.94
+   ],
+   [
+    "own",
+    0.98,
+    1.14
+   ],
+   [
+    "replies",
+    1.18,
+    1.66
+   ],
+   [
+    "too",
+    1.7,
+    1.96
    ]
   ]
  },
@@ -899,348 +1054,253 @@
    ]
   ]
  },
- "d3": {
-  "stamp": "[amused] Subtle, it is not. [pause] Every flag lands with drama, so you can't miss it.|109758",
+ "d5b": {
+  "stamp": "[amused] Subtle, it is not. [pause] Rethink it, and the flag clears.|87815",
   "words": [
    [
     "Subtle",
-    0.28,
-    0.66
+    0.26,
+    0.64
    ],
    [
     "it",
-    1.06,
-    1.14
+    1.1,
+    1.2
    ],
    [
     "is",
-    1.2,
-    1.36
+    1.26,
+    1.44
    ],
    [
     "not.",
-    1.42,
-    1.72
+    1.5,
+    1.82
    ],
    [
-    "Every",
-    2.38,
-    2.62
-   ],
-   [
-    "flag",
-    2.74,
-    3
-   ],
-   [
-    "lands",
-    3.1,
-    3.38
-   ],
-   [
-    "with",
-    3.42,
-    3.54
-   ],
-   [
-    "drama,",
-    3.64,
-    4.12
-   ],
-   [
-    "so",
-    4.44,
-    4.56
-   ],
-   [
-    "you",
-    4.62,
-    4.7
-   ],
-   [
-    "can't",
-    4.76,
-    5.02
-   ],
-   [
-    "miss",
-    5.06,
-    5.22
+    "Rethink",
+    2.44,
+    2.8
    ],
    [
     "it",
-    5.28,
-    5.36
-   ]
-  ]
- },
- "d4": {
-  "stamp": "Click the tag: Claude explains why, and asks one question to make your argument stronger. [pause] Fix it, and the flag clears.|168272",
-  "words": [
-   [
-    "Click",
-    0,
-    0.22
-   ],
-   [
-    "the",
-    0.24,
-    0.34
-   ],
-   [
-    "tag.",
-    0.4,
-    0.7
-   ],
-   [
-    "Claude",
-    1.16,
-    1.48
-   ],
-   [
-    "explains",
-    1.54,
-    2
-   ],
-   [
-    "why",
-    2.1,
-    2.42
+    2.86,
+    2.98
    ],
    [
     "and",
-    2.74,
-    2.86
-   ],
-   [
-    "asks",
-    2.92,
-    3.24
-   ],
-   [
-    "one",
-    3.3,
-    3.5
-   ],
-   [
-    "question",
-    3.54,
-    3.98
-   ],
-   [
-    "to",
-    4,
-    4.08
-   ],
-   [
-    "make",
-    4.12,
-    4.26
-   ],
-   [
-    "your",
-    4.3,
-    4.44
-   ],
-   [
-    "argument",
-    4.52,
-    4.86
-   ],
-   [
-    "stronger.",
-    5,
-    5.42
-   ],
-   [
-    "Fix",
-    6.56,
-    6.76
-   ],
-   [
-    "it",
-    6.82,
-    6.96
-   ],
-   [
-    "and",
-    7.24,
-    7.32
+    3.2,
+    3.28
    ],
    [
     "the",
-    7.36,
-    7.48
+    3.32,
+    3.42
    ],
    [
     "flag",
-    7.52,
-    7.74
+    3.46,
+    3.72
    ],
    [
     "clears",
-    7.86,
-    8.28
+    3.84,
+    4.26
    ]
   ]
  },
  "science": {
-  "stamp": "[confident] It knows twenty-six classic fallacies, [pause] and stays quiet when your reasoning holds.|98786",
+  "stamp": "[confident] It knows dozens of fallacies, biases and pressure tactics, [pause] and stays quiet when the reasoning holds.|119684",
   "words": [
    [
     "It",
-    0.06,
+    0.04,
     0.16
    ],
    [
     "knows",
-    0.18,
-    0.44
+    0.2,
+    0.38
    ],
    [
-    "26",
-    0.64,
-    1.24
+    "dozens",
+    0.54,
+    0.96
    ],
    [
-    "classic",
-    1.28,
-    1.68
+    "of",
+    1,
+    1.16
    ],
    [
-    "fallacies",
-    1.76,
-    2.3
+    "fallacies,",
+    1.2,
+    1.74
+   ],
+   [
+    "biases,",
+    1.9,
+    2.42
    ],
    [
     "and",
-    2.64,
-    2.72
+    2.48,
+    2.58
+   ],
+   [
+    "pressure",
+    2.68,
+    3
+   ],
+   [
+    "tactics",
+    3.04,
+    3.48
+   ],
+   [
+    "and",
+    3.8,
+    3.88
    ],
    [
     "stays",
-    2.82,
-    3.1
+    4,
+    4.26
    ],
    [
     "quiet",
-    3.16,
-    3.56
+    4.34,
+    4.7
    ],
    [
     "when",
-    3.6,
-    3.7
+    4.76,
+    4.86
    ],
    [
-    "your",
-    3.74,
-    3.9
+    "the",
+    4.9,
+    4.98
    ],
    [
     "reasoning",
-    3.94,
-    4.3
+    5.02,
+    5.36
    ],
    [
     "holds",
-    4.4,
-    4.82
+    5.44,
+    5.86
    ]
   ]
  },
  "privacy": {
-  "stamp": "[warmly] It reads your words, never your feed: [pause] no passwords, no pasted text, nothing you didn't write yourself.|142150",
+  "stamp": "[warmly] It reads only the article, email or reply in front of you, [pause] and it never tells you what to believe.|115505",
   "words": [
    [
     "It",
-    0,
-    0.16
+    0.04,
+    0.14
    ],
    [
     "reads",
-    0.22,
-    0.48
+    0.18,
+    0.46
    ],
    [
-    "your",
-    0.52,
-    0.66
+    "only",
+    0.54,
+    0.78
    ],
    [
-    "words,",
-    0.78,
-    1.24
+    "the",
+    0.82,
+    0.94
    ],
    [
-    "never",
-    1.66,
-    1.9
+    "article,",
+    1,
+    1.4
    ],
    [
-    "your",
-    1.94,
+    "email,",
+    1.64,
     2.02
    ],
    [
-    "feed.",
+    "or",
     2.16,
-    2.42
+    2.26
    ],
    [
-    "No",
-    3.06,
-    3.22
+    "reply",
+    2.28,
+    2.72
    ],
    [
-    "passwords,",
-    3.28,
-    3.88
+    "in",
+    2.76,
+    2.88
    ],
    [
-    "no",
-    4.12,
-    4.22
+    "front",
+    2.92,
+    3.12
    ],
    [
-    "pasted",
-    4.32,
-    4.66
+    "of",
+    3.16,
+    3.24
    ],
    [
-    "text,",
-    4.72,
-    5.06
+    "you,",
+    3.3,
+    3.42
    ],
    [
-    "nothing",
-    5.46,
-    5.82
+    "and",
+    3.88,
+    3.96
+   ],
+   [
+    "it",
+    4,
+    4.08
+   ],
+   [
+    "never",
+    4.26,
+    4.52
+   ],
+   [
+    "tells",
+    4.56,
+    4.82
    ],
    [
     "you",
-    5.88,
-    6
+    4.86,
+    4.96
    ],
    [
-    "didn't",
-    6.04,
-    6.28
+    "what",
+    5.02,
+    5.14
    ],
    [
-    "write",
-    6.3,
-    6.48
+    "to",
+    5.18,
+    5.26
    ],
    [
-    "yourself",
-    6.52,
-    6.98
+    "believe",
+    5.28,
+    5.66
    ]
   ]
  },
  "impact": {
-  "stamp": "For students, for work, for anyone in a comment section: [pause] every message becomes a chance to think twice.|142150",
+  "stamp": "For students, for families, for anyone with an inbox: [pause] every headline becomes a chance to think twice.|140060",
   "words": [
    [
     "For",
@@ -1254,123 +1314,118 @@
    ],
    [
     "for",
-    0.98,
-    1.12
+    0.94,
+    1.02
    ],
    [
-    "work,",
-    1.16,
-    1.46
+    "families,",
+    1.12,
+    1.62
    ],
    [
     "for",
-    1.84,
-    1.98
+    1.94,
+    2.1
    ],
    [
     "anyone",
-    2.06,
-    2.52
-   ],
-   [
-    "in",
-    2.56,
+    2.18,
     2.6
    ],
    [
-    "a",
-    2.64,
-    2.7
+    "with",
+    2.62,
+    2.72
    ],
    [
-    "comment",
+    "an",
     2.74,
-    3
+    2.82
    ],
    [
-    "section,",
-    3.1,
-    3.46
+    "inbox.",
+    2.86,
+    3.34
    ],
    [
-    "every",
-    4.46,
-    4.68
+    "Every",
+    4.32,
+    4.6
    ],
    [
-    "message",
-    4.76,
-    5.16
+    "headline",
+    4.64,
+    5.12
    ],
    [
     "becomes",
-    5.26,
-    5.56
+    5.14,
+    5.44
    ],
    [
     "a",
-    5.6,
-    5.68
+    5.48,
+    5.56
    ],
    [
     "chance",
-    5.72,
-    6.12
+    5.6,
+    6
    ],
    [
     "to",
-    6.16,
-    6.26
+    6.04,
+    6.16
    ],
    [
     "think",
-    6.3,
-    6.52
+    6.18,
+    6.38
    ],
    [
     "twice",
-    6.58,
-    6.98
+    6.46,
+    6.86
    ]
   ]
  },
  "outro": {
-  "stamp": "[warmly] Ember. [pause] Catch the fallacy. [pause] Keep the argument.|78411",
+  "stamp": "[warmly] Socrates. [pause] Critical thinking, built into your browser.|82068",
   "words": [
    [
-    "Ember.",
-    0.08,
-    0.5
+    "Socrates.",
+    0.14,
+    0.84
    ],
    [
-    "Catch",
-    1.34,
-    1.6
+    "Critical",
+    1.58,
+    1.92
    ],
    [
-    "the",
-    1.64,
-    1.76
+    "thinking",
+    2.02,
+    2.42
    ],
    [
-    "fallacy.",
-    1.8,
-    2.28
+    "built",
+    2.84,
+    3.04
    ],
    [
-    "Keep",
-    3,
-    3.18
+    "into",
+    3.16,
+    3.34
    ],
    [
-    "the",
-    3.24,
-    3.32
-   ],
-   [
-    "argument",
+    "your",
     3.38,
-    3.8
+    3.48
+   ],
+   [
+    "browser",
+    3.56,
+    3.98
    ]
   ]
  }

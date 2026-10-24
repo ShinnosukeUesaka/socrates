@@ -30,6 +30,7 @@ const POSITIVE = [
   ["false_cause", "Ever since we got the new manager sales dropped, so clearly she's the problem."],
   ["sunk_cost", "We've already invested €20,000 in our startup, so we have to keep going or all that money will have been wasted."],
   ["sweeping_generalization", "Everyone is stupid."],
+  ["sunk_cost", "We spent so much time on this project, we cannot quit now."],
   ["sweeping_generalization", "Honestly, people are so lazy these days."],
   ["unjustified_certainty", "There's no doubt that this is the right call."],
   ["overconfidence", "Relax, this plan can't fail."],

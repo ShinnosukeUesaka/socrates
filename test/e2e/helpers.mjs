@@ -150,8 +150,13 @@ export async function launchWithExtension() {
   return { context, worker, extensionId };
 }
 
+// Writing-mode defaults; reading tests switch the sources they need on.
 export const TEST_SETTINGS = {
   enabled: true,
+  checkWriting: true,
+  checkEmails: false,
+  checkArticles: false,
+  checkDocs: false,
   apiKey: "",
   engine: "auto",
   intensity: "dramatic",
@@ -160,8 +165,18 @@ export const TEST_SETTINGS = {
   mutedTypes: [],
   blockedSites: [],
   debounceMs: 300,
+  maxReadChars: 20000,
   apiBaseUrl: "",
 };
+
+// Sends a message from the extension to the content script in the active tab,
+// as the popup button and the context menu do.
+export async function messageActiveTab(worker, message) {
+  await worker.evaluate(async (msg) => {
+    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+    await chrome.tabs.sendMessage(tab.id, msg);
+  }, message);
+}
 
 export async function setSettings(worker, patch) {
   await worker.evaluate((p) => chrome.storage.local.set(p), patch);
@@ -179,7 +194,7 @@ export function overlayState(page) {
       const b = el.getBoundingClientRect();
       return { left: b.left, top: b.top, right: b.right, bottom: b.bottom, width: b.width, height: b.height };
     };
-    if (!root) return { mounted: false, tags: [], hls: [], stamps: 0, embers: 0, vignettes: 0, fixed: 0, banners: 0, card: null, status: null };
+    if (!root) return { mounted: false, tags: [], hls: [], stamps: 0, embers: 0, vignettes: 0, fixed: 0, banners: 0, card: null, status: null, nav: null, pending: 0 };
     return {
       mounted: true,
       tags: [...root.querySelectorAll(".ctp-tag:not(.ctp-tag--leave)")]
@@ -194,6 +209,8 @@ export function overlayState(page) {
       fixed: root.querySelectorAll(".ctp-fixed").length,
       card: root.querySelector(".ctp-card")?.textContent ?? null,
       status: root.querySelector(".ctp-status")?.textContent ?? null,
+      nav: root.querySelector(".ctp-nav")?.textContent ?? null,
+      pending: root.querySelectorAll(".ctp-tag[data-pending]").length,
     };
   });
 }

@@ -5,6 +5,7 @@ const $ = (id) => document.getElementById(id);
 async function render() {
   const s = await loadSettings();
   $("enabled").checked = s.enabled;
+  for (const box of document.querySelectorAll("[data-setting]")) box.checked = Boolean(s[box.dataset.setting]);
   $("sound").checked = s.sound;
   for (const b of $("intensity").querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.value === s.intensity));
 
@@ -20,6 +21,14 @@ $("sound").addEventListener("change", (e) => chrome.storage.local.set({ sound: e
 $("intensity").addEventListener("click", (e) => {
   const value = e.target.closest("button")?.dataset.value;
   if (value) chrome.storage.local.set({ intensity: value });
+});
+for (const box of document.querySelectorAll("[data-setting]")) {
+  box.addEventListener("change", (e) => chrome.storage.local.set({ [box.dataset.setting]: e.target.checked }));
+}
+$("checkPage").addEventListener("click", async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (tab?.id) chrome.tabs.sendMessage(tab.id, { type: "ctp:checkPage" }).catch(() => {});
+  window.close();
 });
 $("settings").addEventListener("click", () => chrome.runtime.openOptionsPage());
 chrome.storage.onChanged.addListener(render);

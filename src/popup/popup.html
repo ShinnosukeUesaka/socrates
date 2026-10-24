@@ -8,6 +8,7 @@
       body { width: 300px; padding: 14px; }
       section { margin-top: 14px; }
       footer { margin-top: 16px; display: flex; justify-content: space-between; align-items: center; }
+      .toggle { padding: 5px 0; }
     </style>
   </head>
   <body>
@@ -18,7 +19,16 @@
         <span></span>
       </label>
     </div>
-    <p class="muted" style="margin: 6px 0 0">Better thinking starts with awareness. Socrates reads only what you write.</p>
+    <p class="muted" style="margin: 6px 0 0">Read critically. Socrates questions the reasoning in what you read.</p>
+
+    <section>
+      <h2>Check</h2>
+      <div class="row toggle"><span>Emails I open (Gmail)</span><label class="switch"><input data-setting="checkEmails" type="checkbox" aria-label="Emails I open" /><span></span></label></div>
+      <div class="row toggle"><span>News &amp; articles</span><label class="switch"><input data-setting="checkArticles" type="checkbox" aria-label="News and articles" /><span></span></label></div>
+      <div class="row toggle"><span>Google Docs</span><label class="switch"><input data-setting="checkDocs" type="checkbox" aria-label="Google Docs" /><span></span></label></div>
+      <div class="row toggle"><span>What I write</span><label class="switch"><input data-setting="checkWriting" type="checkbox" aria-label="What I write" /><span></span></label></div>
+      <button type="button" class="primary" id="checkPage" style="width: 100%; margin-top: 10px">Check this page now</button>
+    </section>
 
     <section>
       <h2>Drama level</h2>

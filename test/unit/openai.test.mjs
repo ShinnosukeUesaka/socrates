@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { analyzeWithOpenAI, buildOpenAIRequest, parseOpenAIResponse } from "../../src/background/openai.js";
-import { RESULT_SCHEMA, SYSTEM_PROMPT } from "../../src/background/prompt.js";
+import { READ_PROMPT, RESULT_SCHEMA, WRITE_PROMPT } from "../../src/background/prompt.js";
 import { activeModel, DEFAULT_SETTINGS, providerFor, usesAI } from "../../src/shared/settings.js";
 
 const passages = [
@@ -40,7 +40,8 @@ test("usesAI and activeModel follow the key and engine", () => {
 test("request uses the Responses API with a strict JSON schema and reasoning effort", () => {
   const req = buildOpenAIRequest({ model: "gpt-5.5", effort: "low", passages });
   assert.equal(req.model, "gpt-5.5");
-  assert.equal(req.instructions, SYSTEM_PROMPT);
+  assert.equal(req.instructions, WRITE_PROMPT);
+  assert.equal(buildOpenAIRequest({ model: "gpt-5.5", effort: "low", passages, mode: "read" }).instructions, READ_PROMPT);
   assert.deepEqual(req.reasoning, { effort: "low" });
   assert.deepEqual(req.text.format, { type: "json_schema", name: "reasoning_issues", schema: RESULT_SCHEMA, strict: true });
   assert.match(req.input, /<passage id="p0">/);

@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { AnalysisError, buildUserMessage, mapFindings, RESULT_SCHEMA, SYSTEM_PROMPT } from "./prompt.js";
+import { AnalysisError, buildUserMessage, mapFindings, RESULT_SCHEMA, systemPrompt } from "./prompt.js";
 
 export function createOpenAIClient({ apiKey, apiBaseUrl }) {
   return new OpenAI({
@@ -12,10 +12,10 @@ export function createOpenAIClient({ apiKey, apiBaseUrl }) {
   });
 }
 
-export function buildOpenAIRequest({ model, effort, passages }) {
+export function buildOpenAIRequest({ model, effort, passages, mode = "write" }) {
   return {
     model,
-    instructions: SYSTEM_PROMPT,
+    instructions: systemPrompt(mode),
     input: buildUserMessage(passages),
     reasoning: { effort },
     text: { format: { type: "json_schema", name: "reasoning_issues", schema: RESULT_SCHEMA, strict: true } },
@@ -31,11 +31,11 @@ export function parseOpenAIResponse(response, passages) {
   return mapFindings(response.output_text ?? "", passages);
 }
 
-export async function analyzeWithOpenAI({ client, model, effort, passages }) {
+export async function analyzeWithOpenAI({ client, model, effort, passages, mode }) {
   if (!passages.length) return [];
   let response;
   try {
-    response = await client.responses.create(buildOpenAIRequest({ model, effort, passages }));
+    response = await client.responses.create(buildOpenAIRequest({ model, effort, passages, mode }));
   } catch (error) {
     if (error instanceof OpenAI.AuthenticationError) throw new AnalysisError("auth", "Your OpenAI API key was rejected.");
     if (error instanceof OpenAI.PermissionDeniedError) throw new AnalysisError("auth", "This API key can't use that model.");

@@ -204,6 +204,30 @@ describe("flagging", () => {
     assert.ok(Math.abs(hl.width - 2 - expected.width) < 3, `width ${hl.width} vs ${expected.width}`);
   });
 
+  test("finishing a sentence triggers a check right away", async () => {
+    await setSettings(browser.worker, { debounceMs: 5000 });
+    await sleep(100);
+    await typeInto("#ta", "Everyone knows it works.");
+    const start = Date.now();
+    await waitFor(tagNamed("Bandwagon"), { message: "tag after sentence end", timeout: 4000 });
+    assert.ok(Date.now() - start < 3500, "didn't wait for the 5s pause");
+  });
+
+  test("steady typing still gets checked without a pause", async () => {
+    await setSettings(browser.worker, { debounceMs: 5000 });
+    await sleep(100);
+    await typeInto("#ta", "Everyone knows it works");
+    // Keep typing slowly, never pausing long enough for the debounce.
+    const typing = (async () => {
+      for (const ch of " and that is that and so on and so forth") {
+        await page.keyboard.type(ch);
+        await sleep(150);
+      }
+    })();
+    await waitFor(tagNamed("Bandwagon"), { message: "tag while still typing", timeout: 5000 });
+    await typing;
+  });
+
   test("single-line input gets flagged inside its box", async () => {
     await typeInto("#single", "Everyone knows cats are better than dogs.");
     await waitFor(tagNamed("Bandwagon"), { message: "bandwagon tag" });

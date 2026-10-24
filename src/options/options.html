@@ -70,7 +70,8 @@
           <div class="field">
             <label for="debounceMs">Check after you pause for</label>
             <select id="debounceMs">
-              <option value="800">0.8 seconds</option>
+              <option value="400">0.4 seconds</option>
+              <option value="800">0.8 seconds (default)</option>
               <option value="1400">1.4 seconds</option>
               <option value="2500">2.5 seconds</option>
               <option value="5000">5 seconds</option>
@@ -87,11 +88,11 @@
       <section class="panel">
         <h2>What Socrates reads</h2>
         <ul class="privacy">
-          <li>Only text you type into text boxes, text areas, rich-text editors (Gmail included) and Google Docs. Page content is never read.</li>
-          <li>Text that was already in a field or document, text the site inserts, and quoted replies are skipped.</li>
-          <li>On Google Docs, Socrates switches on Docs' accessible text layer so it can see where your words are on the page.</li>
-          <li>Password, payment, one-time-code and similar fields are always skipped.</li>
-          <li>With an API key set, the text you wrote is sent to that provider (OpenAI or Anthropic) with your key. Nothing else is sent anywhere.</li>
+          <li><b>Emails you open</b> in Gmail: the message body, without quoted earlier messages.</li>
+          <li><b>News and articles</b>: the main article text, without navigation, captions, related links or comments. Other pages are only read when you click “Check this page now” or select text and choose “Ask Socrates about this”.</li>
+          <li><b>Google Docs</b> you have open. Socrates switches on Docs' accessible text layer so it can see where the words are on the page.</li>
+          <li><b>What you write</b> (off unless you turn it on): only text you type, never text that was already there, text the site inserts or quoted replies. Password, payment and one-time-code fields are always skipped.</li>
+          <li>With an API key set, that text is sent to your provider (OpenAI or Anthropic) with your key, up to the first 20,000 characters of a page. Nothing else is sent anywhere. Without a key, nothing leaves your browser.</li>
         </ul>
         <div class="row" style="margin-top: 12px">
           <span>Also check text I paste</span>
