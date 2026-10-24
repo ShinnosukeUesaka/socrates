@@ -20,30 +20,26 @@ const FILTER = `silenceremove=start_periods=1:start_threshold=-45dB,areverse,sil
 const MODEL = 'eleven_v4';
 const NARRATOR = 'JBFqnCBsd6RMkjVDRZzb'; // George: warm, captivating storyteller (ElevenLabs premade voice)
 const ANNOUNCER = 'SOYHLrjzK2X1ezoPC6cr'; // Harry: fierce warrior (ElevenLabs premade voice), shouts the fallacy name
+const DAN = 'cjVigY5qzO86Huf0OWal'; // Eric: smooth, trustworthy (ElevenLabs premade voice), the persuasive colleague
 
 export const LINES = [
-  // A specific example first: Leo's late-night headline, and the morning after.
-  ['leo1', NARRATOR, "[whispers] Take Leo. It's one in the morning, [pause] and a headline just made him furious."],
-  ['leo2', NARRATOR, "[mischievously] He doesn't question a word. [pause] Read. [pause] Believe. [pause] Repost."],
-  ['leo3', NARRATOR, '[sighs] By morning, two hundred people have shared it. [pause] Nobody asked if the argument held up.'],
-  // The general picture.
-  ['cold1', NARRATOR, "[serious] Leo isn't alone. Every day, billions of us read, share and reply, [pause] and almost nobody stops to check the argument."],
-  ['mit', NARRATOR, '[gravely] On Twitter, false stories were seventy percent more likely to be retweeted than true ones.'],
-  ['wef', NARRATOR, '[ominous] And in 2024, and again in 2025, the World Economic Forum ranked misinformation the number one global risk for the next two years.'],
-  ['pivot', NARRATOR, '[intensely] We have spam filters. We have spell-check. [long pause] But nothing checks our logic.'],
-  ['vision', NARRATOR, "[hopeful] What if a partner questioned the argument, [pause] whether you're reading it, or writing it?"],
+  // The office: Dan's pitch, and what it cost.
+  ['open', NARRATOR, '[softly] Meet Dan. He wins every meeting.'],
+  ['dan', DAN, "[confidently] Trust me, I've done this for twenty years. Either we go all in on Atlas, or we're finished."],
+  ['collapse', NARRATOR, '[gravely] It sounded convincing. Nobody checked the logic. [long pause] A year later, the company was gone.'],
+  // What's missing.
+  ['pivot', NARRATOR, '[intensely] We have spell-check. We have grammar-check. [long pause] But nothing checks our logic.'],
   ['intro', NARRATOR, '[confident] Meet Socrates: critical thinking, built into your browser. It flags weak arguments in what you read, and in what you write.'],
-  // The product: reading an article, the card, the inbox, then your own reply.
-  ['d1', NARRATOR, '[calm] Open an article, and it reads along with you.'],
+  ['structure', NARRATOR, '[confident] It looks past the wording, to the structure of the argument.'],
+  // The real extension: an email, then an article.
   ['d2', NARRATOR, '[suspenseful] When the reasoning slips, the exact words get tagged.'],
   ['d3', NARRATOR, "Click the tag. [pause] Socrates won't tell you what to think. It asks the question that helps you decide."],
-  ['d4', NARRATOR, '[serious] In your inbox, pressure tactics get caught before you click.'],
   ['d5a', NARRATOR, '[amused] And it checks your own replies too.'],
-  ['shout', ANNOUNCER, '[shouting] Slippery slope!'],
   ['d5b', NARRATOR, '[amused] Subtle, it is not. [pause] Rethink it, and the flag clears.'],
-  ['science', NARRATOR, '[confident] It knows dozens of fallacies, biases and pressure tactics, [pause] and stays quiet when the reasoning holds.'],
+  ['d1', NARRATOR, '[calm] Open an article, and it reads along with you.'],
+  ['science', NARRATOR, '[confident] It catches the fallacies and biases behind bad decisions, [pause] and stays quiet when the reasoning holds.'],
   ['privacy', NARRATOR, '[warmly] It reads only the article, email or reply in front of you, [pause] and it never tells you what to believe.'],
-  ['impact', NARRATOR, 'For students, for families, for anyone with an inbox: [pause] every headline becomes a chance to think twice.'],
+  ['impact', NARRATOR, '[confident] Better arguments. Better decisions. [pause] Logic, not language.'],
   ['outro', NARRATOR, '[warmly] Socrates. [pause] Critical thinking, built into your browser.'],
 ];
 

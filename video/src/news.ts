@@ -27,3 +27,6 @@ export const HEADLINES = [
   'Microsoft Study Finds AI Makes Human Cognition “Atrophied and Unprepared”',
   'Increased AI use linked to eroding critical thinking skills',
 ];
+
+/** The decision-making stat beat (null until a verified one is chosen). */
+export const STAT: (Beat & { word?: string }) | null = null;

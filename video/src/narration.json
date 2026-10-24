@@ -1,53 +1,33 @@
 {
-  "leo1": {
-    "text": "[whispers] Take Leo. It's one in the morning, [pause] and a headline just made him furious.",
+  "open": {
+    "text": "[softly] Meet Dan. He wins every meeting.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 5.15
+    "duration": 2.4
   },
-  "leo2": {
-    "text": "[mischievously] He doesn't question a word. [pause] Read. [pause] Believe. [pause] Repost.",
-    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 5.72
+  "dan": {
+    "text": "[confidently] Trust me, I've done this for twenty years. Either we go all in on Atlas, or we're finished.",
+    "voice": "eleven_v4:cjVigY5qzO86Huf0OWal:1.1",
+    "duration": 5.17
   },
-  "leo3": {
-    "text": "[sighs] By morning, two hundred people have shared it. [pause] Nobody asked if the argument held up.",
+  "collapse": {
+    "text": "[gravely] It sounded convincing. Nobody checked the logic. [long pause] A year later, the company was gone.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 6.35
-  },
-  "cold1": {
-    "text": "[serious] Leo isn't alone. Every day, billions of us read, share and reply, [pause] and almost nobody stops to check the argument.",
-    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 8.59
-  },
-  "mit": {
-    "text": "[gravely] On Twitter, false stories were seventy percent more likely to be retweeted than true ones.",
-    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 5.3
-  },
-  "wef": {
-    "text": "[ominous] And in 2024, and again in 2025, the World Economic Forum ranked misinformation the number one global risk for the next two years.",
-    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 9.4
+    "duration": 6.5
   },
   "pivot": {
-    "text": "[intensely] We have spam filters. We have spell-check. [long pause] But nothing checks our logic.",
+    "text": "[intensely] We have spell-check. We have grammar-check. [long pause] But nothing checks our logic.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 5.36
-  },
-  "vision": {
-    "text": "[hopeful] What if a partner questioned the argument, [pause] whether you're reading it, or writing it?",
-    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 4.55
+    "duration": 5.33
   },
   "intro": {
     "text": "[confident] Meet Socrates: critical thinking, built into your browser. It flags weak arguments in what you read, and in what you write.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
     "duration": 7.24
   },
-  "d1": {
-    "text": "[calm] Open an article, and it reads along with you.",
+  "structure": {
+    "text": "[confident] It looks past the wording, to the structure of the argument.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 2.43
+    "duration": 3.13
   },
   "d2": {
     "text": "[suspenseful] When the reasoning slips, the exact words get tagged.",
@@ -59,30 +39,25 @@
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
     "duration": 7
   },
-  "d4": {
-    "text": "[serious] In your inbox, pressure tactics get caught before you click.",
-    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 3.63
-  },
   "d5a": {
     "text": "[amused] And it checks your own replies too.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
     "duration": 2.06
-  },
-  "shout": {
-    "text": "[shouting] Slippery slope!",
-    "voice": "eleven_v4:SOYHLrjzK2X1ezoPC6cr:1.1",
-    "duration": 1.25
   },
   "d5b": {
     "text": "[amused] Subtle, it is not. [pause] Rethink it, and the flag clears.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
     "duration": 4.36
   },
-  "science": {
-    "text": "[confident] It knows dozens of fallacies, biases and pressure tactics, [pause] and stays quiet when the reasoning holds.",
+  "d1": {
+    "text": "[calm] Open an article, and it reads along with you.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 5.96
+    "duration": 2.43
+  },
+  "science": {
+    "text": "[confident] It catches the fallacies and biases behind bad decisions, [pause] and stays quiet when the reasoning holds.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 5.77
   },
   "privacy": {
     "text": "[warmly] It reads only the article, email or reply in front of you, [pause] and it never tells you what to believe.",
@@ -90,9 +65,9 @@
     "duration": 5.75
   },
   "impact": {
-    "text": "For students, for families, for anyone with an inbox: [pause] every headline becomes a chance to think twice.",
+    "text": "[confident] Better arguments. Better decisions. [pause] Logic, not language.",
     "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
-    "duration": 6.97
+    "duration": 4.49
   },
   "outro": {
     "text": "[warmly] Socrates. [pause] Critical thinking, built into your browser.",
