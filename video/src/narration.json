@@ -1,0 +1,92 @@
+{
+  "leo1": {
+    "text": "[whispers] Take Leo. It's one in the morning, [pause] and someone on the internet is wrong.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 5.09
+  },
+  "leo2": {
+    "text": "[mischievously] So he types the perfect comeback. [quickly] Type. Post. Win.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 4.18
+  },
+  "leo3": {
+    "text": "[sighs] By morning: two hundred replies. [pause] Not one about his point. [dramatically] All about his logic.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 7.42
+  },
+  "cold1": {
+    "text": "[serious] Leo isn't alone. Every day, billions of us post, comment and reply, [pause] and almost nobody checks their own reasoning.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 8.52
+  },
+  "mit": {
+    "text": "[gravely] On Twitter, false stories were seventy percent more likely to be retweeted than true ones.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 5.3
+  },
+  "wef": {
+    "text": "[ominous] And in 2024, and again in 2025, the World Economic Forum ranked misinformation the number one global risk for the next two years.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 9.4
+  },
+  "pivot": {
+    "text": "[intensely] We have spell-check. We have grammar-check. [long pause] But nothing checks our logic.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 5.41
+  },
+  "vision": {
+    "text": "[hopeful] What if something caught the flaw in your argument, [pause] before the whole world did?",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 4.34
+  },
+  "intro": {
+    "text": "[confident] Meet Ember, your critical thinking partner: a Chrome extension that reads only what you write, and flags fallacies right where they happen.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 7.31
+  },
+  "d1": {
+    "text": "[calm] It ignores everything you read. [pause] It only watches what you type.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 4.08
+  },
+  "d2": {
+    "text": "[suspenseful] Slip into a fallacy, and it's tagged right on the words that did it.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 3.81
+  },
+  "shout": {
+    "text": "[shouting] Slippery slope!",
+    "voice": "eleven_v4:SOYHLrjzK2X1ezoPC6cr:1.1",
+    "duration": 1.25
+  },
+  "d3": {
+    "text": "[amused] Subtle, it is not. [pause] Every flag lands with drama, so you can't miss it.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 5.46
+  },
+  "d4": {
+    "text": "Click the tag: Claude explains why, and asks one question to make your argument stronger. [pause] Fix it, and the flag clears.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 8.39
+  },
+  "science": {
+    "text": "[confident] It knows twenty-six classic fallacies, [pause] and stays quiet when your reasoning holds.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 4.91
+  },
+  "privacy": {
+    "text": "[warmly] It reads your words, never your feed: [pause] no passwords, no pasted text, nothing you didn't write yourself.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 7.08
+  },
+  "impact": {
+    "text": "For students, for work, for anyone in a comment section: [pause] every message becomes a chance to think twice.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 7.08
+  },
+  "outro": {
+    "text": "[warmly] Ember. [pause] Catch the fallacy. [pause] Keep the argument.",
+    "voice": "eleven_v4:JBFqnCBsd6RMkjVDRZzb:1.1",
+    "duration": 3.89
+  }
+}

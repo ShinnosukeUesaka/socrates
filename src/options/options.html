@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ember Settings</title>
+    <link rel="stylesheet" href="ui.css" />
+    <style>
+      body { padding: 32px 16px 64px; }
+      main { max-width: 680px; margin: 0 auto; display: grid; gap: 16px; }
+      .field { display: grid; gap: 6px; margin-bottom: 12px; }
+      .field:last-child { margin-bottom: 0; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      @media (max-width: 520px) { .grid2 { grid-template-columns: 1fr; } }
+      .types { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; }
+      .types label { display: flex; gap: 8px; align-items: center; }
+      #testResult { margin-top: 10px; white-space: pre-wrap; font: 12px/1.5 ui-monospace, Menlo, monospace; }
+      #saved { color: var(--ok); opacity: 0; transition: opacity 0.2s; }
+      #saved.show { opacity: 1; }
+      ul.privacy { margin: 0; padding-left: 18px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header class="row">
+        <h1><span class="flame">⚠</span> Ember settings</h1>
+        <span id="saved">Saved</span>
+      </header>
+
+      <section class="panel">
+        <h2>Analysis engine</h2>
+        <div class="field">
+          <label for="apiKey">Anthropic API key</label>
+          <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-..." />
+          <span class="muted">Stored only in this browser profile (not synced). Without a key, Ember uses offline pattern checks, which catch textbook phrasings only.</span>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label for="engine">Engine</label>
+            <select id="engine">
+              <option value="auto">Claude when a key is set (recommended)</option>
+              <option value="claude">Claude only</option>
+              <option value="patterns">Offline patterns only</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="model">Model</label>
+            <select id="model">
+              <option value="claude-opus-5-5">Claude Opus 5.5 (default)</option>
+              <option value="claude-sonnet-5-5">Claude Sonnet 5.5</option>
+              <option value="claude-haiku-5-5">Claude Haiku 5.5 (fastest, cheapest)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="effort">Effort</label>
+            <select id="effort">
+              <option value="low">Low: fastest feedback</option>
+              <option value="medium">Medium</option>
+              <option value="high">High: most thorough</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="debounceMs">Check after you pause for</label>
+            <select id="debounceMs">
+              <option value="800">0.8 seconds</option>
+              <option value="1400">1.4 seconds</option>
+              <option value="2500">2.5 seconds</option>
+              <option value="5000">5 seconds</option>
+            </select>
+          </div>
+        </div>
+        <div class="row" style="justify-content: flex-start">
+          <button type="button" class="primary" id="test">Test it</button>
+          <span class="muted">Runs one sample sentence through the current engine.</span>
+        </div>
+        <div id="testResult"></div>
+      </section>
+
+      <section class="panel">
+        <h2>What Ember reads</h2>
+        <ul class="privacy">
+          <li>Only text you type into text boxes, text areas and rich-text editors. Page content is never read.</li>
+          <li>Text that was already in a field, text the site inserts, and quoted replies are skipped.</li>
+          <li>Password, payment, one-time-code and similar fields are always skipped.</li>
+          <li>With Claude enabled, the text you wrote is sent to the Anthropic API with your key. Nothing else is sent anywhere.</li>
+        </ul>
+        <div class="row" style="margin-top: 12px">
+          <span>Also check text I paste</span>
+          <label class="switch"><input id="checkPastes" type="checkbox" aria-label="Also check pasted text" /><span></span></label>
+        </div>
+        <div class="field" style="margin-top: 12px">
+          <label for="blockedSites">Never run on these sites (one domain per line)</label>
+          <textarea id="blockedSites" spellcheck="false" placeholder="mail.example.com"></textarea>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Fallacies to flag</h2>
+        <div class="types" id="types"></div>
+      </section>
+
+      <section class="panel row">
+        <span class="muted">Fallacy counter shown in the popup.</span>
+        <button type="button" id="resetStats">Reset counter</button>
+      </section>
+    </main>
+    <script src="options.js"></script>
+  </body>
+</html>

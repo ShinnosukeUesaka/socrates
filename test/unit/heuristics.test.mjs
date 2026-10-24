@@ -1,0 +1,79 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { FALLACY_IDS } from "../../src/shared/fallacies.js";
+import { detectHeuristic } from "../../src/shared/heuristics.js";
+
+const POSITIVE = [
+  ["ad_hominem", "You're an idiot, so nobody should listen to your plan."],
+  ["ad_hominem", "What would you even know about economics?"],
+  ["straw_man", "So you're saying we should just let criminals walk free?"],
+  ["false_dilemma", "You're either with us or against us."],
+  ["false_dilemma", "There are only two options: ban it or accept chaos."],
+  ["slippery_slope", "If we allow remote work, next thing you know nobody will ever come to the office."],
+  ["appeal_to_popularity", "Everyone knows that this diet works."],
+  ["appeal_to_popularity", "Millions of fans can't be wrong."],
+  ["appeal_to_authority", "Experts say it's safe, so stop worrying."],
+  ["appeal_to_authority", "We do it this way because I said so."],
+  ["appeal_to_tradition", "We've always done it this way and it works fine."],
+  ["appeal_to_nature", "It's natural, so it can't hurt you."],
+  ["tu_quoque", "Look who's talking, you eat meat too."],
+  ["no_true_scotsman", "No true programmer would ever use tabs."],
+  ["burden_of_proof", "Aliens built the pyramids, prove me wrong."],
+  ["appeal_to_ignorance", "Nobody has ever proven ghosts don't exist, so they must be real."],
+  ["appeal_to_emotion", "Think of the children before you vote for this."],
+  ["anecdotal_evidence", "My grandpa smoked every day and he lived to 95."],
+  ["hasty_generalization", "I met two rude tourists from there, so they are all like that."],
+  ["circular_reasoning", "The book is true because the book says so."],
+  ["sunk_cost", "We've already spent two years on this, we can't quit now."],
+  ["loaded_question", "Have you stopped lying to your customers?"],
+  ["middle_ground", "The truth is somewhere in the middle, as always."],
+  ["false_cause", "Ever since we got the new manager sales dropped, so clearly she's the problem."],
+];
+
+const NEGATIVE = [
+  "I think we should meet tomorrow to discuss the budget.",
+  "According to a 2021 study published in The Lancet, experts say the vaccine is safe.",
+  "I'm doing great, what about you?",
+  "Either way, let's grab lunch at noon.",
+  "Most people think it's hard, but the docs explain it well.",
+  "That's a natural fit for the team.",
+  "My friend recommended this book and I loved it.",
+  "Can you send me the report before Friday?",
+  "The truth is that I forgot to reply, sorry!",
+  "We spent a week on this design and learned a lot.",
+];
+
+for (const [type, text] of POSITIVE) {
+  test(`flags ${type}: ${text}`, () => {
+    const found = detectHeuristic(text);
+    assert.ok(
+      found.some((f) => f.type === type),
+      `expected ${type}, got ${JSON.stringify(found.map((f) => f.type))}`,
+    );
+  });
+}
+
+for (const text of NEGATIVE) {
+  test(`stays quiet: ${text}`, () => {
+    assert.deepEqual(detectHeuristic(text), []);
+  });
+}
+
+test("results carry sentence offsets, catalog text and known types", () => {
+  const text = "Fine weather today. Everyone knows that vaccines are a hoax.";
+  const [f] = detectHeuristic(text);
+  assert.equal(f.type, "appeal_to_popularity");
+  assert.equal(text.slice(f.start, f.end), "Everyone knows that vaccines are a hoax.");
+  assert.equal(f.quote, "Everyone knows that vaccines are a hoax.");
+  assert.ok(f.explanation.length > 10 && f.question.length > 10);
+  assert.ok(FALLACY_IDS.includes(f.type));
+});
+
+test("caps flags per sentence", () => {
+  const text = "You're an idiot, everyone knows that, next thing you know you'll say prove me wrong.";
+  assert.ok(detectHeuristic(text).length <= 2);
+});
+
+test("handles curly apostrophes", () => {
+  assert.equal(detectHeuristic("We’ve always done it this way.")[0]?.type, "appeal_to_tradition");
+});
