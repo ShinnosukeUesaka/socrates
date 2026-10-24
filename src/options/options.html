@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Ember Settings</title>
+    <title>Socrates Settings</title>
     <link rel="stylesheet" href="ui.css" />
     <style>
       body { padding: 32px 16px 64px; }
@@ -12,8 +12,9 @@
       .field:last-child { margin-bottom: 0; }
       .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
       @media (max-width: 520px) { .grid2 { grid-template-columns: 1fr; } }
-      .types { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; }
+      .types { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 14px; margin-bottom: 14px; }
       .types label { display: flex; gap: 8px; align-items: center; }
+      h3 { margin: 0 0 8px; font-size: 13px; }
       #testResult { margin-top: 10px; white-space: pre-wrap; font: 12px/1.5 ui-monospace, Menlo, monospace; }
       #saved { color: var(--ok); opacity: 0; transition: opacity 0.2s; }
       #saved.show { opacity: 1; }
@@ -23,28 +24,35 @@
   <body>
     <main>
       <header class="row">
-        <h1><span class="flame">⚠</span> Ember settings</h1>
+        <h1><span class="flame">?</span> Socrates settings</h1>
         <span id="saved">Saved</span>
       </header>
 
       <section class="panel">
         <h2>Analysis engine</h2>
         <div class="field">
-          <label for="apiKey">Anthropic API key</label>
-          <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-..." />
-          <span class="muted">Stored only in this browser profile (not synced). Without a key, Ember uses offline pattern checks, which catch textbook phrasings only.</span>
+          <label for="apiKey">OpenAI or Anthropic API key</label>
+          <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="sk-... (OpenAI) or sk-ant-... (Anthropic)" />
+          <span class="muted"><span id="provider"></span>Stored only in this browser profile (not synced). Without a key, Socrates uses offline pattern checks, which catch textbook phrasings only.</span>
         </div>
         <div class="grid2">
           <div class="field">
             <label for="engine">Engine</label>
             <select id="engine">
-              <option value="auto">Claude when a key is set (recommended)</option>
-              <option value="claude">Claude only</option>
+              <option value="auto">AI model when a key is set (recommended)</option>
               <option value="patterns">Offline patterns only</option>
             </select>
           </div>
           <div class="field">
-            <label for="model">Model</label>
+            <label for="openaiModel">OpenAI model</label>
+            <select id="openaiModel">
+              <option value="gpt-5.5">GPT-5.5 (default)</option>
+              <option value="gpt-5.4-mini">GPT-5.4 mini (fastest)</option>
+              <option value="gpt-6.1-sol">GPT-6.1 Sol</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="model">Claude model</label>
             <select id="model">
               <option value="claude-opus-5-5">Claude Opus 5.5 (default)</option>
               <option value="claude-sonnet-5-5">Claude Sonnet 5.5</option>
@@ -77,12 +85,13 @@
       </section>
 
       <section class="panel">
-        <h2>What Ember reads</h2>
+        <h2>What Socrates reads</h2>
         <ul class="privacy">
-          <li>Only text you type into text boxes, text areas and rich-text editors. Page content is never read.</li>
-          <li>Text that was already in a field, text the site inserts, and quoted replies are skipped.</li>
+          <li>Only text you type into text boxes, text areas, rich-text editors (Gmail included) and Google Docs. Page content is never read.</li>
+          <li>Text that was already in a field or document, text the site inserts, and quoted replies are skipped.</li>
+          <li>On Google Docs, Socrates switches on Docs' accessible text layer so it can see where your words are on the page.</li>
           <li>Password, payment, one-time-code and similar fields are always skipped.</li>
-          <li>With Claude enabled, the text you wrote is sent to the Anthropic API with your key. Nothing else is sent anywhere.</li>
+          <li>With an API key set, the text you wrote is sent to that provider (OpenAI or Anthropic) with your key. Nothing else is sent anywhere.</li>
         </ul>
         <div class="row" style="margin-top: 12px">
           <span>Also check text I paste</span>
@@ -95,14 +104,10 @@
       </section>
 
       <section class="panel">
-        <h2>Fallacies to flag</h2>
-        <div class="types" id="types"></div>
+        <h2>What to flag</h2>
+        <div id="types"></div>
       </section>
 
-      <section class="panel row">
-        <span class="muted">Fallacy counter shown in the popup.</span>
-        <button type="button" id="resetStats">Reset counter</button>
-      </section>
     </main>
     <script src="options.js"></script>
   </body>

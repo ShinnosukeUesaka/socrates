@@ -90,12 +90,15 @@ export const OVERLAY_CSS = `
   animation: ctp-card-in 180ms ease-out;
 }
 @keyframes ctp-card-in { from { opacity: 0; transform: translateY(-6px); } }
-.ctp-card h3 { margin: 0 0 2px; font: 800 15px/1.2 ui-sans-serif, system-ui, sans-serif; color: #ff4d6d; letter-spacing: 0.02em; }
-.ctp-card .meta { margin: 0 0 10px; font-size: 11px; color: #b38f96; }
-.ctp-card .quote { margin: 0 0 10px; padding-left: 9px; border-left: 2px solid #ff2d55; color: #e2c9ce; font-style: italic; }
-.ctp-card .why { margin: 0 0 10px; }
-.ctp-card .ask { margin: 0 0 12px; padding: 8px 10px; border-radius: 7px; background: rgba(255, 214, 10, 0.08); color: #ffe48a; }
-.ctp-card .ask b { display: block; margin-bottom: 2px; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: #ffd60a; }
+.ctp-card .label { margin: 0 0 4px; font: 800 10.5px/1.2 ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; color: #b38f96; }
+.ctp-card .quote { margin: 0 0 12px; padding-left: 9px; border-left: 2px solid #ff2d55; color: #e2c9ce; font-style: italic; }
+.ctp-card .chip { display: inline-block; margin: 0 0 6px; padding: 2px 7px; border-radius: 99px; background: rgba(255, 45, 85, 0.16); color: #ff8fa3; font: 700 10.5px/1.5 ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.04em; }
+.ctp-card h3 { margin: 0 0 4px; font: 800 16px/1.25 ui-sans-serif, system-ui, sans-serif; color: #fff; }
+.ctp-card .why { margin: 0 0 12px; color: #e9d9dc; }
+.ctp-card .ask { margin: 0 0 10px; padding: 10px 12px; border-radius: 8px; background: rgba(255, 214, 10, 0.09); border: 1px solid rgba(255, 214, 10, 0.18); }
+.ctp-card .ask .label { color: #ffd60a; }
+.ctp-card .question { margin: 0; color: #fff3c4; font: 600 14px/1.45 ui-sans-serif, system-ui, sans-serif; }
+.ctp-card .meta { margin: 0 0 10px; font-size: 11px; color: #8f747a; }
 .ctp-card .actions { display: flex; gap: 8px; justify-content: flex-end; }
 .ctp-card button {
   font: 600 12px/1 ui-sans-serif, system-ui, sans-serif;

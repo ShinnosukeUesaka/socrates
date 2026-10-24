@@ -1,51 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { FALLACY_IDS } from "../shared/fallacies.js";
-import { locateQuote } from "../shared/text.js";
-
-export const SYSTEM_PROMPT = `You are the analysis engine of Critical Thinking Partner, a browser extension the user installed to get feedback on the reasoning in their own writing (messages, comments, posts, emails) while they type. You'll receive one or more passages the user wrote, each wrapped in a <passage id="..."> tag.
-
-Find logical fallacies: places where the user's argument draws a conclusion from support that doesn't establish it, in a way a careful reasoning teacher would point out. Most passages contain none, and an empty list is the normal answer. Don't flag opinions or preferences stated as such, jokes or obvious hyperbole, questions asked in good faith, claims that are merely unsourced or possibly false, sentences that are visibly unfinished, or views the user is quoting or describing rather than asserting.
-
-For each fallacy you find:
-- passage_id: the id of the passage it's in.
-- type: the closest category from the allowed list.
-- quote: the shortest contiguous span, copied character-for-character from the passage, that carries the faulty reasoning (usually a clause or one sentence). It is used to place a marker on the text, so it must match the passage exactly.
-- explanation: one or two sentences, addressed to the user as "you", on why this specific reasoning doesn't hold.
-- question: one Socratic question that would help the user strengthen the argument.
-- confidence: "high" for a textbook case, "medium" when it's likely but depends on context.
-
-Write the explanation and question in the language of the passage.`;
-
-export const RESULT_SCHEMA = {
-  type: "object",
-  properties: {
-    fallacies: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          passage_id: { type: "string" },
-          type: { type: "string", enum: FALLACY_IDS },
-          quote: { type: "string" },
-          explanation: { type: "string" },
-          question: { type: "string" },
-          confidence: { type: "string", enum: ["high", "medium"] },
-        },
-        required: ["passage_id", "type", "quote", "explanation", "question", "confidence"],
-        additionalProperties: false,
-      },
-    },
-  },
-  required: ["fallacies"],
-  additionalProperties: false,
-};
-
-export class AnalysisError extends Error {
-  constructor(code, message) {
-    super(message);
-    this.code = code;
-  }
-}
+import { AnalysisError, buildUserMessage, mapFindings, RESULT_SCHEMA, SYSTEM_PROMPT } from "./prompt.js";
 
 export function createClient({ apiKey, apiBaseUrl }) {
   return new Anthropic({
@@ -56,14 +10,6 @@ export function createClient({ apiKey, apiBaseUrl }) {
     maxRetries: 1,
     timeout: 90_000,
   });
-}
-
-function escapeXml(s) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-export function buildUserMessage(passages) {
-  return passages.map((p) => `<passage id="${p.id}">\n${escapeXml(p.text)}\n</passage>`).join("\n\n");
 }
 
 export function buildRequest({ model, effort, passages }) {
@@ -94,31 +40,7 @@ export function parseResponse(response, passages) {
     .filter((b) => b.type === "text")
     .map((b) => b.text)
     .join("");
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    throw new AnalysisError("bad-output", "Claude returned output that wasn't valid JSON.");
-  }
-  const byId = new Map(passages.map((p) => [p.id, p]));
-  const out = [];
-  for (const f of data.fallacies ?? []) {
-    const passage = byId.get(f.passage_id);
-    if (!passage || !FALLACY_IDS.includes(f.type)) continue;
-    const loc = locateQuote(passage.text, f.quote);
-    if (!loc) continue;
-    out.push({
-      passageId: passage.id,
-      type: f.type,
-      start: loc.start,
-      end: loc.end,
-      quote: passage.text.slice(loc.start, loc.end),
-      explanation: f.explanation,
-      question: f.question,
-      confidence: f.confidence,
-    });
-  }
-  return out;
+  return mapFindings(text, passages);
 }
 
 export async function analyzeWithClaude({ client, model, effort, passages }) {

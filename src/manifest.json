@@ -1,13 +1,19 @@
 {
   "manifest_version": 3,
-  "name": "Ember — Critical Thinking Partner",
-  "short_name": "Ember",
-  "version": "0.1.0",
-  "description": "Watches only what you type and dramatically flags logical fallacies right where they are in your text.",
+  "name": "Socrates — Reasoning Companion",
+  "short_name": "Socrates",
+  "version": "0.2.0",
+  "description": "Grammarly for your thinking. Flags possible reasoning errors in what you write and asks a Socratic question about each.",
   "permissions": ["storage"],
-  "host_permissions": ["https://api.anthropic.com/*"],
+  "host_permissions": ["https://api.openai.com/*", "https://api.anthropic.com/*"],
   "background": { "service_worker": "background.js" },
   "content_scripts": [
+    {
+      "matches": ["https://docs.google.com/document/*"],
+      "js": ["docs-annotate.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
     {
       "matches": ["<all_urls>"],
       "js": ["content.js"],
@@ -18,7 +24,7 @@
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Ember",
+    "default_title": "Socrates",
     "default_icon": { "16": "icons/16.png", "32": "icons/32.png", "48": "icons/48.png", "128": "icons/128.png" }
   },
   "options_page": "options.html",

@@ -1,19 +1,18 @@
-// Renders the toolbar icon (an alarm triangle with an ember glow) to PNGs.
+// Renders the toolbar icon (a glowing question mark) to PNGs.
 import { chromium } from "playwright";
 
 const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
   <defs>
-    <radialGradient id="g" cx="50%" cy="58%" r="60%">
+    <radialGradient id="g" cx="50%" cy="40%" r="65%">
       <stop offset="0" stop-color="#ffd60a"/>
       <stop offset="0.45" stop-color="#ff6b35"/>
       <stop offset="1" stop-color="#d1002f"/>
     </radialGradient>
   </defs>
   <rect width="128" height="128" rx="28" fill="#170a0d"/>
-  <path d="M64 14 L118 108 H10 Z" fill="url(#g)" stroke="#ff2d55" stroke-width="5" stroke-linejoin="round"/>
-  <rect x="56" y="44" width="16" height="38" rx="5" fill="#170a0d"/>
-  <circle cx="64" cy="95" r="8.5" fill="#170a0d"/>
+  <circle cx="64" cy="64" r="48" fill="url(#g)"/>
+  <text x="64" y="91" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="82" fill="#170a0d">?</text>
 </svg>`;
 
 const browser = await chromium.launch();

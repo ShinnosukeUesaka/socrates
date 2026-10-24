@@ -28,6 +28,12 @@ const POSITIVE = [
   ["loaded_question", "Have you stopped lying to your customers?"],
   ["middle_ground", "The truth is somewhere in the middle, as always."],
   ["false_cause", "Ever since we got the new manager sales dropped, so clearly she's the problem."],
+  ["sunk_cost", "We've already invested €20,000 in our startup, so we have to keep going or all that money will have been wasted."],
+  ["sweeping_generalization", "Everyone is stupid."],
+  ["sweeping_generalization", "Honestly, people are so lazy these days."],
+  ["unjustified_certainty", "There's no doubt that this is the right call."],
+  ["overconfidence", "Relax, this plan can't fail."],
+  ["confirmation_bias", "I only read sources that agree with me, and they all say I'm right."],
 ];
 
 const NEGATIVE = [
@@ -41,6 +47,9 @@ const NEGATIVE = [
   "Can you send me the report before Friday?",
   "The truth is that I forgot to reply, sorry!",
   "We spent a week on this design and learned a lot.",
+  "Everyone is welcome to join the call.",
+  "People are busy this week, so let's meet next Monday.",
+  "We have to keep going until the tests pass.",
 ];
 
 for (const [type, text] of POSITIVE) {

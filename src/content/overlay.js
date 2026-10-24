@@ -1,13 +1,13 @@
 // A single fixed, full-viewport layer (inside a shadow root so page CSS can't
 // touch it) that draws highlights, tags and the explanation card.
 
-import { FALLACIES, fallacyName } from "../shared/fallacies.js";
+import { categoryName, FALLACIES, fallacyName, possibleName } from "../shared/fallacies.js";
 import { Effects } from "./effects.js";
 import { OVERLAY_CSS } from "./styles.js";
 
 const TAG_HEIGHT = 20;
 const ICON_SVG =
-  '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 1.3 15.3 14H.7L8 1.3Zm-.9 4.5v4.3h1.8V5.8H7.1Zm0 5.4V13h1.8v-1.8H7.1Z"/></svg>';
+  '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.2" fill="currentColor" opacity=".25"/><path fill="currentColor" d="M7.1 10.2v-.5c0-.9.4-1.5 1.2-2 .6-.4.9-.7.9-1.2 0-.6-.5-1-1.2-1-.7 0-1.2.4-1.3 1.1H5.1C5.2 5 6.4 4 8.1 4c1.7 0 2.8.9 2.8 2.3 0 1-.5 1.6-1.3 2.1-.6.4-.8.6-.8 1.2v.6H7.1Zm-.1 1.1h1.8V13H7v-1.7Z"/></svg>';
 
 export class Overlay {
   constructor({ onDismiss, onMute }) {
@@ -53,7 +53,7 @@ export class Overlay {
     tag.setAttribute("aria-expanded", "false");
     tag.innerHTML = ICON_SVG;
     tag.append(fallacyName(flag.type));
-    tag.title = `${fallacyName(flag.type)}: click for details`;
+    tag.title = `${possibleName(flag.type)}: click to see Socrates' question`;
     if (flag.entering) tag.setAttribute("data-pending", "");
     tag.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -155,42 +155,34 @@ export class Overlay {
     }
     this.closeCard();
     const info = FALLACIES[flag.type] ?? {};
-    const card = document.createElement("div");
-    card.className = "ctp-card";
+    const el = (tag, className, text) => {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text != null) node.textContent = text;
+      return node;
+    };
+    const card = el("div", "ctp-card");
     card.setAttribute("role", "dialog");
-    card.setAttribute("aria-label", fallacyName(flag.type));
-    const h = document.createElement("h3");
-    h.textContent = fallacyName(flag.type);
-    const meta = document.createElement("p");
-    meta.className = "meta";
-    meta.textContent = [
-      info.blurb,
-      flag.engine === "claude" ? `${flag.confidence === "high" ? "High" : "Medium"} confidence · Claude` : "Pattern match",
-    ]
-      .filter(Boolean)
-      .join(" · ");
-    const quote = document.createElement("p");
-    quote.className = "quote";
-    quote.textContent = `“${flag.quote}”`;
-    const why = document.createElement("p");
-    why.className = "why";
-    why.textContent = flag.explanation;
-    const ask = document.createElement("p");
-    ask.className = "ask";
-    const askLabel = document.createElement("b");
-    askLabel.textContent = "Ask yourself";
-    ask.append(askLabel, flag.question || info.question || "");
-    const actions = document.createElement("div");
-    actions.className = "actions";
-    const mute = document.createElement("button");
+    card.setAttribute("aria-label", possibleName(flag.type));
+    const yours = el("p", "label", "Your reasoning");
+    const quote = el("p", "quote", `“${flag.quote}”`);
+    const chip = el("span", "chip", categoryName(flag.type));
+    const h = el("h3", null, possibleName(flag.type));
+    const why = el("p", "why", flag.explanation || info.blurb);
+    const ask = el("div", "ask");
+    ask.append(el("p", "label", "Socrates asks"), el("p", "question", flag.question || info.question || ""));
+    const meta = el(
+      "p",
+      "meta",
+      flag.checkedBy ? `${flag.confidence === "high" ? "Clear case" : "Depends on context"} · checked by ${flag.checkedBy}` : "Offline pattern check",
+    );
+    const actions = el("div", "actions");
+    const mute = el("button", null, "Don't flag this kind");
     mute.type = "button";
     mute.dataset.action = "mute";
-    mute.textContent = `Stop flagging ${fallacyName(flag.type)}`;
-    const ok = document.createElement("button");
+    const ok = el("button", "primary", "Got it");
     ok.type = "button";
-    ok.className = "primary";
     ok.dataset.action = "dismiss";
-    ok.textContent = "Got it";
     for (const b of [mute, ok]) b.addEventListener("mousedown", (e) => e.preventDefault());
     mute.addEventListener("click", () => {
       this.closeCard();
@@ -201,7 +193,7 @@ export class Overlay {
       this.onDismiss(flag);
     });
     actions.append(mute, ok);
-    card.append(h, meta, quote, why, ask, actions);
+    card.append(yours, quote, chip, h, why, ask, meta, actions);
     this.layer.appendChild(card);
     this.card = card;
     this.cardFlag = flag;

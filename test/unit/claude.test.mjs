@@ -1,7 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { AnalysisError, analyzeWithClaude, buildRequest, buildUserMessage, parseResponse, RESULT_SCHEMA } from "../../src/background/claude.js";
+import { analyzeWithClaude, buildRequest, parseResponse } from "../../src/background/claude.js";
+import { AnalysisError, buildUserMessage, RESULT_SCHEMA } from "../../src/background/prompt.js";
 import { FALLACY_IDS } from "../../src/shared/fallacies.js";
 
 const passages = [

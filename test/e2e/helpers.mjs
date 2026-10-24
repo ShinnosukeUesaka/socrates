@@ -19,7 +19,7 @@ export const PAGE_HTML = `<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>Ember test page</title>
+<title>Socrates test page</title>
 <style>
   body { font-family: Georgia, serif; margin: 40px; background: #faf7f2; color: #222; }
   textarea, input, [contenteditable] { display: block; margin: 0 0 26px; font: 16px/1.5 Helvetica, Arial, sans-serif; }
@@ -59,8 +59,9 @@ function unescapeXml(s) {
   return s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
 }
 
-// Pretends to be the Messages API. It "detects" fallacies with the offline
-// patterns so responses are deterministic, and records every request.
+// Pretends to be both the Anthropic Messages API and the OpenAI Responses API.
+// It "detects" issues with the offline patterns so responses are
+// deterministic, and records every request.
 export async function startMockApi() {
   const requests = [];
   const server = createServer(async (req, res) => {
@@ -77,36 +78,54 @@ export async function startMockApi() {
     let raw = "";
     for await (const chunk of req) raw += chunk;
     const body = JSON.parse(raw || "{}");
-    // SDK 1.x sends the key as a bearer token; older versions use x-api-key.
+    // Anthropic SDK 1.x sends the key as a bearer token, like OpenAI's SDK.
     const apiKey = req.headers["x-api-key"] ?? req.headers.authorization?.replace(/^Bearer /, "");
-    requests.push({ url: req.url, headers: req.headers, apiKey, body });
-    if (apiKey === "bad-key") {
+    const provider = req.url === "/v1/responses" ? "openai" : "anthropic";
+    const content = provider === "openai" ? body.input : body.messages?.[0]?.content;
+    requests.push({ url: req.url, provider, headers: req.headers, apiKey, body, content: content ?? "" });
+    if (apiKey?.includes("bad")) {
       res.writeHead(401, { ...cors, "content-type": "application/json" });
-      res.end(JSON.stringify({ type: "error", error: { type: "authentication_error", message: "invalid x-api-key" } }));
+      res.end(JSON.stringify({ type: "error", error: { type: "authentication_error", message: "invalid api key" } }));
       return;
     }
-    const content = body.messages?.[0]?.content ?? "";
     const fallacies = [];
-    for (const m of content.matchAll(/<passage id="(p\d+)">\n([\s\S]*?)\n<\/passage>/g)) {
+    for (const m of (content ?? "").matchAll(/<passage id="(p\d+)">\n([\s\S]*?)\n<\/passage>/g)) {
       for (const f of detectHeuristic(unescapeXml(m[2]))) {
         fallacies.push({
           passage_id: m[1],
           type: f.type,
           quote: f.quote,
-          explanation: `Mock Claude explanation for ${f.type}.`,
+          explanation: `Mock ${provider} explanation for ${f.type}.`,
           question: "Mock Socratic question?",
           confidence: "high",
         });
       }
     }
+    const text = JSON.stringify({ fallacies });
     res.writeHead(200, { ...cors, "content-type": "application/json" });
+    if (provider === "openai") {
+      res.end(
+        JSON.stringify({
+          id: `resp_mock_${requests.length}`,
+          object: "response",
+          created_at: 0,
+          status: "completed",
+          model: body.model,
+          output: [
+            { type: "message", id: "msg_1", status: "completed", role: "assistant", content: [{ type: "output_text", text, annotations: [] }] },
+          ],
+          usage: { input_tokens: 10, output_tokens: 10, total_tokens: 20 },
+        }),
+      );
+      return;
+    }
     res.end(
       JSON.stringify({
         id: `msg_mock_${requests.length}`,
         type: "message",
         role: "assistant",
         model: body.model,
-        content: [{ type: "text", text: JSON.stringify({ fallacies }) }],
+        content: [{ type: "text", text }],
         stop_reason: "end_turn",
         stop_details: null,
         usage: { input_tokens: 10, output_tokens: 10 },
@@ -118,7 +137,7 @@ export async function startMockApi() {
 }
 
 export async function launchWithExtension() {
-  const userDataDir = await mkdtemp(path.join(tmpdir(), "ember-e2e-"));
+  const userDataDir = await mkdtemp(path.join(tmpdir(), "socrates-e2e-"));
   const context = await chromium.launchPersistentContext(userDataDir, {
     channel: "chromium",
     headless: true,
@@ -142,7 +161,6 @@ export const TEST_SETTINGS = {
   blockedSites: [],
   debounceMs: 300,
   apiBaseUrl: "",
-  stats: { total: 0, byType: {} },
 };
 
 export async function setSettings(worker, patch) {
@@ -153,7 +171,7 @@ export async function getSettings(worker, keys) {
   return worker.evaluate((k) => chrome.storage.local.get(k), keys);
 }
 
-// Snapshot of everything Ember has drawn on the page.
+// Snapshot of everything Socrates has drawn on the page.
 export function overlayState(page) {
   return page.evaluate(() => {
     const root = document.querySelector("ctp-overlay")?.shadowRoot;

@@ -51,9 +51,9 @@ export class Effects {
     const max = intensity === "maximum";
     const c = centerOf(rects);
     const stamp = this.spawn(`ctp-stamp${max ? " ctp-stamp--max" : ""}`);
-    stamp.textContent = `${fallacyName(flag.type)}!`;
+    stamp.textContent = `${fallacyName(flag.type)}?`;
     const sub = document.createElement("small");
-    sub.textContent = "fallacy detected";
+    sub.textContent = "Socrates has a question";
     stamp.appendChild(sub);
     const sr = stamp.getBoundingClientRect();
     const x = Math.min(Math.max(c.x - sr.width / 2, 8), window.innerWidth - sr.width - 8);
@@ -109,7 +109,7 @@ export class Effects {
 
   resolved({ rect, sound }) {
     if (!rect) return;
-    const el = this.spawn("ctp-fixed", "✓ Fixed");
+    const el = this.spawn("ctp-fixed", "✓ Rethought");
     const r = el.getBoundingClientRect();
     el.style.left = `${Math.min(Math.max(rect.left, 8), window.innerWidth - r.width - 8)}px`;
     el.style.top = `${Math.max(rect.top - r.height - 6, 8)}px`;
@@ -199,7 +199,7 @@ export class Effects {
       ).finished.finally(() => el.remove());
     bar(top, -1);
     bar(bottom, 1);
-    const banner = this.spawn("ctp-banner", "⚠ Fallacy detected ⚠");
+    const banner = this.spawn("ctp-banner", "Wait. Think about this.");
     banner.animate(
       [
         { opacity: 0, letterSpacing: "0.6em" },

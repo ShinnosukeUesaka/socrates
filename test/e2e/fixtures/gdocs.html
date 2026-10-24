@@ -1,0 +1,116 @@
+<!doctype html>
+<!--
+  A miniature stand-in for Google Docs, served at a docs.google.com URL in
+  tests. Like the real thing it paints text on a canvas, routes keystrokes
+  through a hidden iframe, repaints asynchronously, and only renders the
+  annotated SVG text layer (rect[aria-label][data-font-css]) when an extension
+  has set window._docs_annotate_canvas_by_ext.
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled document - Google Docs</title>
+<style>
+  body { margin: 0; font-family: Arial, sans-serif; background: #f9fbfd; }
+  .toolbar { height: 64px; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid #ddd; }
+  .kix-appview-editor { position: absolute; top: 65px; left: 0; right: 0; bottom: 0; overflow: auto; }
+  .page { position: relative; width: 816px; height: 1056px; margin: 20px auto 600px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2); cursor: text; }
+  .kix-canvas-tile-content { position: absolute; inset: 0; }
+  .kix-canvas-tile-content canvas, .kix-canvas-tile-content svg { position: absolute; left: 0; top: 0; }
+  iframe.docs-texteventtarget-iframe { position: absolute; left: -10000px; top: 0; width: 1px; height: 1px; border: 0; }
+</style>
+</head>
+<body>
+  <div class="toolbar">Untitled document</div>
+  <div class="kix-appview-editor">
+    <div class="page">
+      <div class="kix-canvas-tile-content">
+        <canvas width="816" height="1056"></canvas>
+        <svg width="816" height="1056" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+    </div>
+  </div>
+  <iframe class="docs-texteventtarget-iframe"></iframe>
+<script>
+  const FONT = '400 14.6667px "Arial"';
+  const LEFT = 96, TOP = 96, WIDTH = 624, LINE = 22;
+  const paragraphs = [
+    "Meeting notes from last week.",
+    "Everyone knows the old system is perfect, prove me wrong.",
+    "",
+  ];
+  const canvas = document.querySelector("canvas");
+  const ctx = canvas.getContext("2d");
+  const svg = document.querySelector("svg");
+  const iframe = document.querySelector("iframe");
+
+  function wrap(text) {
+    ctx.font = FONT;
+    const lines = [];
+    let line = "";
+    for (const word of text.split(" ")) {
+      const next = line ? `${line} ${word}` : word;
+      if (line && ctx.measureText(next).width > WIDTH) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = next;
+      }
+    }
+    lines.push(line);
+    return lines;
+  }
+
+  function render() {
+    const annotated = Boolean(window._docs_annotate_canvas_by_ext);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.font = FONT;
+    ctx.fillStyle = "#000";
+    svg.replaceChildren();
+    let y = TOP;
+    for (const p of paragraphs) {
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      g.setAttribute("role", "paragraph");
+      g.setAttribute("data-section-type", "body");
+      for (const line of wrap(p)) {
+        ctx.fillText(line, LEFT, y + 16);
+        if (annotated && line) {
+          const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          rect.setAttribute("x", LEFT);
+          rect.setAttribute("y", y);
+          rect.setAttribute("width", ctx.measureText(line).width);
+          rect.setAttribute("height", LINE);
+          rect.setAttribute("fill", "none");
+          rect.setAttribute("aria-label", line);
+          rect.setAttribute("data-font-css", FONT);
+          g.appendChild(rect);
+        }
+        y += LINE;
+      }
+      svg.appendChild(g);
+      y += 8;
+    }
+  }
+
+  const input = iframe.contentDocument;
+  input.open();
+  input.write("<!doctype html><body contenteditable='true'></body>");
+  input.close();
+  input.addEventListener("keydown", (e) => {
+    const last = paragraphs.length - 1;
+    if (e.key === "Enter") paragraphs.push("");
+    else if (e.key === "Backspace") paragraphs[last] = paragraphs[last].slice(0, -1);
+    else if (e.key.length === 1) paragraphs[last] += e.key;
+    else return;
+    e.preventDefault();
+    setTimeout(render, 40); // Docs repaints asynchronously
+  });
+  document.querySelector(".page").addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    iframe.contentWindow.focus();
+    input.body.focus();
+  });
+  render();
+</script>
+</body>
+</html>

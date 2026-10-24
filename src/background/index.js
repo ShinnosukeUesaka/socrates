@@ -1,6 +1,12 @@
 import { detectHeuristic } from "../shared/heuristics.js";
-import { loadSettings, usesClaude } from "../shared/settings.js";
+import { activeModel, loadSettings, MODEL_NAMES, providerFor, usesAI } from "../shared/settings.js";
 import { analyzeWithClaude, createClient } from "./claude.js";
+import { analyzeWithOpenAI, createOpenAIClient } from "./openai.js";
+
+const PROVIDERS = {
+  anthropic: { label: "Claude", createClient, analyze: analyzeWithClaude },
+  openai: { label: "OpenAI", createClient: createOpenAIClient, analyze: analyzeWithOpenAI },
+};
 
 const CACHE_LIMIT = 300;
 // Per-passage results, keyed by engine + passage text, so retyping elsewhere in
@@ -26,11 +32,13 @@ function heuristicResults(passages) {
 
 async function analyze(passages) {
   const settings = await loadSettings();
-  if (!usesClaude(settings) || !settings.apiKey) {
+  if (!usesAI(settings)) {
     return { engine: "patterns", fallacies: heuristicResults(passages) };
   }
 
-  const engineKey = `${settings.model}|${settings.effort}`;
+  const provider = PROVIDERS[providerFor(settings.apiKey)];
+  const model = activeModel(settings);
+  const engineKey = `${model}|${settings.effort}`;
   const fallacies = [];
   const missing = [];
   for (const p of passages) {
@@ -40,35 +48,29 @@ async function analyze(passages) {
   }
   if (missing.length) {
     try {
-      const client = createClient(settings);
-      const found = await analyzeWithClaude({ client, model: settings.model, effort: settings.effort, passages: missing });
+      const client = provider.createClient(settings);
+      const found = await provider.analyze({ client, model, effort: settings.effort, passages: missing });
       for (const p of missing) {
         const mine = found.filter((f) => f.passageId === p.id);
         cacheSet(`${engineKey}\u0000${p.text}`, mine);
         fallacies.push(...mine);
       }
     } catch (error) {
-      // Keep the user covered while Claude is unavailable.
-      console.warn("[CTP] Claude analysis failed, using patterns:", error);
+      // Keep the user covered while the model is unavailable.
+      console.warn(`[Socrates] ${provider.label} analysis failed, using patterns:`, error);
       return {
         engine: "patterns",
+        provider: provider.label,
         fallacies: heuristicResults(passages),
         warning: error.message || String(error),
         errorCode: error.code ?? "unknown",
       };
     }
   }
-  return { engine: "claude", model: settings.model, fallacies };
+  return { engine: "ai", model, modelName: MODEL_NAMES[model] ?? model, fallacies };
 }
 
-async function recordFlag(type) {
-  const { stats = { total: 0, byType: {} } } = await chrome.storage.local.get("stats");
-  stats.total += 1;
-  stats.byType[type] = (stats.byType[type] ?? 0) + 1;
-  await chrome.storage.local.set({ stats });
-}
-
-const SAMPLE = "If we let students redo one test, next thing you know nobody will ever study again.";
+const SAMPLE = "We've already invested €20,000 in our startup, so we have to keep going or all that money will have been wasted.";
 
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg?.type === "ctp:analyze") {
@@ -80,10 +82,6 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
       (r) => sendResponse({ ...r, sample: SAMPLE }),
       (e) => sendResponse({ error: String(e?.message ?? e) }),
     );
-    return true;
-  }
-  if (msg?.type === "ctp:flagged") {
-    recordFlag(msg.fallacyType).then(() => sendResponse({ ok: true }));
     return true;
   }
   return false;

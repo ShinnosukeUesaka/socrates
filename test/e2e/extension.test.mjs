@@ -114,10 +114,10 @@ describe("reading only what the user writes", () => {
     assert.equal((await overlayState(page)).tags.length, 0, "prefilled fallacy must not be flagged");
 
     await typeInto("#prefilled", " You're either with us or against us.");
-    await waitFor(tagNamed("False Dilemma"), { message: "false dilemma tag" });
+    await waitFor(tagNamed("False dilemma"), { message: "false dilemma tag" });
     await sleep(400);
     const s = await overlayState(page);
-    assert.deepEqual(s.tags.map((t) => t.label), ["False Dilemma"]);
+    assert.deepEqual(s.tags.map((t) => t.label), ["False dilemma"]);
   });
 
   test("pasted text is skipped unless enabled", async () => {
@@ -134,7 +134,7 @@ describe("reading only what the user writes", () => {
     await sleep(100);
     await page.keyboard.type(" ");
     await page.keyboard.press("ControlOrMeta+V");
-    await waitFor(tagNamed("Tu Quoque"), { message: "tu quoque after enabling pastes" });
+    await waitFor(tagNamed("Tu quoque"), { message: "tu quoque after enabling pastes" });
     const s = await overlayState(page);
     assert.equal(s.tags.length, 1, "the earlier, unchecked paste stays unflagged");
   });
@@ -146,13 +146,14 @@ describe("flagging", () => {
     const fallacy = "If we allow remote work, next thing you know nobody will come to the office.";
     await typeInto("#ta", first + fallacy);
 
-    const peak = await watchEffects(async (s) => s.tags.some((t) => t.label === "Slippery Slope" && !t.pending));
+    const peak = await watchEffects(async (s) => s.tags.some((t) => t.label === "Slippery slope" && !t.pending));
     assert.ok(peak.stamps >= 1, "stamp slammed down");
-    assert.match(peak.stampText, /Slippery Slope!/i);
+    assert.match(peak.stampText, /Slippery slope\?/i);
     assert.ok(peak.embers >= 10, "embers burst");
     assert.ok(peak.vignettes >= 1, "screen flashed");
     assert.ok(peak.fieldAnimated, "field shook");
 
+    await sleep(700); // let the tag's pop-in animation settle before measuring
     const s = await overlayState(page);
     const expected = await page.evaluate(
       ({ before, span }) => {
@@ -179,7 +180,7 @@ describe("flagging", () => {
   test("contenteditable: highlight matches the DOM range of the fallacy", async () => {
     const fallacy = "No true programmer would ever use tabs.";
     await typeInto("#ce", `Here is my take. ${fallacy}`);
-    await waitFor(tagNamed("No True Scotsman"), { message: "no true scotsman tag", timeout: 7000 });
+    await waitFor(tagNamed("No true Scotsman"), { message: "no true scotsman tag", timeout: 7000 });
     const expected = await page.evaluate((needle) => {
       const ce = document.querySelector("#ce");
       const walker = document.createTreeWalker(ce, NodeFilter.SHOW_TEXT);
@@ -249,11 +250,11 @@ describe("flagging", () => {
 
   test("tag opens an explanation card; Got it dismisses for good", async () => {
     await typeInto("#ta", "My grandpa smoked every day and he lived to 95.");
-    await waitFor(tagNamed("Anecdotal Evidence"), { message: "tag" });
+    await waitFor(tagNamed("Anecdotal evidence"), { message: "tag" });
     await page.locator("ctp-overlay .ctp-tag").click();
     const card = (await overlayState(page)).card;
-    assert.match(card, /Anecdotal Evidence/);
-    assert.match(card, /Ask yourself/);
+    assert.match(card, /Possible anecdotal evidence/);
+    assert.match(card, /Socrates asks/);
     assert.match(card, /My grandpa smoked/);
     await page.screenshot({ path: `${SHOTS}/card.png` });
     await page.locator("ctp-overlay .ctp-card button[data-action=dismiss]").click();
@@ -302,7 +303,7 @@ describe("flagging", () => {
     assert.equal(peak.stamps, 0);
   });
 
-  test("turning Ember off clears flags and stops checking", async () => {
+  test("turning Socrates off clears flags and stops checking", async () => {
     await typeInto("#ta", "Everyone knows it works.");
     await waitFor(tagNamed("Bandwagon"), { message: "tag" });
     await setSettings(browser.worker, { enabled: false });
@@ -323,19 +324,19 @@ describe("flagging", () => {
 
 describe("Claude engine (mock API)", () => {
   beforeEach(async () => {
-    await setSettings(browser.worker, { apiKey: "test-key", apiBaseUrl: api.url });
+    await setSettings(browser.worker, { apiKey: "sk-ant-test-key", apiBaseUrl: api.url });
   });
 
   test("sends only the user's typed text, with the right request shape", async () => {
     await typeInto("#pw", "hunter2 everyone knows");
     await typeInto("#prefilled", " Short.");
     await typeInto("#ta", "I disagree with the proposal. If we allow this, next thing you know everyone quits.");
-    await waitFor(tagNamed("Slippery Slope"), { message: "claude tag" });
+    await waitFor(tagNamed("Slippery slope"), { message: "claude tag" });
 
     assert.ok(api.requests.length >= 1);
     const req = api.requests.at(-1);
     assert.equal(req.url, "/v1/messages");
-    assert.equal(req.apiKey, "test-key");
+    assert.equal(req.apiKey, "sk-ant-test-key");
     assert.equal(req.headers["anthropic-dangerous-direct-browser-access"], "true");
     assert.match(req.headers["anthropic-beta"], /server-side-fallback-2026-07-01/);
     assert.equal(req.body.model, "claude-opus-5-5");
@@ -343,7 +344,7 @@ describe("Claude engine (mock API)", () => {
     assert.equal(req.body.output_config.effort, "low");
     assert.equal(req.body.output_config.format.type, "json_schema");
 
-    const sent = api.requests.map((r) => r.body.messages[0].content).join("\n");
+    const sent = api.requests.map((r) => r.content).join("\n");
     assert.match(sent, /next thing you know everyone quits/);
     assert.doesNotMatch(sent, /moon landing/, "static page text never sent");
     assert.doesNotMatch(sent, /hunter2/, "password never sent");
@@ -351,8 +352,8 @@ describe("Claude engine (mock API)", () => {
 
     await page.locator("ctp-overlay .ctp-tag").click();
     const card = (await overlayState(page)).card;
-    assert.match(card, /Mock Claude explanation for slippery_slope/);
-    assert.match(card, /High confidence · Claude/);
+    assert.match(card, /Mock anthropic explanation for slippery_slope/);
+    assert.match(card, /Clear case · checked by Claude Opus 5\.5/);
   });
 
   test("unchanged paragraphs are cached and not re-sent", async () => {
@@ -362,33 +363,66 @@ describe("Claude engine (mock API)", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.press("Enter");
     await page.keyboard.type("You're either with us or against us.");
-    await waitFor(tagNamed("False Dilemma"), { message: "second tag" });
-    const later = api.requests.slice(before).map((r) => r.body.messages[0].content).join("\n");
+    await waitFor(tagNamed("False dilemma"), { message: "second tag" });
+    const later = api.requests.slice(before).map((r) => r.content).join("\n");
     assert.match(later, /either with us/);
     assert.doesNotMatch(later, /Everyone knows it works/, "first paragraph served from cache");
     assert.equal((await overlayState(page)).tags.length, 2);
   });
 
   test("falls back to offline patterns and tells the user when the key is rejected", async () => {
-    await setSettings(browser.worker, { apiKey: "bad-key" });
+    await setSettings(browser.worker, { apiKey: "sk-ant-bad-key" });
     await sleep(100);
     // A sentence no earlier test used, so it can't come from the result cache.
     await typeInto("#ta", "Millions of fans can't be wrong about this band.");
     await waitFor(tagNamed("Bandwagon"), { message: "fallback tag" });
-    assert.equal(api.requests.at(-1).apiKey, "bad-key");
+    assert.equal(api.requests.at(-1).apiKey, "sk-ant-bad-key");
     const s = await overlayState(page);
     assert.match(s.status, /Claude unavailable/);
   });
 });
 
+describe("OpenAI engine (mock API)", () => {
+  test("an OpenAI key routes analysis to the Responses API with a strict schema", async () => {
+    await setSettings(browser.worker, { apiKey: "sk-proj-test-openai", apiBaseUrl: api.url });
+    await sleep(100);
+    await typeInto("#ta", "I like it. We've always done it this way, so there's no reason to change.");
+    await waitFor(tagNamed("Appeal to tradition"), { message: "openai tag" });
+
+    const req = api.requests.at(-1);
+    assert.equal(req.url, "/v1/responses");
+    assert.equal(req.apiKey, "sk-proj-test-openai");
+    assert.equal(req.body.model, "gpt-5.5");
+    assert.deepEqual(req.body.reasoning, { effort: "low" });
+    assert.equal(req.body.text.format.type, "json_schema");
+    assert.equal(req.body.text.format.strict, true);
+    assert.match(req.body.instructions, /Socrates/);
+    assert.match(req.content, /We've always done it this way/);
+    assert.doesNotMatch(req.content, /moon landing/);
+
+    await sleep(600);
+    await page.locator("ctp-overlay .ctp-tag").click();
+    const card = (await overlayState(page)).card;
+    assert.match(card, /Mock openai explanation for appeal_to_tradition/);
+    assert.match(card, /checked by GPT-5\.5/);
+  });
+
+  test("a rejected OpenAI key falls back to patterns with a notice", async () => {
+    await setSettings(browser.worker, { apiKey: "sk-bad-openai", apiBaseUrl: api.url });
+    await sleep(100);
+    await typeInto("#ta", "Millions of voters can't be wrong about this.");
+    await waitFor(tagNamed("Bandwagon"), { message: "fallback tag" });
+    assert.match((await overlayState(page)).status, /OpenAI unavailable/);
+  });
+});
+
 describe("extension pages", () => {
   test("popup reflects and changes settings", async () => {
-    await setSettings(browser.worker, { stats: { total: 3, byType: { straw_man: 2, ad_hominem: 1 } } });
     const popup = await browser.context.newPage();
     await popup.goto(`chrome-extension://${browser.extensionId}/popup.html`);
-    await popup.waitForFunction(() => document.querySelector("#total").textContent === "3");
-    assert.match(await popup.textContent("#top"), /Straw Man×2/);
+    await popup.waitForFunction(() => document.querySelector("#engine").textContent !== "…");
     assert.equal(await popup.textContent("#engine"), "Offline patterns");
+    assert.equal(await popup.$eval("#intensity button[data-value=dramatic]", (b) => b.getAttribute("aria-pressed")), "true");
     await popup.click("#intensity button[data-value=maximum]");
     await popup.click("#sound + span");
     await sleep(200);
@@ -403,7 +437,7 @@ describe("extension pages", () => {
     await options.selectOption("#model", "claude-haiku-5-5");
     await options.locator("#types input[value=straw_man]").uncheck();
     await options.click("#test");
-    await options.waitForFunction(() => /Slippery Slope/.test(document.querySelector("#testResult").textContent));
+    await options.waitForFunction(() => /Sunk-cost reasoning/.test(document.querySelector("#testResult").textContent));
     const s = await getSettings(browser.worker, ["model", "mutedTypes"]);
     assert.equal(s.model, "claude-haiku-5-5");
     assert.deepEqual(s.mutedTypes, ["straw_man"]);

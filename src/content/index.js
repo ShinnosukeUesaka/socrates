@@ -1,6 +1,6 @@
-// Content script: watches only text the user types into fields on the page,
-// asks the background worker to analyze it, and pins dramatic flags onto the
-// exact spans that contain a fallacy.
+// Content script: watches only text the user types into fields on the page
+// (and into Google Docs), asks the background worker to analyze it, and pins
+// dramatic flags onto the exact spans that may contain a reasoning error.
 //
 // What counts as "written by the user": text produced by trusted (real,
 // not script-generated) keyboard/input events. Text that was already in a
@@ -13,10 +13,13 @@ import { DEFAULT_SETTINGS } from "../shared/settings.js";
 import { buildPassages, locateQuote, newSentenceKeys, sentenceKey, splitSentences } from "../shared/text.js";
 import { prefersReducedMotion } from "./effects.js";
 import { fieldFromEvent, fieldKind, readField } from "./extract.js";
+import { docsEditor, docsInputDocument, isDocsInputFrame, isGoogleDocs, readDocs } from "./gdocs.js";
 import { Mirror, rectsForSpan } from "./geometry.js";
 import { Overlay } from "./overlay.js";
 
 const EDIT_WINDOW_MS = 700;
+// Docs repaints its text layer asynchronously, so give typing a longer window.
+const DOCS_EDIT_WINDOW_MS = 1500;
 const POLL_MS = 500;
 const STAGGER_MS = 650;
 
@@ -48,18 +51,23 @@ function intensity() {
 
 // --- Field state -----------------------------------------------------------
 
-function ensureField(el) {
+function read(field) {
+  return field.kind === "gdocs" ? readDocs() : readField(field.el);
+}
+
+function ensureField(el, kind = fieldKind(el)) {
   let field = fields.get(el);
   if (field) return field;
-  const kind = fieldKind(el);
-  const { text, segments } = readField(el);
-  field = {
-    el,
-    kind,
+  field = { el, kind };
+  const { text, segments } = read(field);
+  Object.assign(field, {
     text,
     segments,
     // Whatever is in the field before the user starts typing isn't theirs.
     baseline: new Set(splitSentences(text).map((s) => sentenceKey(s.text))),
+    // Sentences the user typed. Remembered so that text which scrolls out of
+    // Google Docs' rendered pages and back in is still recognised as theirs.
+    authored: new Set(),
     flags: new Map(),
     dismissed: new Set(),
     editUntil: 0,
@@ -67,7 +75,7 @@ function ensureField(el) {
     timer: null,
     seq: 0,
     mirror: null,
-  };
+  });
   fields.set(el, field);
   return field;
 }
@@ -81,7 +89,7 @@ function dropField(field) {
 
 function markEdit(field, kind) {
   field.editKind = kind;
-  field.editUntil = performance.now() + EDIT_WINDOW_MS;
+  field.editUntil = performance.now() + (field.kind === "gdocs" ? DOCS_EDIT_WINDOW_MS : EDIT_WINDOW_MS);
 }
 
 function userAuthored(field) {
@@ -95,28 +103,36 @@ function sync(field) {
     dropField(field);
     return;
   }
-  const { text, segments } = readField(field.el);
+  const { text, segments } = read(field);
   field.segments = segments;
   if (text === field.text) return;
   const typed = userAuthored(field);
-  if (!typed) {
-    for (const key of newSentenceKeys(field.text, text)) field.baseline.add(key);
+  for (const key of newSentenceKeys(field.text, text)) {
+    if (typed) field.authored.add(key);
+    else if (!field.authored.has(key)) field.baseline.add(key);
   }
   // A field that was emptied (message sent) or mostly replaced isn't a "fix".
   const cleared = text.trim().length === 0 || text.length < field.text.length * 0.4;
   const prev = field.text;
   field.text = text;
-  if (!text.trim()) field.baseline.clear();
+  if (!text.trim() && field.kind !== "gdocs") {
+    field.baseline.clear();
+    field.authored.clear();
+  }
   for (const flag of [...field.flags.values()]) {
     const loc = locateQuote(text, flag.quote, { hint: flag.start });
     if (loc) {
       flag.start = loc.start;
       flag.end = loc.end;
       flag.stale = false;
+      flag.offscreen = false;
     } else if (typed && !cleared && prev.length > 0) {
       // The user is editing the flagged text. Hide the flag until the next
       // analysis decides whether it was fixed or just reworded.
       flag.stale = true;
+    } else if (field.kind === "gdocs") {
+      // Scrolled out of the pages Docs has rendered; it'll be back.
+      flag.offscreen = true;
     } else {
       removeFlag(field, flag, { celebrate: false });
     }
@@ -138,7 +154,7 @@ async function analyze(field) {
   const passages = buildPassages(text, field.baseline);
   const seq = ++field.seq;
   if (!passages.length) {
-    applyResults(field, [], "patterns");
+    applyResults(field, [], null);
     return;
   }
   let response;
@@ -152,7 +168,7 @@ async function analyze(field) {
   }
   if (seq !== field.seq || !response) return;
   if (response.error) {
-    overlay.status(`Ember couldn't check this text: ${response.error}`);
+    overlay.status(`Socrates couldn't check this text: ${response.error}`);
     return;
   }
   if (response.warning) maybeWarn(response);
@@ -163,19 +179,20 @@ async function analyze(field) {
     if (!p) continue;
     let loc = { start: p.start + f.start, end: p.start + f.end };
     if (field.text !== text) loc = locateQuote(field.text, f.quote, { hint: loc.start });
-    if (loc) results.push({ ...f, ...loc, engine: response.engine });
+    if (loc) results.push({ ...f, ...loc });
   }
-  applyResults(field, results, response.engine);
+  applyResults(field, results, response.engine === "ai" ? response.modelName : null);
 }
 
 let warnedCode = null;
 function maybeWarn(response) {
   if (warnedCode === response.errorCode) return;
   warnedCode = response.errorCode;
-  overlay.status(`Claude unavailable (${response.warning}) — using offline pattern checks for now.`);
+  overlay.status(`${response.provider} unavailable (${response.warning}). Using offline pattern checks for now.`);
 }
 
-function applyResults(field, results, engine) {
+// `checkedBy` is the model's display name, or null for offline patterns.
+function applyResults(field, results, checkedBy) {
   const keep = new Set();
   const fresh = [];
   for (const r of results) {
@@ -197,7 +214,7 @@ function applyResults(field, results, engine) {
         explanation: r.explanation,
         question: r.question,
         confidence: r.confidence,
-        engine,
+        checkedBy,
         stale: false,
       });
     } else {
@@ -212,7 +229,7 @@ function applyResults(field, results, engine) {
         explanation: r.explanation,
         question: r.question,
         confidence: r.confidence,
-        engine,
+        checkedBy,
         entering: true,
         stale: false,
       };
@@ -221,13 +238,12 @@ function applyResults(field, results, engine) {
     }
   }
   for (const flag of [...field.flags.values()]) {
-    if (!keep.has(flag.key)) removeFlag(field, flag, { celebrate: true });
+    if (!keep.has(flag.key) && !flag.offscreen) removeFlag(field, flag, { celebrate: true });
   }
   if (fresh.length) {
     overlay.mount();
     renderNow();
     fresh.forEach((flag, i) => setTimeout(() => enter(flag, i === 0), i * STAGGER_MS));
-    for (const flag of fresh) chrome.runtime.sendMessage({ type: "ctp:flagged", fallacyType: flag.type }).catch(() => {});
   } else {
     requestRender();
   }
@@ -270,7 +286,7 @@ function removeFlag(field, flag, { celebrate }) {
 
 function flagRects(flag) {
   const field = flag.field;
-  if (field.kind !== "ce") {
+  if (field.kind === "textarea" || field.kind === "input") {
     field.mirror ??= new Mirror(overlay.mirrors);
     field.mirror.sync(field.el, field.text);
   }
@@ -283,7 +299,7 @@ function renderNow() {
   const items = [];
   for (const field of fields.values()) {
     for (const flag of field.flags.values()) {
-      if (flag.stale) continue;
+      if (flag.stale || flag.offscreen) continue;
       const rects = flagRects(flag);
       if (rects.length) flag.lastRect = rects[0];
       items.push({ flag, rects });
@@ -346,20 +362,56 @@ function onPasteOrDrop(e) {
   if (el) markEdit(ensureField(el), "paste");
 }
 
+// --- Google Docs -----------------------------------------------------------
+
+const watchedDocsInputs = new WeakSet();
+
+function docsTyping(field, e) {
+  if (!e.isTrusted || !active()) return;
+  if (e.type === "keydown") {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "v") markEdit(field, "paste");
+    else if (e.key.length === 1 || ["Backspace", "Delete", "Enter"].includes(e.key)) markEdit(field, "type");
+    else return;
+  } else if (e.type === "paste" || e.type === "drop") {
+    markEdit(field, "paste");
+  } else if (e.type === "beforeinput") {
+    markEdit(field, /^insertFrom(Paste|Drop|PasteAsQuotation)$/.test(e.inputType) ? "paste" : "type");
+  }
+  for (const ms of [60, 250, 700, 1200]) setTimeout(() => sync(field), ms);
+}
+
+function attachDocs() {
+  if (!isGoogleDocs() || !active()) return;
+  const editor = docsEditor();
+  if (!editor) return;
+  const field = ensureField(editor, "gdocs");
+  const doc = docsInputDocument();
+  if (!doc || watchedDocsInputs.has(doc)) return;
+  watchedDocsInputs.add(doc);
+  for (const type of ["keydown", "beforeinput", "paste", "drop"]) {
+    doc.addEventListener(type, (e) => docsTyping(field, e), true);
+  }
+}
+
 function poll() {
+  attachDocs();
   for (const field of [...fields.values()]) sync(field);
   if (overlay.host && [...fields.values()].some((f) => f.flags.size)) requestRender();
 }
 
-document.addEventListener("focusin", onFocusIn, true);
-document.addEventListener("beforeinput", onBeforeInput, true);
-document.addEventListener("input", onInput, true);
-document.addEventListener("keydown", onKeyDown, true);
-document.addEventListener("paste", onPasteOrDrop, true);
-document.addEventListener("drop", onPasteOrDrop, true);
-window.addEventListener("scroll", requestRender, { capture: true, passive: true });
-window.addEventListener("resize", requestRender, { passive: true });
-setInterval(poll, POLL_MS);
+function start() {
+  document.addEventListener("focusin", onFocusIn, true);
+  document.addEventListener("beforeinput", onBeforeInput, true);
+  document.addEventListener("input", onInput, true);
+  document.addEventListener("keydown", onKeyDown, true);
+  document.addEventListener("paste", onPasteOrDrop, true);
+  document.addEventListener("drop", onPasteOrDrop, true);
+  window.addEventListener("scroll", requestRender, { capture: true, passive: true });
+  window.addEventListener("resize", requestRender, { passive: true });
+  setInterval(poll, POLL_MS);
+}
+
+if (!isDocsInputFrame()) start();
 
 chrome.storage.local.get(Object.keys(DEFAULT_SETTINGS)).then((stored) => {
   settings = { ...DEFAULT_SETTINGS, ...stored };

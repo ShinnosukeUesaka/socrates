@@ -23,7 +23,7 @@ Both commands rebuild the timeline and the sound effects first. They don't need 
 | Narration | `scripts/make-narration.mjs` | Generates every voice line with ElevenLabs **Eleven v4**. `[bracketed]` audio tags such as `[whispers]`, `[gravely]`, `[shouting]` and `[long pause]` steer the delivery. George narrates and Harry shouts the fallacy name. Lines whose text hasn't changed are skipped, and you can pass ids to regenerate only those lines: `node scripts/make-narration.mjs intro outro`. |
 | Word timings | `scripts/align.mjs` | Runs ElevenLabs speech-to-text (Scribe) over each line and saves word timings to `src/words.json`, so stamps and text land on the spoken word. |
 | Timeline | `scripts/timeline.mjs` | Builds `src/timeline.json` (scene starts, word marks and the scripted demo beats) from the narration lengths and word timings. |
-| Sound | `scripts/make-sounds.mjs` | Synthesises every sound effect. The `stinger` and `chime` sounds copy the extension's own Web Audio alarm and chime from `src/content/effects.js`. |
+| Sound | `scripts/make-sounds.mjs`, `npm run master` | Synthesises every sound effect. After rendering, `npm run master` normalises the mix to -16 LUFS with a -1.5 dB true-peak ceiling. The `stinger` and `chime` sounds copy the extension's own Web Audio alarm and chime from `src/content/effects.js`. |
 | Pictures | `src/Pitch.tsx`, `src/product.tsx`, `src/editorial.tsx` | Builds the scenes. `product.tsx` recreates the extension on a sample discussion page, using the overlay styles (`src/content/styles.js`), the entrance choreography (`effects.js`) and the fallacy catalogue (`src/shared/fallacies.js`). |
 
 To regenerate the voice after you edit a line, run this (it reads the key from the environment):

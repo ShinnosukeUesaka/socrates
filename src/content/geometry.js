@@ -4,6 +4,7 @@
 // over the field, and measure that instead.
 
 import { fieldKind, rangeFromSegments } from "./extract.js";
+import { docsRects } from "./gdocs.js";
 
 const COPIED_PROPS = [
   "direction", "fontStyle", "fontVariant", "fontWeight", "fontStretch", "fontSize", "fontSizeAdjust",
@@ -122,7 +123,9 @@ function clip(rect, box) {
 export function rectsForSpan(field, start, end) {
   const { el } = field;
   let raw;
-  if (field.kind === "ce") {
+  if (field.kind === "gdocs") {
+    raw = docsRects(field.segments, start, end);
+  } else if (field.kind === "ce") {
     const range = rangeFromSegments(field.segments, start, end);
     raw = range ? [...range.getClientRects()] : [];
   } else {

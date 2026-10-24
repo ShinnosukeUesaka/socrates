@@ -2,26 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Ember</title>
+    <title>Socrates</title>
     <link rel="stylesheet" href="ui.css" />
     <style>
       body { width: 300px; padding: 14px; }
       section { margin-top: 14px; }
-      .stats b { font-size: 26px; font-weight: 900; color: var(--accent); }
-      .top { margin: 6px 0 0; padding: 0; list-style: none; }
-      .top li { display: flex; justify-content: space-between; padding: 3px 0; border-top: 1px solid var(--line); }
-      footer { margin-top: 14px; display: flex; justify-content: space-between; align-items: center; }
+      footer { margin-top: 16px; display: flex; justify-content: space-between; align-items: center; }
     </style>
   </head>
   <body>
     <div class="row">
-      <h1><span class="flame">⚠</span> Ember</h1>
-      <label class="switch" title="Turn Ember on or off">
+      <h1><span class="flame">?</span> Socrates</h1>
+      <label class="switch" title="Turn Socrates on or off">
         <input id="enabled" type="checkbox" aria-label="Enabled" />
         <span></span>
       </label>
     </div>
-    <p class="muted" style="margin: 6px 0 0">Your critical thinking partner. Checks only what you type.</p>
+    <p class="muted" style="margin: 6px 0 0">Better thinking starts with awareness. Socrates reads only what you write.</p>
 
     <section>
       <h2>Drama level</h2>
@@ -38,11 +35,6 @@
         <input id="sound" type="checkbox" aria-label="Sound effects" />
         <span></span>
       </label>
-    </section>
-
-    <section class="panel stats">
-      <div class="row"><span class="muted">Fallacies caught</span><b id="total">0</b></div>
-      <ul class="top" id="top"></ul>
     </section>
 
     <footer>

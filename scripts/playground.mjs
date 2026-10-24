@@ -13,5 +13,5 @@ createServer(async (req, res) => {
   res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
   res.end(await readFile(page));
 }).listen(port, "127.0.0.1", () => {
-  console.log(`Ember playground: http://127.0.0.1:${port}`);
+  console.log(`Socrates playground: http://127.0.0.1:${port}`);
 });

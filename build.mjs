@@ -9,6 +9,7 @@ await build({
   entryPoints: {
     background: "src/background/index.js",
     content: "src/content/index.js",
+    "docs-annotate": "src/content/docs-annotate.js",
     popup: "src/popup/popup.js",
     options: "src/options/options.js",
   },

@@ -1,0 +1,28 @@
+<!doctype html>
+<!--
+  A stand-in for a Gmail reply window, served at a mail.google.com URL in
+  tests: a subject input and a contenteditable message body that already holds
+  a signature and the quoted message being replied to.
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<title>Inbox - Gmail</title>
+<style>
+  body { margin: 0; font: 14px/1.5 Arial, sans-serif; background: #f6f8fc; }
+  .compose { position: fixed; right: 24px; bottom: 0; width: 560px; background: #fff; border-radius: 8px 8px 0 0; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+  .compose header { padding: 10px 14px; background: #f2f6fc; border-radius: 8px 8px 0 0; font-weight: bold; }
+  .compose input { display: block; width: 100%; box-sizing: border-box; border: 0; border-bottom: 1px solid #eee; padding: 8px 14px; font: inherit; }
+  .Am { height: 260px; overflow: auto; padding: 10px 14px; outline: none; }
+  .gmail_quote { color: #555; }
+  blockquote { margin: 0 0 0 .8ex; border-left: 1px solid #ccc; padding-left: 1ex; }
+</style>
+</head>
+<body>
+  <div class="compose">
+    <header>Re: Startup update</header>
+    <input name="subjectbox" placeholder="Subject" value="Re: Startup update">
+    <div class="Am editable" contenteditable="true" role="textbox" aria-label="Message Body"><div id="first"><br></div><div><br></div><div class="gmail_signature">-- <br>Sent with love</div><div class="gmail_quote">On Mon, Bob wrote:<br><blockquote class="gmail_quote">Everyone knows our plan is perfect, prove me wrong. If we change anything, next thing you know we'll lose every customer.</blockquote></div></div>
+  </div>
+</body>
+</html>
