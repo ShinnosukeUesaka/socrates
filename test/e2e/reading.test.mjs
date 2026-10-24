@@ -57,7 +57,7 @@ const hasTag = (label) => async () => (await labels()).includes(label);
 describe("news articles", () => {
   test("flags the article's reasoning, stamping each issue as it scrolls into view", async () => {
     await page.goto(ARTICLE_URL);
-    await waitFor(hasTag("Slippery slope"), { message: "slippery slope tag in article", timeout: 8000 });
+    await waitFor(hasTag("Possible unjustified prediction"), { message: "slippery slope tag in article", timeout: 8000 });
 
     // The bandwagon claim is below the fold: found, but not shown yet.
     let s = await overlayState(page);
@@ -69,17 +69,17 @@ describe("news articles", () => {
     await waitFor(async () => {
       s = await overlayState(page);
       stamped ||= s.stamps > 0;
-      return s.tags.some((t) => t.label === "Bandwagon" && !t.pending);
+      return s.tags.some((t) => t.label === "Possible unsupported factual claim" && !t.pending);
     }, { message: "bandwagon flag after scrolling", timeout: 8000 });
     assert.ok(stamped, "stamp played when the flag came into view");
     assert.ok(await page.evaluate(() => scrollY > 200), "navigator scrolled down to the next flag");
-    assert.deepEqual(await labels(), ["Bandwagon", "Slippery slope"], "nav, caption and related links are not analyzed");
+    assert.deepEqual(await labels(), ["Possible unjustified prediction", "Possible unsupported factual claim"], "nav, caption and related links are not analyzed");
   });
 
   test("with a model, only the article body is sent, using the reading prompt", async () => {
     await setSettings(browser.worker, { apiKey: "sk-test-openai", apiBaseUrl: api.url });
     await page.goto(ARTICLE_URL);
-    await waitFor(hasTag("Slippery slope"), { message: "tag", timeout: 8000 });
+    await waitFor(hasTag("Possible unjustified prediction"), { message: "tag", timeout: 8000 });
     const req = api.requests.at(-1);
     assert.match(req.body.instructions, /embedded in a reading tool/);
     const sent = api.requests.map((r) => r.content).join("\n");
@@ -100,8 +100,8 @@ describe("news articles", () => {
 
     await page.bringToFront();
     await messageActiveTab(browser.worker, { type: "ctp:checkPage" });
-    await waitFor(hasTag("Bandwagon"), { message: "check-page bandwagon", timeout: 8000 });
-    await waitFor(hasTag("Slippery slope"), { message: "check-page slippery slope", timeout: 8000 });
+    await waitFor(hasTag("Possible unsupported factual claim"), { message: "check-page bandwagon", timeout: 8000 });
+    await waitFor(hasTag("Possible unjustified prediction"), { message: "check-page slippery slope", timeout: 8000 });
   });
 
   test("Ask Socrates about a selection checks just that text", async () => {
@@ -118,9 +118,9 @@ describe("news articles", () => {
     }, STATIC_FALLACY);
     await page.bringToFront();
     await messageActiveTab(browser.worker, { type: "ctp:checkSelection" });
-    await waitFor(hasTag("Bandwagon"), { message: "selection flag", timeout: 8000 });
+    await waitFor(hasTag("Possible unsupported factual claim"), { message: "selection flag", timeout: 8000 });
     await sleep(500);
-    assert.ok(!(await labels()).includes("Slippery slope"), "text outside the selection isn't flagged");
+    assert.ok(!(await labels()).includes("Possible unjustified prediction"), "text outside the selection isn't flagged");
     assert.match((await overlayState(page)).status ?? "", /question/);
   });
 
@@ -133,15 +133,15 @@ describe("news articles", () => {
 });
 
 describe("emails you open", () => {
-  test("flags pressure tactics in a received email, but not the quoted thread", async () => {
+  test("flags reasoning in a received email, but not the quoted thread", async () => {
     await page.goto(INBOX_URL);
-    await waitFor(hasTag("False urgency"), { message: "false urgency tag", timeout: 8000 });
+    await waitFor(hasTag("Possible unsupported factual claim"), { message: "unsupported claim tag", timeout: 8000 });
     await sleep(500);
-    assert.deepEqual(await labels(), ["False urgency"]);
+    assert.deepEqual(await labels(), ["Possible unsupported factual claim"]);
     await page.locator("ctp-overlay .ctp-tag").click();
     const card = (await overlayState(page)).card;
-    assert.match(card, /Persuasion tactic/);
-    assert.match(card, /Possible false urgency/);
+    assert.match(card, /Unsupported assumption/);
+    assert.match(card, /Possible unsupported factual claim/);
   });
 
   test("emails are skipped when that source is off", async () => {
@@ -155,6 +155,6 @@ describe("emails you open", () => {
 describe("Google Docs (reading)", () => {
   test("a Doc you open is checked in full, including text already there", async () => {
     await page.goto(DOCS_URL);
-    await waitFor(hasTag("Bandwagon"), { message: "existing doc text flagged", timeout: 9000 });
+    await waitFor(hasTag("Possible unsupported factual claim"), { message: "existing doc text flagged", timeout: 9000 });
   });
 });

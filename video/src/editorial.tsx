@@ -42,7 +42,8 @@ export function Reveal({ children, at, style, dy = 28 }: { children: ReactNode; 
 
 /** Accent gradient text. */
 export function Grad({ children, style }: { children: ReactNode; style?: CSSProperties }) {
-  return <span style={{ background: GRAD, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', ...style }}>{children}</span>;
+  // backgroundImage, not the background shorthand: React re-applying the shorthand resets background-clip.
+  return <span style={{ backgroundImage: GRAD, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', ...style }}>{children}</span>;
 }
 
 /** Small mono label. */

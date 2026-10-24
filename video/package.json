@@ -1,5 +1,5 @@
 {
-  "name": "critical-thinking-partner-video",
+  "name": "socrates-pitch-video",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,7 +8,7 @@
     "timeline": "node scripts/timeline.mjs",
     "studio": "npm run timeline && npm run sounds && remotion studio src/index.ts",
     "render": "npm run timeline && npm run sounds && remotion render src/index.ts CTPPitch out/ctp-pitch-raw.mp4 && npm run master",
-    "master": "ffmpeg -y -loglevel error -i out/ctp-pitch-raw.mp4 -c:v copy -af loudnorm=I=-16:TP=-1.5:LRA=11 -ar 48000 -c:a aac -b:a 192k out/ctp-pitch.mp4"
+    "master": "ffmpeg -y -loglevel error -i out/ctp-pitch-raw.mp4 -c:v copy -af loudnorm=I=-16:TP=-1.5:LRA=11 -ar 48000 -c:a aac -b:a 192k out/socrates-pitch.mp4"
   },
   "dependencies": {
     "@remotion/cli": "4.0.536",

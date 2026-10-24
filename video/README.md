@@ -1,9 +1,20 @@
-# Ember pitch video
+# Socrates launch video
 
-A two-minute pitch for Ember, the critical thinking partner, made with [Remotion](https://www.remotion.dev).
-It uses the same structure and look as the Ember pitch video in `codebees/video`: a specific story first, the problem worldwide, what we believe, the title card, the product, then the close. The terracotta is swapped for the extension's signal red.
+A two-minute launch film for **Socrates**, the critical thinking companion for Chrome, made with [Remotion](https://www.remotion.dev). Socrates flags weak arguments in what you read (articles, emails) and in what you write.
 
-Output: `out/ctp-pitch.mp4` (1920 × 1080, 30 fps, about 2:06).
+The story follows the Ember pitch video in `codebees/video`:
+
+1. One person: it's 1 a.m. and Leo reposts a one-sided article.
+2. The problem worldwide: real headlines and two sourced stats.
+3. What's missing.
+4. The product.
+5. Privacy.
+6. Who it's for.
+7. The close.
+
+It looks like a dark launch film: near-black frames, tight white type, and one accent colour taken from the Socrates icon.
+
+Output: `out/socrates-pitch.mp4` (1920 × 1080, 30 fps, about 2:07).
 
 ## Run it
 
@@ -11,7 +22,7 @@ Output: `out/ctp-pitch.mp4` (1920 × 1080, 30 fps, about 2:06).
 cd video
 npm install
 npm run studio    # preview in the browser
-npm run render    # writes out/ctp-pitch.mp4
+npm run render    # writes out/socrates-pitch.mp4 (rendered, then loudness-normalised)
 ```
 
 Both commands rebuild the timeline and the sound effects first. They don't need an API key, because the narration is already checked in under `public/narration/`.
@@ -20,11 +31,11 @@ Both commands rebuild the timeline and the sound effects first. They don't need 
 
 | Step | File | What it does |
 |---|---|---|
-| Narration | `scripts/make-narration.mjs` | Generates every voice line with ElevenLabs **Eleven v4**. `[bracketed]` audio tags such as `[whispers]`, `[gravely]`, `[shouting]` and `[long pause]` steer the delivery. George narrates and Harry shouts the fallacy name. Lines whose text hasn't changed are skipped, and you can pass ids to regenerate only those lines: `node scripts/make-narration.mjs intro outro`. |
-| Word timings | `scripts/align.mjs` | Runs ElevenLabs speech-to-text (Scribe) over each line and saves word timings to `src/words.json`, so stamps and text land on the spoken word. |
+| Narration | `scripts/make-narration.mjs` | Generates every voice line with ElevenLabs **Eleven v4**. `[bracketed]` audio tags such as `[whispers]`, `[gravely]`, `[ominous]`, `[intensely]`, `[shouting]` and `[long pause]` steer the delivery. George narrates and Harry shouts the fallacy name. Lines whose text hasn't changed are skipped, and you can pass ids to regenerate only those lines: `node scripts/make-narration.mjs intro outro`. |
+| Word timings | `scripts/align.mjs` | Runs ElevenLabs speech-to-text (Scribe) over each line and saves word timings to `src/words.json`, so text, stamps and camera moves land on the spoken word. |
 | Timeline | `scripts/timeline.mjs` | Builds `src/timeline.json` (scene starts, word marks and the scripted demo beats) from the narration lengths and word timings. |
-| Sound | `scripts/make-sounds.mjs`, `npm run master` | Synthesises every sound effect. After rendering, `npm run master` normalises the mix to -16 LUFS with a -1.5 dB true-peak ceiling. The `stinger` and `chime` sounds copy the extension's own Web Audio alarm and chime from `src/content/effects.js`. |
-| Pictures | `src/Pitch.tsx`, `src/product.tsx`, `src/editorial.tsx` | Builds the scenes. `product.tsx` recreates the extension on a sample discussion page, using the overlay styles (`src/content/styles.js`), the entrance choreography (`effects.js`) and the fallacy catalogue (`src/shared/fallacies.js`). |
+| Sound | `scripts/make-sounds.mjs`, `npm run master` | Synthesises every sound effect. The `stinger` and `chime` sounds copy the extension's own Web Audio alarm and chime from `src/content/effects.js`. After rendering, `npm run master` normalises the mix to -16 LUFS with a -1.5 dB true-peak ceiling. |
+| Pictures | `src/Pitch.tsx`, `src/product.tsx`, `src/editorial.tsx` | Builds the scenes. `product.tsx` recreates Socrates on a sample article, an inbox and a comment box. It uses the extension's overlay styles (`src/content/styles.js`), its stamp, fly and tag choreography (`effects.js`), its card layout (`overlay.js`) and its live catalogue (`src/shared/fallacies.js`). |
 
 To regenerate the voice after you edit a line, run this (it reads the key from the environment):
 
@@ -32,7 +43,7 @@ To regenerate the voice after you edit a line, run this (it reads the key from t
 ELEVENLABS_API_KEY=... node scripts/make-narration.mjs && ELEVENLABS_API_KEY=... node scripts/align.mjs
 ```
 
-The demo is a recreation, not a screen recording, and the video says so on screen. The explanation shown in the card is example text written in the style of Claude's output.
+The demo is a recreation, not a screen recording, and the video says so on screen. The explanation and question in the card are example text of the kind the model writes. The article ("The Daily Pulse"), the inbox and the people in them are made up.
 
 ## Sources (headline montage and stats)
 
@@ -51,4 +62,4 @@ The demo is a recreation, not a screen recording, and the video says so on scree
 
 - Music: "Interloper" and "Inspired" by Kevin MacLeod (incompetech.com), licensed under CC BY 4.0.
 - Voice: ElevenLabs (premade voices George and Harry).
-- Fonts: Inter Tight, Instrument Serif, JetBrains Mono and Anton, all from Google Fonts.
+- Fonts: Inter Tight, JetBrains Mono and Anton, all from Google Fonts.

@@ -72,7 +72,7 @@ export function FlagLine({ text, flag, highlight = true, clearT = 0, style, care
   return <div style={{ position: 'relative', whiteSpace: 'nowrap', ...style }}>
     <Highlight flag={highlight ? flag : undefined}>{text}</Highlight>
     {caret !== undefined && <span style={{ display: 'inline-block', width: 2, height: '1.1em', background: '#1f1e1b', verticalAlign: '-0.2em', marginLeft: 1, opacity: caret && Math.floor(frame / 8) % 2 === 0 ? 1 : 0 }}/>}
-    {flag && <div style={{ position: 'absolute', left: 0, top: 0 }}><FlagFx flag={flag} width={text.length * 10.6} clearT={clearT}/></div>}
+    {flag && <div style={{ position: 'absolute', left: 0, top: 0 }}><FlagFx flag={flag} width={text.length * 9.3} clearT={clearT}/></div>}
     {children}
   </div>;
 }
@@ -162,6 +162,20 @@ export function Note({ box, label, at, until = 1e9, on = false }: { box: [number
   </div>;
 }
 
+/** A reading beam that sweeps down a box (a video annotation for "it reads along"). */
+function Scan({ at, until, box }: { at: number; until: number; box: [number, number, number, number] }) {
+  const frame = useCurrentFrame();
+  const t = frame - at;
+  if (t < 0 || frame > until) return null;
+  const [x, y, w, h] = box;
+  const p = (t % 45) / 45;
+  const sy = y + p * h;
+  return <div style={{ position: 'absolute', left: x, top: y, width: w, height: h, overflow: 'hidden', zIndex: 36, pointerEvents: 'none' }}>
+    <div style={{ position: 'absolute', left: 0, right: 0, top: sy - y - 90, height: 90, background: 'linear-gradient(180deg, rgba(255,45,85,0), rgba(255,45,85,0.10))' }}/>
+    <div style={{ position: 'absolute', left: 0, right: 0, top: sy - y, height: 2, background: 'linear-gradient(90deg, rgba(255,45,85,0), #FF2D55, #FF8A1F, rgba(255,138,31,0))', boxShadow: '0 0 16px #FF2D55' }}/>
+  </div>;
+}
+
 export function Cursor({ keys, clicks = [] }: { keys: [number, number, number][]; clicks?: number[] }) {
   const frame = useCurrentFrame();
   if (!keys.length || frame < keys[0][0]) return null;
@@ -189,7 +203,7 @@ export const ARTICLE = {
   rewrite: 'Is one startup really enough evidence, though?',
 };
 /** Where things sit on the article page (page coordinates), for the camera, cursor and notes. */
-export const A = { dilemmaY: 352, lineX: 170, replyY: 1068 };
+export const A = { dilemmaY: 368, lineX: 170, replyY: 1110 };
 
 const ink = '#16161A', soft = '#5C5C66', rule = '#E7E7EC', siteBlue = '#1747C9';
 const body: CSSProperties = { fontFamily: grot, fontWeight: 400, fontSize: 21, lineHeight: '34px', color: '#26262C' };
@@ -210,7 +224,7 @@ export function ArticlePage({ flag1, flag3, reply, card, notes }: { flag1?: Flag
       </FlagLine>;
     } else if (frame >= reply.select) {
       replyEl = <FlagLine text={ARTICLE.reply} flag={flag3} highlight={false} style={body}>
-        <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: ARTICLE.reply.length * 10.2, background: 'rgba(80,140,255,0.32)', borderRadius: 3 }}/>
+        <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: ARTICLE.reply.length * 9.25, background: 'rgba(80,140,255,0.32)', borderRadius: 3 }}/>
       </FlagLine>;
     } else {
       replyEl = <FlagLine text={typed(ARTICLE.reply, frame, reply.type1[0], reply.type1[1])} flag={flag3} style={body} caret={caret}/>;
@@ -234,7 +248,7 @@ export function ArticlePage({ flag1, flag3, reply, card, notes }: { flag1?: Flag
       <div style={{ fontFamily: grot, fontWeight: 500, fontSize: 15, color: soft, marginTop: 12 }}>By Mark Ellison · 6 min read</div>
       <div style={{ ...body, marginTop: 20, width: 790 }}>{ARTICLE.p1}</div>
       <div style={{ transform: `translate(${sh1.x}px, ${sh1.y}px) rotate(${sh1.r}deg)` }}>
-        <FlagLine text={ARTICLE.dilemma} flag={flag1} style={{ ...body, marginTop: 18 }}>{card}</FlagLine>
+        <FlagLine text={ARTICLE.dilemma} flag={flag1} style={{ ...body, marginTop: 34 }}>{card}</FlagLine>
       </div>
       <div style={{ ...body, marginTop: 18 }}>{ARTICLE.p3}</div>
       <div style={{ ...body, marginTop: 18 }}>{ARTICLE.p4}</div>
@@ -268,6 +282,7 @@ export function ArticlePage({ flag1, flag3, reply, card, notes }: { flag1?: Flag
       </div>)}
     </div>
     {notes && <>
+      <Scan at={notes.at + 4} until={notes.until} box={[A.lineX - 18, 80, 856, 640]}/>
       <Note box={[A.lineX - 18, 80, 856, 640]} label="READING" at={notes.at} until={notes.until} on/>
       <Note box={[52, 168, 76, 220]} label="SKIPPED" at={notes.at + 6} until={notes.until}/>
       <Note box={[1024, 88, 332, 650]} label="ADS · LINKS · SKIPPED" at={notes.at + 10} until={notes.until}/>

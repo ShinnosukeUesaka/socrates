@@ -194,7 +194,7 @@ export function overlayState(page) {
       const b = el.getBoundingClientRect();
       return { left: b.left, top: b.top, right: b.right, bottom: b.bottom, width: b.width, height: b.height };
     };
-    if (!root) return { mounted: false, tags: [], hls: [], stamps: 0, embers: 0, vignettes: 0, fixed: 0, banners: 0, card: null, status: null, nav: null, pending: 0 };
+    if (!root) return { mounted: false, tags: [], hls: [], stamps: 0, embers: 0, vignettes: 0, fixed: 0, banners: 0, card: null, status: null, nav: null, pending: 0, all: [] };
     return {
       mounted: true,
       tags: [...root.querySelectorAll(".ctp-tag:not(.ctp-tag--leave)")]
@@ -210,6 +210,8 @@ export function overlayState(page) {
       card: root.querySelector(".ctp-card")?.textContent ?? null,
       status: root.querySelector(".ctp-status")?.textContent ?? null,
       nav: root.querySelector(".ctp-nav")?.textContent ?? null,
+      // Every flag on the page, including ones scrolled out of view.
+      all: [...root.querySelectorAll(".ctp-tag:not(.ctp-tag--leave)")].map((t) => t.textContent.trim()),
       pending: root.querySelectorAll(".ctp-tag[data-pending]").length,
     };
   });

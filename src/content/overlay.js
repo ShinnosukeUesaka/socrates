@@ -1,7 +1,7 @@
 // A single fixed, full-viewport layer (inside a shadow root so page CSS can't
 // touch it) that draws highlights, tags and the explanation card.
 
-import { categoryName, FALLACIES, fallacyName, possibleName } from "../shared/fallacies.js";
+import { categoryName, FALLACIES, possibleName } from "../shared/fallacies.js";
 import { Effects } from "./effects.js";
 import { OVERLAY_CSS } from "./styles.js";
 
@@ -53,7 +53,7 @@ export class Overlay {
     tag.type = "button";
     tag.setAttribute("aria-expanded", "false");
     tag.innerHTML = ICON_SVG;
-    tag.append(fallacyName(flag.type));
+    tag.append(possibleName(flag.type));
     tag.title = `${possibleName(flag.type)}: click to see Socrates' question`;
     if (flag.entering) tag.setAttribute("data-pending", "");
     tag.addEventListener("click", (e) => {

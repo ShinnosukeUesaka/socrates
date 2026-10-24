@@ -3,7 +3,7 @@
 // overlay, so the page's own DOM is never modified (the field shake is a
 // temporary animation that the browser removes when it ends).
 
-import { fallacyName } from "../shared/fallacies.js";
+import { possibleName } from "../shared/fallacies.js";
 
 const EMBER_COLORS = ["#ff2d55", "#ff6b35", "#ffd60a", "#fff3b0"];
 const GREEN_COLORS = ["#1fd17a", "#8affc1", "#e8fff3"];
@@ -51,7 +51,7 @@ export class Effects {
     const max = intensity === "maximum";
     const c = centerOf(rects);
     const stamp = this.spawn(`ctp-stamp${max ? " ctp-stamp--max" : ""}`);
-    stamp.textContent = `${fallacyName(flag.type)}?`;
+    stamp.textContent = `${possibleName(flag.type)}?`;
     const sub = document.createElement("small");
     sub.textContent = "Socrates has a question";
     stamp.appendChild(sub);

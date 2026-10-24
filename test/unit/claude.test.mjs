@@ -53,9 +53,9 @@ test("parseResponse maps quotes onto passages and drops hallucinated ones", () =
   const out = parseResponse(
     textResponse({
       fallacies: [
-        { passage_id: "p0", type: "slippery_slope", quote: "next thing you know nobody studies", explanation: "e", question: "q", confidence: "high" },
-        { passage_id: "p0", type: "straw_man", quote: "this text is not in the passage", explanation: "e", question: "q", confidence: "medium" },
-        { passage_id: "p9", type: "ad_hominem", quote: "Thanks", explanation: "e", question: "q", confidence: "high" },
+        { passage_id: "p0", type: "unjustified_prediction", quote: "next thing you know nobody studies", explanation: "e", question: "q", confidence: "high" },
+        { passage_id: "p0", type: "false_dilemma", quote: "this text is not in the passage", explanation: "e", question: "q", confidence: "medium" },
+        { passage_id: "p9", type: "hasty_generalization", quote: "Thanks", explanation: "e", question: "q", confidence: "high" },
       ],
     }),
     passages,
@@ -89,13 +89,13 @@ test("parseResponse ignores thinking blocks", () => {
 test("analyzeWithClaude calls the beta endpoint once and returns located results", async () => {
   const client = fakeClient(() =>
     textResponse({
-      fallacies: [{ passage_id: "p0", type: "slippery_slope", quote: "next thing you know", explanation: "e", question: "q", confidence: "high" }],
+      fallacies: [{ passage_id: "p0", type: "unjustified_prediction", quote: "next thing you know", explanation: "e", question: "q", confidence: "high" }],
     }),
   );
   const out = await analyzeWithClaude({ client, model: "claude-haiku-5-5", effort: "medium", passages });
   assert.equal(client.calls.length, 1);
   assert.equal(client.calls[0].model, "claude-haiku-5-5");
-  assert.equal(out[0].type, "slippery_slope");
+  assert.equal(out[0].type, "unjustified_prediction");
 });
 
 test("analyzeWithClaude skips the API when there is nothing to analyze", async () => {

@@ -21,10 +21,10 @@ test(`extension flags a fallacy using the real ${name} API`, { skip: !apiKey && 
     await sleep(200);
     await page.click("#ta");
     // No stock phrase the offline patterns know, so only the model can catch it.
-    await page.keyboard.type("My opponent has been divorced twice, so his tax plan obviously can't be trusted.");
+    await page.keyboard.type("Sales went up the month after we changed our logo, so the new logo is clearly what's driving growth.");
     const tag = await waitFor(async () => (await overlayState(page)).tags.find((t) => !t.pending), { timeout: 60_000, message: "Claude flag" });
     console.log("  flagged as:", tag.label);
-    assert.equal(tag.label, "Ad hominem");
+    assert.ok(["Possible false cause", "Possible unexamined alternative explanations"].includes(tag.label), tag.label);
     await sleep(600);
     await page.locator("ctp-overlay .ctp-tag").click();
     const card = (await overlayState(page)).card;

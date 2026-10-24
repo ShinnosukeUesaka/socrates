@@ -1,25 +1,31 @@
 # Socrates
 
-Better thinking starts with awareness. Socrates is an AI reasoning companion for Chrome: Grammarly for your thinking.
+Better thinking starts with awareness. Socrates is a reasoning companion for Chrome. It reads along with you and flags possible reasoning errors in the news, emails and documents you read, and optionally in what you write.
 
-It has two features:
+It does two things:
 
-1. **Reasoning flagger.** As you write, Socrates highlights the exact wording that may contain a reasoning error and explains the potential issue. It looks for three kinds:
-   - logical fallacies, such as false dilemmas, circular reasoning or hasty generalisations
-   - cognitive biases, such as sunk-cost reasoning, confirmation bias or anchoring
-   - unsupported assumptions, such as unjustified certainty, sweeping generalisations or hidden premises
+1. **Flags possible reasoning errors.** It highlights the exact wording and pins a tag to it. Every finding is labelled "Possible …", because it might not be one.
+2. **Asks a Socratic question.** Each flag comes with one question tied to that specific issue, for example "Are these really the only two options available?" Socrates doesn't correct the text or tell you what to think.
 
-   Findings are framed as possibilities ("Possible sunk-cost reasoning"), not verdicts.
-2. **Socratic questioning.** Socrates doesn't correct you. Each flag comes with one question tied to that specific issue, for example "Are these really the only two options available to you?"
+## What it looks for
 
-The flow is write, flag, question, reflect. There's no profile, dashboard or score.
+- **Logical fallacies** (six core ones): ad hominem, straw man, false dilemma, hasty generalisation, false cause, circular reasoning.
+- **Cognitive biases** (not necessarily fallacies): sunk-cost reasoning, confirmation bias, overconfidence, anchoring, survivorship bias.
+- **Unsupported assumptions:** unsupported factual claims, unrepresentative evidence, unexamined alternative explanations, unjustified predictions, missing decision criteria.
 
-Flags arrive with some drama, which you can turn down. A "SLIPPERY SLOPE?" stamp slams onto the text, the screen flashes, the field shakes, sparks fly, and a tag stays pinned to the wording. Rewrite the sentence and you get a green "✓ Rethought".
+## When it checks (and when it calls the model)
 
-## Where it works
+| Source | When it's read | When the model is called |
+|---|---|---|
+| News/blog articles | The main article body is found on load (checked every 1.5s, for pages that load late). Nav, captions, ads, related links and comments are skipped. Pages that aren't articles are ignored. | 0.9s after the article is found, or after its text changes. Up to 20,000 characters, split into ~5,000-character requests sent in parallel. |
+| Gmail | Each email body you open (quoted earlier messages skipped). | 0.9s after it appears. |
+| Google Docs | The rendered pages of any Doc you open, through Docs' accessible text layer. | 0.9s after the text changes, finishing a sentence triggers it within 0.15s, and steady typing gets a check at least every 3s. |
+| What you write (off by default) | Only text you type into fields. | Within 0.15s of finishing a sentence, otherwise 0.8s after you pause, at most 3s apart while you type. |
+| On demand | The popup's **Check this page now**, or select text → right-click → **Ask Socrates about this**. | Immediately. |
 
-- Any text box, textarea or rich-text editor in Chrome, including Gmail compose.
-- **Google Docs.** Docs draws text on a canvas. Socrates switches on Docs' accessible text layer ("annotated canvas") so it can read what you typed and place highlights on the exact words.
+Results are cached per paragraph, so unchanged text is never sent twice. Requests already in flight are shared. Without an API key nothing is sent anywhere; offline patterns catch stock phrasings only.
+
+Flags make a dramatic entrance (stamp, flash, shake, sparks, sound) the first time they scroll into view. A pill shows how many questions the page has and jumps to the next one. Drama level and sound are in the popup.
 
 ## Install
 
@@ -28,49 +34,45 @@ npm install
 npm run build
 ```
 
-Then open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked**, and pick `dist/`. After you rebuild, click the reload icon on the extension's card and reload any open tabs.
+Open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked**, and pick `dist/`. After a rebuild, click **Update** on that page and reload open tabs.
 
-Open **Settings** and paste an API key. Socrates works out the provider from the key:
+Paste an API key in Settings. `sk-…` uses OpenAI (GPT-5.5 by default) and `sk-ant-…` uses Anthropic (Claude Opus 5.5).
 
-- `sk-…`: OpenAI (default model GPT-5.5, low reasoning effort)
-- `sk-ant-…`: Anthropic (default Claude Opus 5.5, low effort, with server-side refusal fallback)
+## Try it
 
-Without a key, Socrates falls back to offline pattern checks that only catch stock phrasings.
+```bash
+npm start
+```
 
-`npm start` serves a playground page at http://127.0.0.1:4173 for trying it out.
+This serves http://127.0.0.1:4173:
 
-## What it reads
+- `/` is a page to type into.
+- `/news/` is **The Daily Certainty**, a fictional tabloid whose four articles are packed with bad reasoning.
 
-Only text you write:
-
-- It only reads text that comes from trusted keyboard/input events. Page content is never read.
-- It skips text that was already in a field or document, text the site inserts, quoted replies and signatures (`blockquote`, `.gmail_quote`), and pasted text. You can turn on pasted text in Settings.
-- Password, payment and one-time-code fields are always skipped.
-- With a key set, the passages you wrote go to that provider. Nothing else is sent. Paragraphs that haven't changed are cached and not re-sent.
+With GPT-5.5, each article gets 15–19 flags from a single model call.
 
 ## Tests
 
 ```bash
-npm test             # build + unit tests + headless Chromium E2E with the extension loaded
-npm run test:live    # real API calls (needs OPENAI_API_KEY and/or ANTHROPIC_API_KEY)
+npm test             # build + unit + headless-Chromium E2E (40 tests) with the extension loaded
+npm run test:live    # real model calls: The Daily Certainty, a Guardian opinion piece, a BBC report
 ```
 
-The E2E suite types into real pages and covers:
+E2E covers:
 
-- Privacy: page text, script input, password/card fields, pre-filled drafts and pastes are never analyzed.
-- Placement: highlights land on the exact span in textareas, inputs, contenteditable editors, Google Docs' canvas and Gmail compose.
-- Effects: the full entrance plays.
-- Behavior: fix, dismiss, mute, scroll, on/off and blocked sites all work.
-- Providers: OpenAI and Anthropic request shapes, caching, and the fallback when a key is bad.
+- Reading mode: articles, Gmail, Google Docs, selections, "check this page", and scroll-in entrances.
+- Writing mode: privacy rules, exact highlight placement in textareas, inputs, contenteditable, Docs' canvas and Gmail compose.
+- Check cadence.
+- OpenAI and Anthropic request shapes, caching and fallback.
 
-Google Docs and Gmail run as local stand-ins served at their real URLs.
+Google Docs and Gmail run as stand-ins served at their real URLs.
 
 ## Layout
 
 ```
-src/background/   service worker: prompt + schema, OpenAI and Claude clients, cache, pattern fallback
-src/content/      field tracking, Google Docs adapter, text→rect geometry, overlay, effects
+src/background/   prompts (reading + writing), schema, OpenAI and Claude clients, cache, pattern fallback
+src/content/      reading-source discovery, field tracking, Google Docs adapter, geometry, overlay, effects
 src/shared/       issue catalog, text utilities, offline patterns, settings
-src/popup, src/options, playground/
+playground/       typing playground and The Daily Certainty fake news site
 test/unit, test/e2e, test/live
 ```

@@ -124,16 +124,17 @@ export const OVERLAY_CSS = `
   border-radius: 6px;
   background: rgba(23, 4, 9, 0.88);
   color: #ff2d55;
-  font: 900 30px/1 Impact, "Arial Black", ui-sans-serif, system-ui, sans-serif;
-  letter-spacing: 0.06em;
+  max-width: min(620px, 86vw);
+  font: 900 28px/1.05 Impact, "Arial Black", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.05em;
+  text-align: center;
   text-transform: uppercase;
-  white-space: nowrap;
   text-shadow: 0 0 16px rgba(255, 45, 85, 0.85);
   box-shadow: 0 0 46px rgba(255, 45, 85, 0.65), inset 0 0 18px rgba(255, 45, 85, 0.35);
   will-change: transform, opacity;
 }
 .ctp-stamp small { display: block; margin-top: 4px; font: 700 10px/1 ui-monospace, Menlo, monospace; letter-spacing: 0.3em; color: #ffd60a; text-shadow: none; }
-.ctp-stamp--max { font-size: 44px; }
+.ctp-stamp--max { font-size: 40px; max-width: min(820px, 92vw); }
 .ctp-vignette {
   position: fixed;
   inset: 0;

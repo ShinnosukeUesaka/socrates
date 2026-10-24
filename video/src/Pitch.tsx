@@ -5,13 +5,14 @@ import TL from './timeline.json';
 import VOICE from './narration.json';
 import WORDS from './words.json';
 import { FALLACIES, FALLACY_IDS } from '../../src/shared/fallacies.js';
-import { BrowserFrame, Clipping, Embers, FallacyTag, Grain, Leo, Masthead, Mono, P, PaperBits, Reveal, Ring, Ticker, WarnIcon, count, grot, lerp, mono, poster, serif, typed, useSpr } from './editorial';
-import { ForumPage, PAGE_H, PAGE_W, SENTENCE_1, SENTENCE_2, impactAt, tagAt, type DemoScript, type Flag } from './product';
+import { BrowserFrame, Chrome, Embers, FallacyTag, Glass, Glow, Grad, Grain, Label, Motes, P, Reveal, Ring, SocratesIcon, SourceCard, Ticker, Vignette, count, grot, lerp, mono, poster, useSpr } from './editorial';
+import { A, ARTICLE, ArticlePage, Card, Cursor, E, MailPage, PAGE_W, VIEW_H, ViewportFx, impactAt, shakeAt, tagAt, type Flag, type Reply } from './product';
 import { HEADLINES, NEWS } from './news';
 
-// Two-minute pitch for Ember, the critical thinking partner. Same structure and look as the Ember pitch video
-// (codebees/video): a specific story, the global problem, the belief, the product, why it is safe, the close.
-// Timings come from src/timeline.json (built by scripts/timeline.mjs from the narration and its word timings). 30 fps.
+// Two-minute launch film for Socrates, the critical thinking companion. The story beats follow the Ember pitch
+// (codebees/video): one person first, the problem worldwide, what's missing, the product, why it's safe, the close.
+// The look is a dark launch film. Timings come from src/timeline.json (built by scripts/timeline.mjs from the
+// narration and its word timings). 30 fps.
 const FPS = 30;
 const F = (s: number) => Math.round(s * FPS);
 const S = TL.scenes, M = TL.marks, D = TL.demo;
@@ -25,13 +26,14 @@ const wordAt = (id: string, prefix: string) => {
   return voAt(id) + (w?.[1] ?? 0);
 };
 const STAT_WORD: Record<string, string> = { mit: '70', wef: 'number' };
+const ease = Easing.inOut(Easing.cubic);
 
 // ---------- Root ----------
 export function Pitch() {
   const scene = (from: number, to: number, el: ReactNode, key?: string) => <Sequence key={key} from={F(from)} durationInFrames={F(to) - F(from)} premountFor={30}>{el}</Sequence>;
-  return <AbsoluteFill style={{ background: P.night }}>
-    {scene(S.story, S.typing, <LeoNight/>)}
-    {scene(S.typing, S.morning, <LeoTypes/>)}
+  return <AbsoluteFill style={{ background: P.bg }}>
+    {scene(S.story, S.typing, <Hook/>)}
+    {scene(S.typing, S.morning, <Repost/>)}
     {scene(S.morning, S.cold, <Morning/>)}
     {scene(S.cold, S.news, <Cold/>)}
     {TL.beats.map((b, i) => scene(b.start, b.start + b.len, <NewsBeat id={b.id} index={i}/>, b.id))}
@@ -44,7 +46,7 @@ export function Pitch() {
     {scene(S.privacy, S.impact, <Privacy/>)}
     {scene(S.impact, S.outro, <Impact/>)}
     {scene(S.outro, S.end, <Outro/>)}
-    <Grain opacity={0.07}/>
+    <Grain opacity={0.035}/>
     <Soundtrack/>
   </AbsoluteFill>;
 }
@@ -60,37 +62,35 @@ function duck(frame: number) {
 }
 
 type Sfx = [sec: number, name: string, volume?: number];
-const FLAGS = { f1: D.flag1, f2: D.flag2 };
+const ENTRANCE = (max: boolean) => (7 + (max ? 39 : 27) + 11) / FPS;
 function sfxList(): Sfx[] {
   const list: Sfx[] = [];
   // Leo's night.
-  list.push([0.3, 'heartbeat', 0.5], [1.4, 'heartbeat', 0.4], [S.typing - 1.2, 'thud', 0.4]);
-  list.push([S.typing, 'whoosh', 0.5], [S.typing + 0.5, 'typing', 0.45], [S.typing + 2.6, 'typing', 0.35], ...M.stamps.map((t): Sfx => [t, 'stamp', 0.8]), [M.stamps[1], 'click', 0.7]);
-  list.push([S.morning, 'slam', 0.6], ...[0.6, 0.9, 1.15, 1.45, 1.7].map((t): Sfx => [S.morning + t, 'pop', 0.4]), [M.logic, 'nope', 0.6]);
+  list.push([0.2, 'heartbeat', 0.45], [1.5, 'heartbeat', 0.35], [M.headline - 0.3, 'ding', 0.35], [M.furious, 'thud', 0.5]);
+  list.push([S.typing, 'whoosh', 0.4], [M.stamps[0], 'thud', 0.7], [M.stamps[1], 'thud', 0.7], [M.stamps[2], 'impact', 0.6], [M.stamps[2], 'click', 0.5]);
+  list.push([S.morning, 'whoosh', 0.4], ...[0.5, 0.85, 1.2, 1.55, 1.9].map((t): Sfx => [S.morning + t, 'click', 0.25]), [M.nobody, 'boom', 0.45]);
   // The problem.
-  list.push([S.cold, 'glitch', 0.6], [S.cold + 0.05, 'whoosh', 0.5], [M.title - 2, 'riser', 0.35], [M.title, 'impact', 0.75], [M.title, 'glitch', 0.5]);
-  TL.beats.forEach((b) => { list.push([b.start, 'slam', 0.45], [b.start, 'glitch', 0.22]); });
-  list.push([S.pivot, 'impact', 0.6], [M.checks[0], 'ding', 0.35], [M.checks[1], 'ding', 0.35], [M.checks[2] + 0.1, 'stinger', 0.75]);
-  list.push([S.vision, 'whoosh', 0.5], [M.visionRight, 'sparkle', 0.5]);
-  list.push([S.intro + 0.1, 'whoosh', 0.5], [M.introName - 0.05, 'boom', 0.7], [M.introName, 'sparkle', 0.5]);
-  // The demo: typing, then the extension's own alarm on every flag.
-  list.push([S.demo, 'whoosh', 0.5], [D.focus, 'click', 0.7]);
-  list.push([D.type1[0], 'typing', 0.45], [D.type2[0], 'typing', 0.45], [D.type3[0], 'typing', 0.4]);
-  for (const [k, at] of Object.entries(FLAGS)) {
+  list.push([S.cold, 'whoosh', 0.45], [M.title - 2, 'riser', 0.35], [M.title, 'impact', 0.7], [M.title, 'glitch', 0.25]);
+  TL.beats.forEach((b) => { list.push([b.start, 'slam', 0.35], [b.start, 'glitch', 0.15]); });
+  list.push([S.pivot, 'impact', 0.45], [M.checks[0], 'click', 0.5], [M.checks[1], 'click', 0.5], [M.checks[2] + 0.1, 'stinger', 0.7]);
+  list.push([S.vision, 'whoosh', 0.4], [M.visionRight - 1.2, 'riser', 0.3]);
+  list.push([S.intro + 0.1, 'whoosh', 0.45], [M.introName - 0.05, 'boom', 0.7], [M.introName, 'impact', 0.35]);
+  // The demo: the extension's own alarm on every flag.
+  list.push([S.demo, 'whoosh', 0.45], [D.click, 'click', 0.7], [D.gotIt, 'click', 0.7], [TL.chapters[3].start, 'whoosh', 0.45], [TL.chapters[4].start, 'whoosh', 0.45]);
+  list.push([TL.chapters[4].start + 0.3, 'click', 0.6], [D.type1[0], 'typing', 0.4], [D.select, 'click', 0.5], [D.type2[0], 'typing', 0.35]);
+  ([[D.flag1, false], [D.flag2, false], [D.flag3, true]] as [number, boolean][]).forEach(([at, max]) => {
     const impact = at + 0.24;
-    // At maximum the stinger sits lower so the shouted fallacy name cuts through.
-    list.push([at, 'whoosh', 0.35], [impact, 'stamp', 0.7], [impact, 'stinger', k === 'f2' ? 0.5 : 0.8], [tagSec(at, k === 'f2') - 0.02, 'zap', 0.45]);
-    if (k === 'f2') list.push([impact, 'boom', 0.7], [impact, 'glitch', 0.4]);
-  }
-  list.push([D.click, 'click', 0.7], [D.click + 0.1, 'pop', 0.4], [D.gotIt, 'click', 0.7], [D.select, 'click', 0.5], [D.fixed, 'chime', 0.8], [D.fixed, 'sparkle', 0.35]);
+    list.push([at, 'whoosh', 0.3], [impact, 'stamp', 0.65], [impact, 'stinger', max ? 0.5 : 0.75], [at + ENTRANCE(max) - 0.02, 'zap', 0.4]);
+    if (max) list.push([impact, 'boom', 0.7], [impact, 'glitch', 0.35]);
+  });
+  list.push([D.fixed, 'chime', 0.8]);
   // Science, privacy, impact, outro.
-  list.push([S.science, 'whoosh', 0.5], ...Array.from({ length: 9 }, (_, i): Sfx => [S.science + 0.5 + i * 0.26, 'pop', 0.3]), [M.quiet + 0.3, 'chime', 0.6]);
-  list.push([S.privacy, 'whoosh', 0.5], ...M.privacy.map((t): Sfx => [t, 'stamp', 0.5]));
-  list.push([S.impact, 'whoosh', 0.5], ...M.who.map((t): Sfx => [t, 'slam', 0.3]), [M.twice, 'whoosh', 0.4]);
-  list.push([S.outro, 'whoosh', 0.5], [S.outro + 0.5, 'boom', 0.6], [S.outro + 0.6, 'sparkle', 0.6]);
+  list.push([S.science, 'whoosh', 0.4], ...Array.from({ length: 10 }, (_, i): Sfx => [S.science + 0.45 + i * 0.22, 'click', 0.2]), [M.quiet + 0.3, 'chime', 0.55]);
+  list.push([S.privacy, 'whoosh', 0.4], [M.privacy[0], 'stamp', 0.4], [M.privacy[1], 'stamp', 0.35], [M.privacy[2], 'stamp', 0.35], [M.privacy[3], 'stamp', 0.4]);
+  list.push([S.impact, 'whoosh', 0.4], ...M.who.map((t): Sfx => [t, 'thud', 0.45]), [M.twice, 'riser', 0.25]);
+  list.push([S.outro, 'whoosh', 0.45], [M.outroName - 0.05, 'boom', 0.6]);
   return list;
 }
-const tagSec = (at: number, max: boolean) => at + (7 + (max ? 39 : 27) + 11) / FPS;
 
 function Soundtrack() {
   return <>
@@ -101,107 +101,106 @@ function Soundtrack() {
     <Sequence from={F(S.vision)}>
       <Audio src={staticFile('music/inspired.mp3')} volume={(f) => (0.5 - 0.28 * duck(f + F(S.vision))) * interpolate(f, [0, 45, F(S.end - S.vision) - 60, F(S.end - S.vision)], [0, 1, 1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}/>
     </Sequence>
-    {(TL.vo as [string, number][]).map(([id, at]) => <Sequence key={id} from={F(at)}><Audio src={staticFile(`narration/${id}.mp3`)} volume={id === 'shout' ? 0.9 : 1}/></Sequence>)}
+    {(TL.vo as [string, number][]).map(([id, at]) => <Sequence key={id} from={F(at)}><Audio src={staticFile(`narration/${id}.mp3`)} volume={id === 'shout' ? 0.85 : 1}/></Sequence>)}
     {sfxList().map(([at, name, volume = 1], i) => <Sequence key={i} from={Math.max(0, F(at))}><Audio src={staticFile(`audio/${name}.wav`)} volume={volume}/></Sequence>)}
   </>;
 }
 
-// ---------- 0. A specific example: Leo's late-night comeback ----------
-function CommentCard({ handle, color, time, text, style, children }: { handle: string; color: string; time: string; text: string; style?: CSSProperties; children?: ReactNode }) {
-  return <div style={{ position: 'absolute', background: P.paper, color: P.ink, padding: '28px 34px', boxShadow: '0 30px 60px rgba(0,0,0,0.35)', display: 'flex', gap: 20, ...style }}>
-    <div style={{ width: 58, height: 58, borderRadius: 29, background: color, color: P.white, display: 'grid', placeItems: 'center', fontFamily: grot, fontWeight: 800, fontSize: 28, flex: 'none' }}>{handle[0].toUpperCase()}</div>
-    <div>
-      <Mono size={20} color={P.grey}>@{handle} · {time}</Mono>
-      <div style={{ fontFamily: serif, fontSize: 50, lineHeight: 1.05, marginTop: 10 }}>{text}</div>
-      {children}
-    </div>
-  </div>;
+const H: CSSProperties = { fontFamily: grot, fontWeight: 800, letterSpacing: '-0.045em', lineHeight: 0.95, color: P.white };
+
+// ---------- 0. One person: Leo's 1 a.m. headline ----------
+function AppIcon({ size = 64 }: { size?: number }) {
+  return <div style={{ width: size, height: size, borderRadius: size * 0.24, background: 'linear-gradient(135deg, #2B5BE0, #1636A8)', display: 'grid', placeItems: 'center', fontFamily: grot, fontWeight: 900, fontSize: size * 0.5, color: '#fff', flex: 'none' }}>P</div>;
 }
 
-function LeoNight() {
+function Hook() {
   const frame = useCurrentFrame();
-  const leo = useSpr(4, 13, 120), card = useSpr(12, 13, 150);
-  const colon = Math.floor(frame / 15) % 2 ? 0.25 : 1;
-  const wrong = F(voAt('leo1') + 4.62);
-  return <AbsoluteFill style={{ background: P.night }}>
-    <AbsoluteFill style={{ background: `radial-gradient(circle at 72% 42%, ${P.slabDeep}44, transparent 45%)` }}/>
-    <Mono size={22} color={P.white} style={{ position: 'absolute', left: 64, top: 52, opacity: 0.8 }}>A comment thread</Mono>
-    <div style={{ position: 'absolute', left: 110, top: 250 }}>
-      <div style={{ fontFamily: grot, fontWeight: 900, fontSize: 250, letterSpacing: '-0.06em', color: P.white, lineHeight: 0.9 }}>1<span style={{ opacity: colon }}>:</span>{frame < 30 ? '11' : '12'}<span style={{ fontSize: 110, letterSpacing: '-0.03em' }}> AM</span></div>
-      <Reveal at={16} style={{ marginTop: 22 }}><Mono size={30} color={P.signal}>“Is remote work here to stay?” · 38 replies</Mono></Reveal>
+  const colon = Math.floor(frame / 15) % 2 ? 0.3 : 1;
+  const note = F(M.headline - S.story) - 8, fury = F(M.furious - S.story);
+  const n = useSpr(note, 16, 140);
+  const heat = lerp(frame, [fury - 2, fury + 6], [0, 1]);
+  const sh = shakeAt(frame, fury, 8, 'hook');
+  return <AbsoluteFill>
+    <Glow x={72} y={40} size={45} opacity={0.12 + 0.18 * heat}/>
+    <Chrome left="Tuesday · 1:12 AM" right=""/>
+    <div style={{ position: 'absolute', left: 120, top: 270 }}>
+      <div style={{ fontFamily: grot, fontWeight: 300, fontSize: 300, letterSpacing: '-0.06em', color: P.white, lineHeight: 0.85 }}>1<span style={{ opacity: colon }}>:</span>12<span style={{ fontSize: 90, fontWeight: 400, letterSpacing: '-0.02em', color: P.grey }}> AM</span></div>
+      <Reveal at={F(0.4)} style={{ marginTop: 40 }}><div style={{ ...H, fontSize: 64 }}>Leo.</div></Reveal>
+      <Reveal at={F(1.4)} style={{ marginTop: 14 }}><Label size={22}>One more scroll</Label></Reveal>
     </div>
-    <CommentCard handle="dana_k" color="#5BA581" time="2m" text="Studies suggest remote work can boost productivity. Worth a real try?" style={{ left: 1040, top: 210, width: 780, transform: `rotate(${2.5 - 4 * (1 - card)}deg) translateY(${(1 - card) * 80}px)`, opacity: card }}>
-      {frame >= wrong && <div style={{ position: 'absolute', left: -16, top: -14, right: -16, bottom: -14, border: `5px solid ${P.signal}`, borderRadius: '48% 52% 46% 54%', transform: `rotate(-2deg) scale(${lerp(frame, [wrong, wrong + 6], [1.15, 1])})`, opacity: lerp(frame, [wrong, wrong + 4], [0, 1]) }}/>}
-    </CommentCard>
-    <div style={{ position: 'absolute', left: 1210, bottom: -30, transform: `translateY(${(1 - leo) * 400}px)` }}><Leo face={frame >= wrong ? 'angry' : 'neutral'} size={420}/></div>
+    <Glass style={{ left: 1040, top: 360, width: 760, padding: '26px 30px', opacity: Math.min(1, n * 1.4), transform: `translate(${sh.x}px, ${(1 - n) * -60 + sh.y}px) scale(${0.97 + 0.03 * n})`, border: `1px solid rgba(255,45,85,${0.1 + 0.6 * heat})`, boxShadow: `0 30px 80px rgba(0,0,0,0.6), 0 0 ${60 * heat}px rgba(255,45,85,${0.35 * heat})` }}>
+      <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+        <AppIcon/>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}><Label size={16} color={P.white}>The Daily Pulse</Label><Label size={16}>now</Label></div>
+          <div style={{ fontFamily: grot, fontWeight: 700, fontSize: 36, lineHeight: 1.15, letterSpacing: '-0.02em', color: P.white, marginTop: 8 }}>Remote work is <span style={{ color: heat > 0.5 ? P.signal : P.white }}>killing</span> productivity. Every CEO knows it.</div>
+        </div>
+      </div>
+    </Glass>
+    <Vignette/>
   </AbsoluteFill>;
 }
 
-function LeoTypes() {
+function Repost() {
   const frame = useCurrentFrame();
-  const W = 1240, sc = W / PAGE_W;
+  const W = 1080, sc = W / PAGE_W;
   const local = (sec: number) => F(sec - S.typing);
-  const enter = useSpr(0, 16, 130);
-  const tStart = F(0.7), tMid = local(M.stamps[0]) - 14, tEnd = local(M.stamps[0]) - 4;
-  const s: DemoScript = {
-    focus: F(0.4),
-    type1: [tStart, tMid - 4],
-    type2: [tMid, tEnd],
-    postAt: local(M.stamps[1]),
-    cursor: [[0, 900, 700], [F(0.4), 520, 520], [tEnd, 520, 520], [local(M.stamps[1]) - 6, 1300, 610], [local(M.stamps[1]) + 20, 1300, 610]],
-    clickAt: [F(0.4), local(M.stamps[1])],
-  };
-  return <AbsoluteFill style={{ background: P.slab }}>
-    <Masthead left="LEO REPLIES" right="1:14 AM"/>
-    <BrowserFrame url="thecommons.example/work/remote-work" width={W} ext={false} style={{ left: 64, top: 150, transform: `translateY(${(1 - enter) * 100}px)` }}>
-      <div style={{ position: 'absolute', left: 0, top: 0, width: PAGE_W, height: PAGE_H, transform: `scale(${sc})`, transformOrigin: '0 0' }}><ForumPage s={s} ext={false}/></div>
+  const enter = useSpr(0, 18, 120);
+  const scroll = ease(lerp(frame, [F(0.4), local(M.stamps[0]) - 4], [0, 1])) * 0.55;
+  const rp = local(M.stamps[2]);
+  return <AbsoluteFill>
+    <Glow x={30} y={50} size={55} opacity={0.12}/>
+    <Chrome left="He doesn’t question a word" right=""/>
+    <BrowserFrame url="dailypulse.example/opinion/remote-work" width={W} ext={false} style={{ left: 110, top: 190, transform: `translateY(${(1 - enter) * 60}px)`, opacity: Math.min(1, enter * 1.5) }}>
+      <div style={{ position: 'absolute', left: 0, top: 0, width: PAGE_W, height: 1500, transformOrigin: '0 0', transform: `scale(${sc}) translateY(${-scroll * 240}px)` }}>
+        <ArticlePage/>
+        <Cursor keys={[[0, 900, 520], [rp - 14, 900, 520 + scroll * 240], [rp, 88, 198 + 240]]} clicks={[rp]}/>
+      </div>
+      {frame >= rp && <div style={{ position: 'absolute', left: '50%', bottom: 30, transform: `translateX(-50%) translateY(${lerp(frame, [rp, rp + 8], [40, 0])}px)`, opacity: lerp(frame, [rp, rp + 6], [0, 1]), background: '#16161A', color: '#fff', fontFamily: grot, fontWeight: 600, fontSize: 22, padding: '14px 24px', borderRadius: 12 }}>↻ Reposted to your feed</div>}
     </BrowserFrame>
-    <div style={{ position: 'absolute', left: 1360, top: 170 }}>
-      {['TYPE.', 'POST.', 'WIN.'].map((w, i) => {
+    <div style={{ position: 'absolute', left: 1290, top: 260 }}>
+      {['Read.', 'Believe.', 'Repost.'].map((w, i) => {
         const at = local(M.stamps[i]);
+        const p = lerp(frame, [at, at + 6], [0, 1]);
         if (frame < at) return null;
-        return <div key={w} style={{ fontFamily: grot, fontWeight: 900, fontSize: 150, letterSpacing: '-0.06em', color: i === 2 ? P.white : P.ink, lineHeight: 0.95, transform: `scale(${lerp(frame, [at, at + 5], [2.2, 1])}) rotate(${[-4, 3, -2][i]}deg)`, transformOrigin: '0 50%' }}>{w}</div>;
+        return <div key={w} style={{ ...H, fontSize: 138, marginBottom: 12, opacity: p, transform: `translateY(${(1 - p) * 30}px) scale(${1.08 - 0.08 * p})`, filter: `blur(${(1 - p) * 10}px)`, transformOrigin: '0 50%' }}>{i === 2 ? <Grad>{w}</Grad> : w}</div>;
       })}
     </div>
-    <div style={{ position: 'absolute', left: 1560, bottom: -30 }}><Leo face={frame >= local(M.stamps[2]) ? 'smug' : 'angry'} size={320}/></div>
+    <Vignette/>
   </AbsoluteFill>;
 }
 
-const REPLIES: [string, string, string][] = [
-  ['maya_r', '#6D8BC9', 'Attack the argument, not the person.'],
-  ['sam_t', '#A46BB0', '“Nobody will work at all”? Slippery slope much.'],
-  ['dana_k', '#5BA581', 'My CV isn’t the point. The study is.'],
-  ['jo_writes', '#C9A13B', 'Ad hominem. Textbook.'],
-  ['priya_dev', '#3E8FB0', 'So… any actual evidence?'],
-];
+const CHIPS: [string, string][] = [['owen.k', 'Finally someone said it.'], ['jess_r', 'Sending this to my manager.'], ['dev_mike', 'Every CEO agrees. Case closed.'], ['ana.p', 'Knew it.'], ['tom_h', 'So true.']];
 
 function Morning() {
   const frame = useCurrentFrame();
-  const shake = frame < 14 ? Math.sin(frame * 3) * (14 - frame) * 1.6 : 0;
-  const n = count(frame, 10, 214, 50);
-  return <AbsoluteFill style={{ background: P.ivory, transform: `translateX(${shake}px)` }}>
-    <Masthead left="THE NEXT MORNING" right={`${n} REPLIES`}/>
-    <CommentCard handle="leo_m" color="#E0703A" time="8h" text={`${SENTENCE_1} ${SENTENCE_2}`} style={{ left: 90, top: 150, width: 820, transform: 'rotate(-1.5deg)' }}>
-      <Mono size={20} color={P.slabDeep} style={{ marginTop: 16 }}>💬 {n} replies</Mono>
-    </CommentCard>
-    {REPLIES.map(([h, c, t], i) => {
-      const at = F([0.6, 0.9, 1.15, 1.45, 1.7][i]);
-      if (frame < at) return null;
-      const p = lerp(frame, [at, at + 5], [0, 1]);
-      return <div key={h} style={{ position: 'absolute', left: [470, 560, 440, 600, 500][i], top: [520, 625, 730, 835, 930][i] - 20, width: 480, background: P.white, borderLeft: `6px solid ${P.signal}`, padding: '12px 18px', boxShadow: '0 14px 30px rgba(0,0,0,0.18)', transform: `scale(${0.6 + 0.4 * p}) rotate(${[-2, 1.5, -1, 2, -1.5][i]}deg)`, opacity: p }}>
-        <Mono size={15} color={P.grey}>@{h}</Mono>
-        <div style={{ fontFamily: grot, fontWeight: 700, fontSize: 25, color: P.ink, letterSpacing: '-0.01em', marginTop: 3 }}>{t}</div>
-      </div>;
-    })}
-    <div style={{ position: 'absolute', left: 90, bottom: -30 }}><Leo face="panic" size={360}/></div>
-    <div style={{ position: 'absolute', left: 1080, top: 330, width: 780 }}>
-      <Reveal at={F(M.point - S.morning)}><div style={{ fontFamily: grot, fontWeight: 900, fontSize: 104, letterSpacing: '-0.05em', color: P.ink, lineHeight: 0.95 }}>Not one reply about his point.</div></Reveal>
-      <Reveal at={F(M.logic - S.morning)} style={{ marginTop: 16 }}><div style={{ fontFamily: grot, fontWeight: 900, fontSize: 104, letterSpacing: '-0.05em', color: P.slab, lineHeight: 0.95 }}>All about his logic.</div></Reveal>
+  const shared = F(M.shared - S.morning), nobody = F(M.nobody - S.morning);
+  const n = count(frame, 6, 214, Math.max(20, shared + 6));
+  const dim = lerp(frame, [nobody - 4, nobody + 8], [1, 0.25]);
+  return <AbsoluteFill>
+    <Glow x={25} y={45} size={50} opacity={0.14}/>
+    <Chrome left="The next morning" right=""/>
+    <div style={{ position: 'absolute', left: 120, top: 200, opacity: dim }}>
+      <div style={{ ...H, fontSize: 340, letterSpacing: '-0.06em' }}>{n}</div>
+      <Label size={26} style={{ marginTop: 8 }}>reposts of Leo’s link</Label>
     </div>
+    {CHIPS.map(([h, t], i) => {
+      const at = F(0.5 + i * 0.35);
+      const p = useSpr(at, 16, 140);
+      if (frame < at) return null;
+      return <Glass key={h} style={{ left: [1080, 1240, 1020, 1300, 1140][i], top: [180, 300, 420, 540, 660][i] - frame * 0.15, padding: '18px 24px', borderRadius: 18, opacity: Math.min(1, p * 1.5) * dim, transform: `translateY(${(1 - p) * 30}px)` }}>
+        <Label size={14}>@{h}</Label>
+        <div style={{ fontFamily: grot, fontWeight: 600, fontSize: 30, color: P.white, marginTop: 6, letterSpacing: '-0.01em' }}>{t}</div>
+      </Glass>;
+    })}
+    <Reveal at={nobody} style={{ position: 'absolute', left: 120, top: 760, width: 1700 }}>
+      <div style={{ ...H, fontSize: 104 }}>Nobody asked if the argument <Grad>held up.</Grad></div>
+    </Reveal>
+    <Vignette/>
   </AbsoluteFill>;
 }
 
-// ---------- 1. Cold open: the globe lights up, then the question lands ----------
+// ---------- 1. The problem, worldwide ----------
 const PINS: [string, number, number][] = [['USA', 39, -98], ['MEXICO', 23, -102], ['BRAZIL', -10, -52], ['UK', 54, -2], ['GERMANY', 51, 10], ['NIGERIA', 9, 8], ['TURKEY', 39, 35], ['INDIA', 21, 78], ['S. KOREA', 37.5, 127], ['JAPAN', 36, 138], ['AUSTRALIA', -25, 134]];
 
 function Globe({ r, rot, lit, opacity = 1 }: { r: number; rot: number; lit: number; opacity?: number }) {
@@ -216,16 +215,17 @@ function Globe({ r, rot, lit, opacity = 1 }: { r: number; rot: number; lit: numb
   for (let lat = -60; lat <= 75; lat += 15) paths.push(line(Array.from({ length: 91 }, (_, k) => project(lat, -180 + k * 4))));
   for (let lon = -180; lon < 180; lon += 20) paths.push(line(Array.from({ length: 61 }, (_, k) => project(-90 + k * 3, lon))));
   return <svg width={r * 2 + 400} height={r * 2 + 200} viewBox={`${-r - 200} ${-r - 100} ${r * 2 + 400} ${r * 2 + 200}`} style={{ overflow: 'visible', opacity }}>
-    <circle r={r} fill="#1a1213" stroke={P.slab} strokeWidth={2} strokeOpacity={0.6}/>
-    {paths.map((d, i) => <path key={i} d={d} fill="none" stroke={P.slab} strokeOpacity={0.3} strokeWidth={1.4}/>)}
+    <defs><radialGradient id="globe" cx="0.4" cy="0.35" r="0.7"><stop offset="0" stopColor="#1a1416"/><stop offset="1" stopColor="#070707"/></radialGradient></defs>
+    <circle r={r} fill="url(#globe)" stroke="rgba(255,255,255,0.18)" strokeWidth={1.5}/>
+    {paths.map((d, i) => <path key={i} d={d} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth={1.2}/>)}
     {PINS.map(([name, lat, lon], i) => {
       const q = project(lat, lon);
       if (q.z < 0.08 || i >= lit) return null;
       const pulse = (frame / 20 + i * 0.37) % 1;
       return <g key={name} transform={`translate(${q.x} ${q.y})`} opacity={Math.min(1, q.z * 3)}>
-        <circle r={8 + pulse * 46} fill="none" stroke={P.signal} strokeWidth={2.5} opacity={1 - pulse}/>
-        <circle r={8} fill={P.signal}/>
-        <text x={16} y={-12} fill={P.white} fontFamily={mono} fontSize={20} fontWeight={700} letterSpacing={2}>{name}</text>
+        <circle r={7 + pulse * 40} fill="none" stroke={P.signal} strokeWidth={2} opacity={1 - pulse}/>
+        <circle r={6} fill={P.signal} style={{ filter: `drop-shadow(0 0 8px ${P.signal})` }}/>
+        <text x={14} y={-10} fill={P.white} fontFamily={mono} fontSize={17} fontWeight={500} letterSpacing={3}>{name}</text>
       </g>;
     })}
   </svg>;
@@ -235,37 +235,34 @@ function Cold() {
   const frame = useCurrentFrame();
   const title = F(M.title - S.cold);
   const after = frame >= title;
-  const rot = 95 - frame * 1.15;
+  const rot = 95 - frame * 1.0;
   const lit = Math.floor(lerp(frame, [12, title - 10], [0, PINS.length + 1]));
-  const shake = after && frame < title + 10 ? Math.sin(frame * 5.3) * (title + 10 - frame) * 2.2 : 0;
-  const zoom = after ? 1 : lerp(frame, [0, title], [1, 1.12]);
-  return <AbsoluteFill style={{ background: P.night, transform: `translateX(${shake}px)` }}>
-    <AbsoluteFill style={{ background: `radial-gradient(circle at 50% 55%, ${P.slabDeep}33, transparent 60%)` }}/>
+  const zoom = after ? 1 : lerp(frame, [0, title], [1, 1.1]);
+  const tp = useSpr(title, 18, 120);
+  return <AbsoluteFill>
+    <Glow x={50} y={55} size={55} opacity={0.12}/>
     <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', transform: `scale(${zoom})` }}>
-      <Globe r={330} rot={rot} lit={lit} opacity={after ? 0.22 : lerp(frame, [0, 12], [0, 1])}/>
+      <Globe r={330} rot={rot} lit={lit} opacity={after ? 0.25 : lerp(frame, [0, 14], [0, 1])}/>
     </AbsoluteFill>
-    {/* Headlines pile up around the globe and stay, then sit dimmed behind the title. */}
     {HEADLINES.map((h, i) => {
       const at = 14 + i * Math.max(5, Math.floor((title - 30) / HEADLINES.length));
       if (frame < at) return null;
-      const p = lerp(frame, [at, at + 6], [0, 1]);
-      return <div key={i} style={{ position: 'absolute', left: [70, 1230, 110, 1200, 60, 1260, 640][i % 7], top: [130, 170, 770, 720, 450, 450, 900][i % 7], width: 600, background: P.paper, color: P.ink, padding: '14px 20px', fontFamily: serif, fontSize: 32, lineHeight: 1.05, transform: `rotate(${[-3, 2, 2, -2, 1, -1, 3][i % 7]}deg) scale(${1.25 - 0.25 * p}) translateY(${(frame - at) * -0.15}px)`, opacity: (after ? 0.14 : 0.94) * p, boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>{h}</div>;
+      const p = lerp(frame, [at, at + 8], [0, 1]);
+      return <Glass key={i} style={{ left: [80, 1240, 120, 1210, 70, 1270, 650][i % 7], top: [140, 180, 780, 730, 460, 460, 900][i % 7], width: 580, padding: '16px 22px', borderRadius: 16, opacity: (after ? 0.12 : 0.95) * p, transform: `translateY(${(1 - p) * 20 - (frame - at) * 0.12}px)`, filter: `blur(${(1 - p) * 8}px)` }}>
+        <div style={{ fontFamily: grot, fontWeight: 600, fontSize: 25, lineHeight: 1.15, color: P.white, letterSpacing: '-0.01em' }}>{h}</div>
+      </Glass>;
     })}
-    {!after && <Mono size={22} color={P.white} style={{ position: 'absolute', left: 64, top: 52, display: 'flex', alignItems: 'center', gap: 12 }}>
-      <span style={{ width: 14, height: 14, borderRadius: 7, background: P.signal, opacity: Math.floor(frame / 10) % 2 ? 0.25 : 1 }}/> Arguing online · worldwide
-    </Mono>}
-    {after && <AbsoluteFill style={{ justifyContent: 'center', padding: '0 110px' }}>
-      <div style={{ fontFamily: grot, fontWeight: 900, fontSize: 210, lineHeight: 0.9, letterSpacing: '-0.05em', color: P.white, transform: `scale(${lerp(frame, [title, title + 5], [1.18, 1])})`, transformOrigin: '0 50%' }}>
-        Who checks<br/><span style={{ color: P.signal }}>your</span> reasoning?
-      </div>
-      <Mono size={24} color={P.grey} style={{ marginTop: 40, opacity: lerp(frame, [title + 8, title + 16], [0, 1]) }}>What the evidence says ↓</Mono>
+    {!after && <Label size={17} style={{ position: 'absolute', left: 72, top: 54, display: 'flex', alignItems: 'center', gap: 12 }}>
+      <span style={{ width: 9, height: 9, borderRadius: 5, background: P.signal, boxShadow: `0 0 10px ${P.signal}` }}/> What everyone is reading
+    </Label>}
+    {after && <AbsoluteFill style={{ justifyContent: 'center', padding: '0 120px', opacity: Math.min(1, tp * 1.4), transform: `scale(${1.04 - 0.04 * tp})`, filter: `blur(${(1 - Math.min(1, tp * 1.3)) * 16}px)` }}>
+      <div style={{ ...H, fontSize: 220, letterSpacing: '-0.055em' }}>Who checks<br/>the <Grad>argument?</Grad></div>
+      <Label size={20} style={{ marginTop: 46 }}>What the evidence says ↓</Label>
     </AbsoluteFill>}
-    <AbsoluteFill style={{ background: P.white, opacity: lerp(frame, [title, title + 1, title + 6], [0, 0.85, 0]) }}/>
-    <AbsoluteFill style={{ background: P.white, opacity: lerp(frame, [0, 1, 4], [0.7, 0.7, 0]) }}/>
+    <Vignette strength={0.7}/>
   </AbsoluteFill>;
 }
 
-// ---------- 2. The evidence ----------
 function NewsBeat({ id, index }: { id: string; index: number }) {
   const frame = useCurrentFrame();
   const b = NEWS[id];
@@ -273,338 +270,320 @@ function NewsBeat({ id, index }: { id: string; index: number }) {
   const statAt = Math.max(4, F(wordAt(id, STAT_WORD[id]) - beat.start) - 8);
   const n = b.to !== undefined ? count(frame, statAt - 2, b.to, 14) : null;
   const statText = n !== null ? `${b.prefix ?? ''}${n.toLocaleString('en-US')}${b.suffix ?? ''}` : b.stat;
-  const push = 1 + frame * 0.00025;
-  return <AbsoluteFill style={{ background: P.night }}>
-    <AbsoluteFill style={{ background: `radial-gradient(circle at ${index % 2 ? 30 : 70}% 40%, ${P.slabDeep}40, transparent 55%)` }}/>
-    <Masthead left="01 — THE PROBLEM IS GLOBAL" right={`${String(index + 1).padStart(2, '0')} / ${String(TL.beats.length).padStart(2, '0')}`} color={P.white}/>
-    <AbsoluteFill style={{ transform: `scale(${push})` }}>
-      <Clipping outlet={b.outlet} date={b.date} headline={b.headline} at={2} rot={index % 2 ? 1.6 : -2} width={820} style={{ left: 100, top: 190 }}/>
-      <div style={{ position: 'absolute', left: 1010, top: 175, width: 830 }}>
-        <Mono size={26} color={P.signal} style={{ display: 'flex', alignItems: 'center', gap: 14, opacity: lerp(frame, [0, 6], [0, 1]) }}>
-          <span style={{ width: 16, height: 16, borderRadius: 8, background: P.signal, boxShadow: `0 0 0 ${6 + (frame % 20)}px ${P.signal}${Math.round(lerp(frame % 20, [0, 20], [90, 0])).toString(16).padStart(2, '0')}` }}/>{b.tag}
-        </Mono>
-        <div style={{ fontFamily: grot, fontWeight: 900, fontSize: b.stat.length > 4 ? 230 : 280, lineHeight: 0.95, letterSpacing: '-0.05em', color: P.signal, marginTop: 14, transform: `scale(${lerp(frame, [statAt, statAt + 5], [1.25, 1])})`, transformOrigin: '0 60%', opacity: frame >= statAt - 2 ? 1 : 0 }}>{statText}</div>
-        <Reveal at={statAt + 6}><div style={{ fontFamily: grot, fontWeight: 700, fontSize: 44, lineHeight: 1.12, color: P.white, letterSpacing: '-0.02em' }}>{b.label}</div></Reveal>
-        {b.sub && <Reveal at={statAt + 18} style={{ marginTop: 18 }}><div style={{ fontFamily: grot, fontWeight: 500, fontSize: 30, color: '#CFC7BA' }}>{b.sub}</div></Reveal>}
-      </div>
-      <Mono size={18} color={P.grey} style={{ position: 'absolute', left: 1010, top: 912, width: 840, opacity: lerp(frame, [12, 20], [0, 1]) }}>Source: {b.source}</Mono>
-    </AbsoluteFill>
-    <AbsoluteFill style={{ background: P.white, opacity: lerp(frame, [0, 1, 4], [0.45, 0.45, 0]) }}/>
+  const sp = useSpr(statAt, 16, 130);
+  return <AbsoluteFill style={{ transform: `scale(${1 + frame * 0.0002})` }}>
+    <Glow x={72} y={42} size={45} opacity={0.18 * Math.min(1, sp)}/>
+    <Chrome left={`The problem · ${String(index + 1).padStart(2, '0')} / ${String(TL.beats.length).padStart(2, '0')}`}/>
+    <SourceCard outlet={b.outlet} date={b.date} headline={b.headline} at={2} width={800} style={{ left: 110, top: 230 }}/>
+    <div style={{ position: 'absolute', left: 1010, top: 190, width: 830 }}>
+      <Label size={20} color={P.signal} style={{ display: 'flex', alignItems: 'center', gap: 12, opacity: lerp(frame, [0, 8], [0, 1]) }}>
+        <span style={{ width: 10, height: 10, borderRadius: 5, background: P.signal, boxShadow: `0 0 12px ${P.signal}` }}/>{b.tag}
+      </Label>
+      <div style={{ ...H, fontSize: 290, letterSpacing: '-0.06em', marginTop: 18, opacity: frame >= statAt - 2 ? Math.min(1, sp * 1.4) : 0, transform: `scale(${1.06 - 0.06 * sp})`, transformOrigin: '0 60%', filter: `blur(${(1 - Math.min(1, sp * 1.3)) * 12}px)` }}><Grad>{statText}</Grad></div>
+      <Reveal at={statAt + 6}><div style={{ fontFamily: grot, fontWeight: 600, fontSize: 42, lineHeight: 1.12, color: P.white, letterSpacing: '-0.02em' }}>{b.label}</div></Reveal>
+      {b.sub && <Reveal at={statAt + 16} style={{ marginTop: 18 }}><div style={{ fontFamily: grot, fontWeight: 400, fontSize: 28, color: P.grey }}>{b.sub}</div></Reveal>}
+    </div>
+    <Label size={15} style={{ position: 'absolute', left: 1010, top: 930, width: 840, lineHeight: 1.5, opacity: lerp(frame, [12, 20], [0, 1]), color: P.dim }}>Source: {b.source}</Label>
+    <Vignette/>
   </AbsoluteFill>;
 }
 
-// ---------- The turn: spell-check, grammar-check... logic-check? ----------
+// ---------- What's missing ----------
 function Pivot() {
   const frame = useCurrentFrame();
-  const rows: [string, boolean][] = [['Spell-check', true], ['Grammar-check', true], ['Logic-check', false]];
+  const rows: [string, boolean][] = [['Spam filters', true], ['Spell-check', true], ['Logic check', false]];
   const at = M.checks.map((t) => F(t - S.pivot));
   const bad = at[2] + 3;
-  const shake = frame >= bad && frame < bad + 12 ? Math.sin(frame * 5.1) * (bad + 12 - frame) * 2 : 0;
-  return <AbsoluteFill style={{ background: P.night, justifyContent: 'center', padding: '0 140px', transform: `translateX(${shake}px)` }}>
-    <Mono size={22} color={P.grey} style={{ position: 'absolute', left: 140, top: 120, opacity: lerp(frame, [0, 10], [0, 1]) }}>What we have · what we don’t</Mono>
+  const sh = shakeAt(frame, bad, 14, 'pivot');
+  return <AbsoluteFill style={{ justifyContent: 'center', padding: '0 140px', transform: `translate(${sh.x}px, ${sh.y}px)` }}>
+    <Glow x={30} y={70} size={50} opacity={0.18 * lerp(frame, [bad, bad + 8], [0, 1])}/>
+    <Chrome left="What we have · what we don’t"/>
     {rows.map(([label, ok], i) => {
       const a = i === 2 ? bad : at[i];
-      return <Reveal key={label} at={a} style={{ marginTop: i ? 10 : 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 50, fontFamily: grot, fontWeight: 900, fontSize: 168, letterSpacing: '-0.05em', lineHeight: 1, color: ok ? P.white : P.signal }}>
-          <span style={{ position: 'relative' }}>{label}
-            {!ok && <span style={{ position: 'absolute', left: -10, right: -10, top: '52%', height: 16, background: P.signal, transform: `scaleX(${lerp(frame, [a + 4, a + 12], [0, 1])})`, transformOrigin: '0 50%' }}/>}
+      return <Reveal key={label} at={a} style={{ marginTop: i ? 18 : 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 46, ...H, fontSize: 160, color: ok ? P.white : P.signal }}>
+          <span style={{ position: 'relative', opacity: ok ? 0.9 : 1 }}>{ok ? label : <Grad>{label}</Grad>}
+            {!ok && <span style={{ position: 'absolute', left: -8, right: -8, top: '54%', height: 10, background: GRADIENT_BAR, transform: `scaleX(${lerp(frame, [a + 4, a + 12], [0, 1])})`, transformOrigin: '0 50%', boxShadow: `0 0 20px ${P.signal}` }}/>}
           </span>
-          <span style={{ fontSize: 140, color: ok ? P.green : P.signal, transform: `scale(${lerp(frame, [a + 2, a + 7], [1.8, 1])})` }}>{ok ? '✓' : '✗'}</span>
+          <span style={{ fontFamily: grot, fontWeight: 300, fontSize: 120, color: ok ? P.grey : P.signal }}>{ok ? '✓' : '✕'}</span>
         </div>
       </Reveal>;
     })}
-    <AbsoluteFill style={{ background: P.white, opacity: lerp(frame, [0, 1, 6], [0.8, 0.8, 0]) }}/>
-    <AbsoluteFill style={{ opacity: lerp(frame, [bad, bad + 2, bad + 24], [0, 1, 0]), boxShadow: 'inset 0 0 220px 60px rgba(255,0,48,0.7)' }}/>
+    <Vignette/>
   </AbsoluteFill>;
 }
+const GRADIENT_BAR = `linear-gradient(90deg, ${P.signal}, ${P.orange})`;
 
-// ---------- The vision: the same keyboard, two ways of using it ----------
-function Loop({ x, y, color, labels, grow, at }: { x: number; y: number; color: string; labels: string[]; grow: boolean; at: number }) {
+// ---------- The vision ----------
+function Pills({ labels, color, at, loop }: { labels: string[]; color: string; at: number; loop: boolean }) {
   const frame = useCurrentFrame();
-  const p = useSpr(at, 14, 140);
-  const r = 190, t = Math.max(0, frame - at);
-  const dot = (t / 40) * Math.PI * 2 - Math.PI / 2;
-  const brain = grow ? 0.7 + 0.5 * Math.min(1, t / 90) : 1.1 - 0.5 * Math.min(1, t / 90);
-  return <div style={{ position: 'absolute', left: x - r - 120, top: y - r - 120, width: (r + 120) * 2, height: (r + 120) * 2, opacity: Math.min(1, p * 1.4), transform: `scale(${0.85 + 0.15 * p})` }}>
-    <svg width={(r + 120) * 2} height={(r + 120) * 2} style={{ position: 'absolute', inset: 0 }}>
-      {grow ? <circle cx={r + 120} cy={r + 120} r={r} fill="none" stroke={color} strokeWidth={6} strokeDasharray="14 12"/>
-        : <path d={`M${120} ${r + 120} L${2 * r + 120} ${r + 120}`} stroke={color} strokeWidth={6} strokeDasharray="14 12"/>}
-      {grow && <circle cx={r + 120 + Math.cos(dot) * r} cy={r + 120 + Math.sin(dot) * r} r={16} fill={color}/>}
-      {!grow && <circle cx={120 + ((t % 45) / 45) * 2 * r} cy={r + 120} r={16} fill={color}/>}
+  const p = useSpr(at, 16, 120);
+  const r = 200, t = Math.max(0, frame - at);
+  const cx = 360, cy = 300;
+  return <div style={{ position: 'absolute', inset: 0, opacity: Math.min(1, p * 1.4), transform: `scale(${0.94 + 0.06 * p})` }}>
+    <svg width={720} height={600} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
+      {loop ? <>
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeOpacity={0.35} strokeWidth={2}/>
+        <circle cx={cx + Math.cos((t / 45) * Math.PI * 2 - Math.PI / 2) * r} cy={cy + Math.sin((t / 45) * Math.PI * 2 - Math.PI / 2) * r} r={9} fill={color} style={{ filter: `drop-shadow(0 0 10px ${color})` }}/>
+      </> : <>
+        <line x1={60} y1={cy} x2={660} y2={cy} stroke={color} strokeOpacity={0.35} strokeWidth={2}/>
+        <circle cx={60 + ((t % 50) / 50) * 600} cy={cy} r={9} fill={color}/>
+      </>}
     </svg>
     {labels.map((l, i) => {
       const a = -Math.PI / 2 + (i / labels.length) * Math.PI * 2;
-      const lx = grow ? r + 120 + Math.cos(a) * r : 120 + (i / (labels.length - 1)) * 2 * r;
-      const ly = grow ? r + 120 + Math.sin(a) * r : r + 120;
-      return <div key={l} style={{ position: 'absolute', left: lx, top: ly, transform: 'translate(-50%, -50%)', background: P.ivory, border: `4px solid ${color}`, borderRadius: 40, padding: '12px 26px', fontFamily: grot, fontWeight: 800, fontSize: 36, color: P.ink, whiteSpace: 'nowrap' }}>{l}</div>;
+      const x = loop ? cx + Math.cos(a) * r : 60 + (i / (labels.length - 1)) * 600;
+      const y = loop ? cy + Math.sin(a) * r : cy;
+      return <div key={l} style={{ position: 'absolute', left: x, top: y, transform: 'translate(-50%, -50%)', background: '#0E0E10', border: `1.5px solid ${color}`, borderRadius: 40, padding: '12px 26px', fontFamily: grot, fontWeight: 700, fontSize: 32, color: P.white, whiteSpace: 'nowrap', boxShadow: loop ? `0 0 30px ${color}44` : 'none' }}>{l}</div>;
     })}
-    <div style={{ position: 'absolute', left: r + 120, top: grow ? r + 120 : r + 260, transform: `translate(-50%, -50%) scale(${brain})`, fontSize: 120, filter: grow ? 'none' : 'grayscale(0.7)' }}>🧠</div>
+    {loop && <div style={{ position: 'absolute', left: cx - 60, top: cy - 60 }}><SocratesIcon size={120} glow={14 + 6 * Math.sin(t / 8)}/></div>}
   </div>;
 }
 
 function Vision() {
   const frame = useCurrentFrame();
   const right = F(M.visionRight - S.vision) - 6;
-  return <AbsoluteFill style={{ background: P.ivory }}>
-    <Masthead left="THE VISION" right="SAME KEYBOARD · TWO WAYS TO USE IT"/>
-    <div style={{ position: 'absolute', left: 120, top: 150, width: 700, textAlign: 'center' }}><Mono size={24} color={P.grey}>The internet catches it</Mono></div>
-    <Loop x={470} y={560} color={P.grey} labels={['Type', 'Post', 'Regret']} grow={false} at={8}/>
-    <Mono size={20} color={P.grey} style={{ position: 'absolute', left: 120, width: 700, top: 930, textAlign: 'center', opacity: lerp(frame, [20, 30], [0, 1]) }}>Posted · screenshotted · forever</Mono>
-    <div style={{ position: 'absolute', left: 960, top: 190, bottom: 120, width: 2, background: P.ink, opacity: 0.2 }}/>
-    <div style={{ position: 'absolute', left: 1100, top: 150, width: 700, textAlign: 'center', opacity: lerp(frame, [right - 6, right], [0, 1]) }}><Mono size={24} color={P.slabDeep}>You catch it first</Mono></div>
-    <Loop x={1450} y={560} color={P.slab} labels={['Type', 'Flag', 'Rethink']} grow at={right}/>
-    <Mono size={20} color={P.grey} style={{ position: 'absolute', left: 1100, width: 700, top: 930, textAlign: 'center', opacity: lerp(frame, [right + 12, right + 22], [0, 1]) }}>Flagged before you hit post</Mono>
+  return <AbsoluteFill>
+    <Glow x={75} y={55} size={40} opacity={0.16 * lerp(frame, [right, right + 15], [0, 1])}/>
+    <Chrome left="The idea"/>
+    <Label size={20} style={{ position: 'absolute', left: 100, width: 720, top: 200, textAlign: 'center' }}>Without</Label>
+    <div style={{ position: 'absolute', left: 100, top: 270, width: 720, height: 600 }}><Pills labels={['Read', 'Believe', 'Repost']} color={P.dim} at={6} loop={false}/></div>
+    <Label size={18} style={{ position: 'absolute', left: 100, width: 720, top: 900, textAlign: 'center', color: P.dim, opacity: lerp(frame, [18, 28], [0, 1]) }}>The loudest argument wins</Label>
+    <div style={{ position: 'absolute', left: 960, top: 230, bottom: 150, width: 1, background: P.line }}/>
+    <Label size={20} color={P.white} style={{ position: 'absolute', left: 1100, width: 720, top: 200, textAlign: 'center', opacity: lerp(frame, [right - 6, right + 2], [0, 1]) }}><Grad>With Socrates</Grad></Label>
+    <div style={{ position: 'absolute', left: 1100, top: 270, width: 720, height: 600 }}><Pills labels={['Read · Write', 'Question', 'Decide']} color={P.signal} at={right} loop/></div>
+    <Label size={18} style={{ position: 'absolute', left: 1100, width: 720, top: 900, textAlign: 'center', opacity: lerp(frame, [right + 14, right + 24], [0, 1]) }}>The best argument wins</Label>
+    <Vignette/>
   </AbsoluteFill>;
 }
 
-// ---------- 3. Introducing Ember (the title slide) ----------
-function TitleChrome() {
-  return <>
-    <div style={{ position: 'absolute', left: 56, top: 44, fontFamily: grot, fontWeight: 800, fontSize: 34, letterSpacing: '-0.05em', color: P.ink }}>OCTOBER 2026</div>
-    <div style={{ position: 'absolute', right: 56, top: 46, fontFamily: grot, fontWeight: 500, fontSize: 30, letterSpacing: '-0.02em', color: P.ink }}>Chrome extension · Powered by Claude</div>
-  </>;
+// ---------- Introducing Socrates ----------
+/** The wordmark, with a band of light that sweeps across it once. */
+function Wordmark({ size, at }: { size: number; at: number }) {
+  const frame = useCurrentFrame();
+  const p = lerp(frame, [at + 4, at + 34], [-30, 130]);
+  return <span style={{ ...H, display: 'inline-block', fontSize: size, letterSpacing: '-0.06em', paddingRight: '0.04em', backgroundImage: `linear-gradient(100deg, ${P.white} ${p - 12}%, #FFE2C8 ${p}%, ${P.white} ${p + 12}%)`, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>Socrates</span>;
 }
 
 function Intro() {
   const frame = useCurrentFrame();
-  const t = Easing.inOut(Easing.cubic)(lerp(frame, [0, 24], [0, 1]));
-  const r = 1250 - (1250 - 300) * t;
-  const cx = 960 - (960 - 500) * t, cy = 540 + (590 - 540) * t;
-  const wake = F(M.introName - S.intro);
-  const hop = frame >= wake ? Math.sin(Math.min(1, (frame - wake) / 10) * Math.PI) * -40 : 0;
-  const glow = frame >= wake ? 30 + 14 * Math.sin((frame - wake) / 6) : 0;
-  return <AbsoluteFill style={{ background: P.slab }}>
-    <TitleChrome/>
-    <div style={{ position: 'absolute', left: cx - r, top: cy - r, width: r * 2, height: r * 2, borderRadius: '50%', background: P.ink, overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', left: r - 150, top: r - 165 + hop, opacity: lerp(frame, [14, 24], [0, 1]), filter: frame < wake ? 'grayscale(1) brightness(0.45)' : 'none' }}>
-        <WarnIcon size={300} glow={glow}/>
-      </div>
-      <Embers at={wake} x={r} y={r} n={50} reach={260} k={1.6} seed="intro"/>
+  const name = F(M.introName - S.intro), sub = F(M.introSub - S.intro), line = F(M.introLine - S.intro);
+  const ip = useSpr(4, 18, 90);
+  const lit = lerp(frame, [name - 4, name + 4], [0, 1]);
+  return <AbsoluteFill>
+    <Glow x={30} y={50} size={42} opacity={0.08 + 0.3 * lit} color={P.orange}/>
+    <Motes n={46} seed="intro" opacity={0.5 * lit}/>
+    <div style={{ position: 'absolute', left: 390, top: 370, transform: `scale(${0.9 + 0.1 * ip})`, opacity: ip, filter: frame < name ? 'saturate(0.2) brightness(0.55)' : 'none' }}>
+      <SocratesIcon size={340} glow={lit * (30 + 8 * Math.sin(frame / 7))}/>
     </div>
-    <Ring at={wake} x={500} y={590} k={6}/>
-    <PaperBits at={wake} x={500} y={500} count={30}/>
-    <div style={{ position: 'absolute', left: 950, top: 360 }}>
-      <Reveal at={F(0.7)}><div style={{ fontFamily: grot, fontWeight: 800, fontSize: 100, letterSpacing: '-0.05em', color: P.ink, lineHeight: 1 }}>INTRODUCING</div></Reveal>
-      <Reveal at={wake}><div style={{ fontFamily: grot, fontWeight: 900, fontSize: 268, letterSpacing: '-0.065em', color: P.ink, lineHeight: 0.86, marginLeft: -8 }}>EMBER</div></Reveal>
-      <Reveal at={wake + 12} style={{ marginTop: 22 }}><div style={{ fontFamily: grot, fontWeight: 800, fontSize: 46, color: P.white, letterSpacing: '-0.03em' }}>Your critical thinking partner.</div></Reveal>
-      <Reveal at={F(M.introSub - S.intro)} style={{ marginTop: 18 }}><div style={{ fontFamily: grot, fontWeight: 500, fontSize: 32, color: P.ink, width: 820, lineHeight: 1.25 }}>A Chrome extension that reads only what <b>you</b> write, and flags fallacies right where they happen.</div></Reveal>
+    <Ring at={name} x={560} y={540} k={9} color={P.orange}/>
+    <Embers at={name} x={560} y={540} n={40} reach={320} k={1.4} seed="intro" life={50}/>
+    <div style={{ position: 'absolute', left: 900, top: 330, width: 960 }}>
+      <Reveal at={F(0.2)}><Label size={22}>Introducing</Label></Reveal>
+      <Reveal at={name} style={{ marginTop: 18 }}><Wordmark size={210} at={name}/></Reveal>
+      <Reveal at={sub} style={{ marginTop: 26 }}><div style={{ ...H, fontSize: 66, lineHeight: 1.04, letterSpacing: '-0.035em' }}><Grad>Critical thinking,<br/>built into your browser.</Grad></div></Reveal>
+      <Reveal at={line} style={{ marginTop: 30 }}><div style={{ fontFamily: grot, fontWeight: 400, fontSize: 30, color: P.grey, lineHeight: 1.35, width: 820 }}>Flags weak arguments in what you read, and in what you write.</div></Reveal>
     </div>
+    <Vignette/>
   </AbsoluteFill>;
 }
 
-// ---------- 4. The product: a scripted demo of the extension's overlay ----------
+// ---------- The product ----------
 const CHAPTER_TEXT: Record<string, [string, string]> = {
-  d1: ['Only your words', 'reads what you type · ignores what you read'],
-  d2: ['Tagged in place', 'right on the words that did it'],
-  d3: ['Subtle? Never.', 'stamp · shake · alarm'],
-  d4: ['Ask, don’t tell', 'Claude explains · you fix it'],
+  d1: ['Reads along', 'articles · skips the clutter'],
+  d2: ['Tags the exact words', 'possible issues, not verdicts'],
+  d3: ['Asks, doesn’t tell', 'one question per flag'],
+  d4: ['Your inbox, too', 'pressure tactics, caught'],
+  d5: ['And what you write', 'optional · off by default'],
 };
 type Cam = { cx: number; cy: number; s: number };
 const CAM: Record<string, Cam> = {
-  page: { cx: PAGE_W / 2, cy: PAGE_H / 2, s: 1 },
-  composer: { cx: 560, cy: 470, s: 1.7 },
-  card: { cx: 440, cy: 255, s: 1.6 },
+  top: { cx: PAGE_W / 2, cy: VIEW_H / 2, s: 1 },
+  dilemma: { cx: 580, cy: A.dilemmaY + 8, s: 1.6 },
+  card: { cx: 560, cy: 610, s: 1.28 },
+  mail: { cx: PAGE_W / 2, cy: VIEW_H / 2, s: 1 },
+  urgency: { cx: 960, cy: E.urgencyY + 30, s: 1.5 },
+  reply: { cx: 580, cy: A.replyY, s: 1.6 },
+  replyWide: { cx: 640, cy: A.replyY - 30, s: 1.15 },
 };
+
+function camAt(frame: number, keys: [number, Cam][]) {
+  let cam = keys[0][1];
+  for (let i = 1; i < keys.length; i++) {
+    const [f, c] = keys[i], [pf, pc] = keys[i - 1];
+    if (frame >= f) { cam = c; continue; }
+    const k = ease(lerp(frame, [pf, f], [0, 1]));
+    cam = { cx: pc.cx + (c.cx - pc.cx) * k, cy: pc.cy + (c.cy - pc.cy) * k, s: pc.s + (c.s - pc.s) * k };
+    break;
+  }
+  return cam;
+}
 
 function Demo() {
   const frame = useCurrentFrame();
   const W = 1400;
   const local = (sec: number) => F(sec - S.demo);
-  const f1: Flag = { id: 'ad_hominem', at: local(D.flag1), clearAt: local(D.fixed) };
-  const f2: Flag = { id: 'slippery_slope', at: local(D.flag2), max: true };
-  const tagX = 262, tagY = 410;
-  const script: DemoScript = {
-    ignore: local(D.ignore), watch: local(D.watch), focus: local(D.focus),
-    type1: [local(D.type1[0]), local(D.type1[1])], type2: [local(D.type2[0]), local(D.type2[1])],
-    flags: [f1, f2],
-    card: { at: local(D.click) + 3, until: local(D.gotIt) + 2, hot: (f) => (f >= local(D.ask) ? 'ask' : f >= local(D.why) ? 'why' : null) },
-    select: local(D.select), type3: [local(D.type3[0]), local(D.type3[1])], fixed: local(D.fixed),
-    cursor: [
-      [F(0.3), 1180, 700], [local(D.focus), 520, 520], [local(D.type1[0]) + 4, 520, 520], [local(D.type1[0]) + 20, 940, 690],
-      [local(D.click) - 14, 940, 690], [local(D.click), tagX, tagY], [local(D.gotIt) - 14, tagX, tagY], [local(D.gotIt), 512, 366],
-      [local(D.select) - 8, 512, 366], [local(D.select), 214, 448], [local(D.select) + 10, 214, 448], [local(D.select) + 26, 860, 640],
-    ],
-    clickAt: [local(D.focus), local(D.click), local(D.gotIt), local(D.select)],
-  };
-  // Camera: ease between framings at scripted moments.
-  const keys: [number, Cam][] = [
-    [0, CAM.page], [local(D.focus) - 6, CAM.page], [local(D.type1[0]), CAM.composer],
-    [impactAt(f2) - 2, CAM.composer], [impactAt(f2) + 6, CAM.page],
-    [local(D.click) - 16, CAM.page], [local(D.click) - 2, CAM.card],
-    [local(D.gotIt) + 4, CAM.card], [local(D.select) + 6, CAM.composer],
-  ];
-  let cam = keys[0][1];
-  for (let i = 1; i < keys.length; i++) {
-    const [f, c] = keys[i], [pf, pc] = keys[i - 1];
-    if (frame >= f) { cam = c; continue; }
-    const k = Easing.inOut(Easing.cubic)(lerp(frame, [pf, f], [0, 1]));
-    cam = { cx: pc.cx + (c.cx - pc.cx) * k, cy: pc.cy + (c.cy - pc.cy) * k, s: pc.s + (c.s - pc.s) * k };
-    break;
-  }
-  const enter = useSpr(0, 16, 120);
+  const [c1, , c3, c4, c5] = TL.chapters.map((c) => local(c.start));
+  const f1: Flag = { id: 'false_dilemma', at: local(D.flag1) };
+  const f2: Flag = { id: 'false_urgency', at: local(D.flag2) };
+  const f3: Flag = { id: 'slippery_slope', at: local(D.flag3), max: true, clearAt: local(D.fixed) };
+  const reply: Reply = { focus: c5 + 9, type1: [local(D.type1[0]), local(D.type1[1])], select: local(D.select), type2: [local(D.type2[0]), local(D.type2[1])], fixed: local(D.fixed) };
+  const page = frame >= c5 ? 'reply' : frame >= c4 ? 'mail' : 'article';
+  const since = frame - (page === 'reply' ? c5 : page === 'mail' ? c4 : c1);
+  const swap = page === 'article' ? 1 : ease(lerp(since, [0, 12], [0, 1]));
+  const cam = camAt(frame, [
+    [0, CAM.top], [local(D.flag1) - 16, CAM.top], [local(D.flag1) - 2, CAM.dilemma],
+    [local(D.click) - 10, CAM.dilemma], [local(D.click) + 6, CAM.card], [c4 - 1, CAM.card],
+    [c4, CAM.mail], [local(D.flag2) - 14, CAM.mail], [local(D.flag2), CAM.urgency], [c5 - 1, CAM.urgency],
+    [c5, CAM.reply], [impactAt(f3) - 1, CAM.reply], [impactAt(f3) + 5, CAM.replyWide], [local(D.select) - 10, CAM.replyWide], [local(D.select) + 4, CAM.reply],
+  ]);
+  const pageShake = shakeAt(frame, impactAt(f3), 9 * K_, 'max');
+  const enter = useSpr(0, 18, 110);
   const current = [...TL.chapters].reverse().find((c) => frame >= local(c.start)) ?? TL.chapters[0];
-  // Video-level punch on each impact: the frame shakes and flashes.
-  const punch = [f1, f2].map((f) => {
+  const punch = [f1, f2, f3].map((f) => {
     const t = frame - impactAt(f);
-    return t >= 0 && t < 14 ? { x: Math.sin(t * 4.3) * (14 - t) * (f.max ? 2.6 : 1.3), flash: lerp(t, [0, 1, 7], [f.max ? 0.55 : 0.25, f.max ? 0.55 : 0.25, 0]) } : { x: 0, flash: 0 };
+    return t >= 0 && t < 14 ? { x: Math.sin(t * 4.3) * (14 - t) * (f.max ? 2.4 : 1.1), glow: lerp(t, [0, 2, 12], [f.max ? 0.5 : 0.22, f.max ? 0.5 : 0.22, 0]) } : { x: 0, glow: 0 };
   });
-  const sx = punch[0].x + punch[1].x, flash = Math.max(punch[0].flash, punch[1].flash);
-  const max = frame >= impactAt(f2) && frame < impactAt(f2) + 60;
-  return <AbsoluteFill style={{ background: P.slab }}>
+  const sx = punch.reduce((a, p) => a + p.x, 0), glow = Math.max(...punch.map((p) => p.glow));
+  const cardEl = <div style={{ position: 'absolute', left: 0, top: 44 }}>{frame >= local(D.click) + 3 && frame < local(D.gotIt) + 2 && <Card at={local(D.click) + 3} hot={frame >= local(D.ask)} label="The author’s reasoning" quote={ARTICLE.dilemma} chip="Logical fallacy" title="Possible false dilemma" why="The author may be presenting two outcomes as the only ones. Hybrid setups, or changes made gradually, aren’t considered." question="Are these really the only two outcomes, or has the author left some out?"/>}</div>;
+  const tagX = A.lineX + 50, tagY = A.dilemmaY - 22;
+  return <AbsoluteFill>
+    <Glow x={38} y={52} size={55} opacity={0.14 + glow}/>
     <AbsoluteFill style={{ transform: `translateX(${sx}px)` }}>
-      <Masthead left="02 — THE PRODUCT" right="HOW IT WORKS"/>
-      <BrowserFrame url="thecommons.example/work/remote-work" width={W} style={{ left: 56, top: 132, transform: `translateY(${(1 - enter) * 120}px)` }}>
-        <div style={{ position: 'absolute', left: 0, top: 0, width: PAGE_W, height: PAGE_H, transformOrigin: '0 0', transform: `translate(${W / 2 - cam.cx * cam.s}px, ${(W * 9) / 32 - cam.cy * cam.s}px) scale(${cam.s})` }}>
-          <ForumPage s={script}/>
+      <Chrome left="The product" right="How it works"/>
+      <BrowserFrame url={page === 'mail' ? 'mail.example/inbox' : 'dailypulse.example/opinion/remote-work'} width={W} style={{ left: 56, top: 150, transform: `translateY(${(1 - enter) * 60}px)`, opacity: Math.min(1, enter * 1.5) }}>
+        <div style={{ position: 'absolute', inset: 0, opacity: swap, transform: `translateX(${(1 - swap) * 140}px)`, filter: `blur(${(1 - swap) * 10}px)` }}>
+          <div style={{ position: 'absolute', left: 0, top: 0, width: PAGE_W, height: 1500, transformOrigin: '0 0', transform: `translate(${W / 2 - cam.cx * cam.s + pageShake.x}px, ${(W * 9) / 32 - cam.cy * cam.s + pageShake.y}px) scale(${cam.s}) rotate(${pageShake.r}deg)` }}>
+            {page === 'mail' ? <>
+              <MailPage flag2={f2}/>
+              <Cursor keys={[[c4 + 6, 1200, 640], [f2.at - 4, 760, 520], [impactAt(f2) + 6, 760, 520], [impactAt(f2) + 26, 1180, 690]]}/>
+            </> : <>
+              <ArticlePage flag1={f1} flag3={page === 'reply' ? f3 : undefined} reply={page === 'reply' ? reply : undefined} card={cardEl} notes={{ at: local(D.read) - 6, until: f1.at - 6 }}/>
+              {page === 'article' ? <Cursor keys={[[F(0.6), 1150, 620], [local(D.click) - 16, 1150, 620], [local(D.click), tagX, tagY], [local(D.gotIt) - 14, tagX, tagY], [local(D.gotIt), 500, 852], [c4, 500, 852]]} clicks={[local(D.click), local(D.gotIt)]}/>
+                : <Cursor keys={[[c5, 900, 1160], [reply.focus, 420, 1100], [reply.type1[0] + 6, 420, 1100], [reply.type1[0] + 22, 930, 1190], [reply.select - 10, 930, 1190], [reply.select, 236, 1094], [reply.select + 14, 236, 1094], [reply.select + 30, 930, 1190]]} clicks={[reply.focus, reply.select]}/>}
+            </>}
+          </div>
+          <ViewportFx flags={page === 'mail' ? [f2] : page === 'reply' ? [f3] : [f1]}/>
         </div>
       </BrowserFrame>
-      <Mono size={15} color={P.ink} style={{ position: 'absolute', left: 60, top: 1012, opacity: 0.75 }}>Recreation of the extension’s overlay, drawn from its own styles and effects code. Explanation text written by Claude in the real extension.</Mono>
-      <div style={{ position: 'absolute', left: 1500, top: 150, width: 370 }}>
+      <Label size={14} style={{ position: 'absolute', left: 60, top: 1000, color: P.dim, letterSpacing: '0.1em' }}>Recreation of the extension’s overlay, built from its own styles and effects code · card text is an example of model output</Label>
+      <div style={{ position: 'absolute', left: 1500, top: 160, width: 370 }}>
         {TL.chapters.map((c, i) => {
           const at = local(c.start);
           if (c.id !== current.id) return null;
           const [title, sub] = CHAPTER_TEXT[c.id];
           return <div key={c.id}>
-            <Reveal at={at}><div style={{ fontFamily: grot, fontWeight: 900, fontSize: 150, letterSpacing: '-0.06em', color: P.ink, lineHeight: 0.9 }}>{String(i + 1).padStart(2, '0')}</div></Reveal>
-            <Reveal at={at + 4} style={{ marginTop: 24 }}><div style={{ fontFamily: grot, fontWeight: 800, fontSize: 50, letterSpacing: '-0.035em', color: P.ink, lineHeight: 1.02 }}>{title}</div></Reveal>
-            {sub && <Reveal at={at + 9} style={{ marginTop: 18 }}><Mono size={22} color={P.ink}>{sub}</Mono></Reveal>}
-            {c.id === 'd3' && <Intensity at={local(voAt('d3') + 2.3)}/>}
+            <Reveal at={at}><div style={{ ...H, fontSize: 130, letterSpacing: '-0.06em', color: P.dim }}>{String(i + 1).padStart(2, '0')}</div></Reveal>
+            <Reveal at={at + 4} style={{ marginTop: 26 }}><div style={{ ...H, fontSize: 48, lineHeight: 1.02, letterSpacing: '-0.035em' }}>{title}</div></Reveal>
+            <Reveal at={at + 9} style={{ marginTop: 18 }}><Label size={17}>{sub}</Label></Reveal>
           </div>;
         })}
-        <div style={{ position: 'absolute', top: 760, display: 'flex', gap: 10 }}>
-          {TL.chapters.map((c) => <span key={c.id} style={{ width: 52, height: 6, background: P.ink, opacity: c.id === current.id ? 1 : 0.25 }}/>)}
+        <div style={{ position: 'absolute', top: 760, display: 'flex', gap: 8 }}>
+          {TL.chapters.map((c) => <span key={c.id} style={{ width: 52, height: 3, borderRadius: 2, background: c.id === current.id ? GRADIENT_BAR : P.dim }}/>)}
         </div>
       </div>
     </AbsoluteFill>
-    {max && <AbsoluteFill style={{ pointerEvents: 'none', boxShadow: `inset 0 0 200px 50px rgba(120,0,20,${lerp(frame - impactAt(f2), [0, 4, 50, 60], [0, 0.8, 0.5, 0])})` }}/>}
-    <AbsoluteFill style={{ background: P.white, opacity: flash, pointerEvents: 'none' }}/>
+    <Vignette strength={0.5}/>
   </AbsoluteFill>;
 }
+const K_ = 1.25;
 
-/** The intensity setting (settings.js: subtle | dramatic | maximum), shown while the narration says "every flag lands with drama". */
-function Intensity({ at }: { at: number }) {
-  const frame = useCurrentFrame();
-  return <div style={{ marginTop: 40 }}>
-    <Mono size={18} color={P.ink} style={{ opacity: lerp(frame, [at, at + 8], [0, 0.8]) }}>Intensity setting</Mono>
-    {['Subtle', 'Dramatic', 'Maximum'].map((l, i) => {
-      const a = at + 4 + i * 5;
-      const on = i === 2;
-      return <div key={l} style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 14, opacity: lerp(frame, [a, a + 6], [0, 1]), transform: `translateX(${lerp(frame, [a, a + 8], [30, 0])}px)` }}>
-        <span style={{ width: 26, height: 26, borderRadius: 13, border: `4px solid ${P.ink}`, background: on ? P.ink : 'transparent' }}/>
-        <span style={{ fontFamily: on ? poster : grot, fontWeight: on ? 400 : 700, fontSize: on ? 44 : 34, color: on ? P.white : P.ink, letterSpacing: on ? '0.06em' : '-0.02em', textTransform: on ? 'uppercase' : 'none', textShadow: on ? `-2px 0 ${P.cyan}, 2px 0 ${P.ink}` : 'none' }}>{l}</span>
-      </div>;
-    })}
-  </div>;
-}
-
-// ---------- 5. Every fallacy in the catalogue ----------
+// ---------- Every way an argument can slip ----------
 function Science() {
   const frame = useCurrentFrame();
   const quiet = F(M.quiet - S.science);
-  const names = FALLACY_IDS.map((id: string) => (FALLACIES as Record<string, { name: string }>)[id].name);
-  const step = Math.max(2, Math.floor((quiet - 24) / names.length));
-  const dim = lerp(frame, [quiet, quiet + 10], [1, 0.12]);
-  const ok = useSpr(quiet + 6, 13, 160);
-  return <AbsoluteFill style={{ background: P.ivory }}>
-    <Masthead left={`03 — ${names.length} FALLACIES`} right="JUDGED LIVE BY CLAUDE"/>
-    <div style={{ position: 'absolute', left: 90, right: 90, top: 140, bottom: 50, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignContent: 'center', gap: '40px 30px', opacity: dim }}>
-      {names.map((n: string, i: number) => {
-        const at = 12 + i * step;
-        return <div key={n} style={{ position: 'relative', width: n.length * 25 + 100, height: 60, transform: `rotate(${((i * 37) % 7) - 3}deg)` }}>
-          <FallacyTag name={n} k={2.9} enter={frame - at} glowPhase={frame + i * 9} style={{ left: 0, top: 0 }}/>
+  const names = (FALLACY_IDS as string[]).map((id) => (FALLACIES as Record<string, { name: string }>)[id].name);
+  const step = Math.max(1.5, (quiet - 20) / names.length);
+  const dim = lerp(frame, [quiet, quiet + 10], [1, 0.1]);
+  const ok = useSpr(quiet + 6, 16, 130);
+  return <AbsoluteFill>
+    <Glow x={50} y={50} size={60} opacity={0.12}/>
+    <Chrome left={`${names.length} ways an argument can slip`} right="Fallacies · biases · pressure tactics"/>
+    <div style={{ position: 'absolute', left: 80, right: 80, top: 130, bottom: 60, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignContent: 'center', gap: '34px 26px', opacity: dim }}>
+      {names.map((n, i) => {
+        const at = 10 + Math.round(i * step);
+        return <div key={n} style={{ position: 'relative', width: n.length * 19.5 + 78, height: 46 }}>
+          <FallacyTag name={n} k={2.25} enter={frame - at} glowPhase={frame + i * 9} style={{ left: 0, top: 0 }}/>
         </div>;
       })}
     </div>
     {frame >= quiet && <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ background: P.white, padding: '40px 56px', borderRadius: 24, boxShadow: '0 30px 70px rgba(20,20,19,0.25)', width: 1260, transform: `scale(${0.85 + 0.15 * ok})`, opacity: ok }}>
-        <Mono size={20} color={P.grey}>Sound reasoning</Mono>
-        <div style={{ fontFamily: serif, fontSize: 60, lineHeight: 1.08, color: P.ink, marginTop: 12 }}>“That study covered call-centre staff, so let’s run a three-month trial and measure our own output.”</div>
-        <div style={{ marginTop: 26, display: 'inline-block', padding: '8px 18px', border: `4px solid ${P.green}`, borderRadius: 8, background: 'rgba(3, 26, 14, 0.92)', color: P.green, fontFamily: poster, fontSize: 34, letterSpacing: '0.08em', boxShadow: '0 0 24px rgba(31,209,122,0.55)' }}>✓ NO FALLACY · NO FLAG</div>
-      </div>
+      <Glass style={{ position: 'relative', padding: '44px 56px', width: 1240, opacity: ok, transform: `scale(${0.94 + 0.06 * ok})`, filter: `blur(${(1 - Math.min(1, ok * 1.2)) * 10}px)` }}>
+        <Label size={18}>Sound reasoning</Label>
+        <div style={{ fontFamily: grot, fontWeight: 600, fontSize: 52, lineHeight: 1.12, letterSpacing: '-0.025em', color: P.white, marginTop: 14 }}>“The trial followed 1,600 staff for two years, and the authors spell out what it can’t tell us.”</div>
+        <div style={{ marginTop: 28, display: 'inline-flex', alignItems: 'center', gap: 12, padding: '10px 18px', border: `1.5px solid ${P.green}`, borderRadius: 999, color: P.green, fontFamily: mono, fontWeight: 700, fontSize: 18, letterSpacing: '0.14em', boxShadow: `0 0 30px ${P.green}33` }}>✓ NO FLAG · NO NOISE</div>
+      </Glass>
     </AbsoluteFill>}
+    <Vignette/>
   </AbsoluteFill>;
 }
 
-// ---------- 6. Privacy: it reads only what you write ----------
+// ---------- Privacy ----------
 function XRay() {
   const frame = useCurrentFrame();
   const at = M.privacy.map((t) => F(t - S.privacy));
-  const block = (x: number, y: number, w: number, h: number, lines = 3, dark = false) => <div style={{ position: 'absolute', left: x, top: y, width: w, height: h, borderRadius: 12, background: dark ? '#2a2725' : '#E9E4D8', padding: 18 }}>
-    {Array.from({ length: lines }, (_, i) => <div key={i} style={{ height: 12, borderRadius: 6, background: dark ? '#3a3633' : '#D3CCBE', width: `${90 - ((i * 23) % 35)}%`, marginTop: i ? 14 : 0 }}/>)}
-  </div>;
-  const label = (x: number, y: number, text: string, a: number, color: string) => frame >= a && <div style={{ position: 'absolute', left: x, top: y, padding: '6px 12px', border: `3px solid ${color}`, borderRadius: 6, color, background: 'rgba(14,13,12,0.92)', fontFamily: poster, fontSize: 24, letterSpacing: '0.08em', transform: `rotate(-4deg) scale(${lerp(frame, [a, a + 5], [1.8, 1])})`, opacity: lerp(frame, [a, a + 3], [0, 1]), whiteSpace: 'nowrap', zIndex: 5 }}>{text}</div>;
-  const read = frame >= at[2];
-  return <div style={{ position: 'absolute', inset: 0, background: '#F5F1E8' }}>
-    <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 52, background: '#fff', borderBottom: '1px solid #E6E1D6' }}/>
-    {block(40, 80, 640, 150, 4)}
-    {block(40, 250, 640, 110, 3)}
-    {label(500, 92, 'NOT READ', 14, P.grey)}
-    {label(500, 262, 'NOT READ', 20, P.grey)}
-    {/* Sign-in box with a password field */}
-    <div style={{ position: 'absolute', left: 720, top: 80, width: 340, height: 220, borderRadius: 12, background: '#fff', border: '1px solid #E6E1D6', padding: 22 }}>
-      <div style={{ fontFamily: grot, fontWeight: 800, fontSize: 18, color: '#1f1e1b' }}>Sign in</div>
-      <div style={{ marginTop: 14, height: 42, borderRadius: 8, border: '2px solid #DDD6C8', fontFamily: grot, fontSize: 18, color: '#9a958b', padding: '8px 12px' }}>leo@example.com</div>
-      <div style={{ marginTop: 12, height: 42, borderRadius: 8, border: `2px solid ${frame >= at[0] ? P.grey : '#DDD6C8'}`, fontFamily: grot, fontSize: 22, color: '#3a3833', padding: '6px 12px', letterSpacing: 4 }}>••••••••</div>
-    </div>
-    {label(820, 240, 'PASSWORD · SKIPPED', at[0], P.yellow)}
-    {/* The reply box: a pasted quote and the user's own words */}
-    <div style={{ position: 'absolute', left: 40, top: 390, width: 1020, height: 220, borderRadius: 14, background: '#fff', border: `3px solid ${read ? P.signal : '#DDD6C8'}`, padding: '18px 22px', boxShadow: read ? `0 0 ${24 + 8 * Math.sin(frame / 5)}px rgba(255,45,85,0.45)` : 'none' }}>
-      <div style={{ borderLeft: '4px solid #CFC7BA', paddingLeft: 14, fontFamily: grot, fontSize: 20, color: '#8a857c', fontStyle: 'italic' }}>“Remote work can boost productivity.” — pasted from the article</div>
-      <div style={{ marginTop: 20, fontFamily: grot, fontWeight: 500, fontSize: 26, color: '#1f1e1b' }}>
-        <span style={{ background: read ? 'rgba(255,45,85,0.14)' : 'transparent', borderRadius: 4 }}>{typed('That only covers one company, so I’m not convinced yet.', frame, 0, at[2])}</span>
-      </div>
-    </div>
-    {label(640, 372, 'PASTED · SKIPPED', at[1], P.yellow)}
-    {label(60, 556, '✍ TYPED BY YOU · READ', at[2], P.signal)}
+  const lines = (n: number, w = 90) => Array.from({ length: n }, (_, i) => <div key={i} style={{ height: 11, borderRadius: 6, background: 'rgba(255,255,255,0.12)', width: `${w - ((i * 23) % 30)}%`, marginTop: i ? 13 : 0 }}/>);
+  const box = (x: number, y: number, w: number, h: number, on: boolean, children: ReactNode) => <div style={{ position: 'absolute', left: x, top: y, width: w, height: h, borderRadius: 12, background: on ? 'rgba(255,45,85,0.07)' : 'rgba(255,255,255,0.04)', border: `1.5px solid ${on ? P.signal : 'rgba(255,255,255,0.08)'}`, boxShadow: on ? `0 0 30px rgba(255,45,85,0.25)` : 'none', padding: 18, opacity: on ? 1 : 0.55 }}>{children}</div>;
+  const tag = (x: number, y: number, text: string, a: number, read: boolean) => frame >= a && <div style={{ position: 'absolute', left: x, top: y, padding: '6px 12px', borderRadius: 999, border: `1.5px solid ${read ? P.signal : P.dim}`, background: '#0B0B0D', color: read ? P.white : P.grey, fontFamily: mono, fontWeight: 700, fontSize: 15, letterSpacing: '0.12em', opacity: lerp(frame, [a, a + 6], [0, 1]), transform: `translateY(${lerp(frame, [a, a + 8], [10, 0])}px)`, zIndex: 5, boxShadow: read ? `0 0 20px rgba(255,45,85,0.35)` : 'none' }}>{text}</div>;
+  return <div style={{ position: 'absolute', inset: 0, background: '#0D0D0F' }}>
+    <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 46, borderBottom: '1px solid rgba(255,255,255,0.06)' }}/>
+    {box(36, 70, 640, 250, frame >= at[0], lines(7))}
+    {tag(56, 52, 'ARTICLE · READ', at[0], true)}
+    {box(36, 344, 640, 120, frame >= at[1], lines(3, 70))}
+    {tag(56, 326, 'EMAIL · READ', at[1], true)}
+    {box(36, 488, 640, 90, frame >= at[2], <div style={{ fontFamily: grot, fontSize: 20, color: P.white }}>Is one startup really enough evidence?</div>)}
+    {tag(56, 470, 'YOUR REPLY · IF YOU TURN IT ON', at[2], true)}
+    {box(706, 70, 300, 200, false, <div style={{ height: '100%', display: 'grid', placeItems: 'center', fontFamily: mono, fontSize: 13, letterSpacing: '0.14em', color: P.dim }}>AD</div>)}
+    {tag(726, 52, 'SKIPPED', at[3], false)}
+    {box(706, 294, 300, 150, false, <><div style={{ fontFamily: grot, fontWeight: 700, fontSize: 16, color: P.grey }}>Sign in</div><div style={{ marginTop: 12, height: 34, borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', color: P.grey, padding: '4px 10px', letterSpacing: 4 }}>••••••••</div></>)}
+    {tag(726, 276, 'PASSWORDS · NEVER', at[3] + 4, false)}
+    {box(706, 468, 300, 110, false, lines(3, 80))}
+    {tag(726, 450, 'COMMENTS · SKIPPED', at[3] + 8, false)}
   </div>;
 }
 
 function Privacy() {
   const frame = useCurrentFrame();
-  const W = 1130;
-  const enter = useSpr(0, 16, 120);
+  const W = 1040;
+  const enter = useSpr(0, 18, 110);
   const at = M.privacy.map((t) => F(t - S.privacy));
-  const bullets = ['🔒 No passwords or card fields', '📋 No pasted text, unless you opt in', '✍️ Only words you type yourself'];
-  return <AbsoluteFill style={{ background: P.slab }}>
-    <Masthead left="04 — PRIVATE BY DESIGN" right="ONLY WHAT YOU WRITE"/>
-    <div style={{ position: 'absolute', left: 64, top: 150, width: 640 }}>
-      <Reveal at={4}><div style={{ fontFamily: grot, fontWeight: 900, fontSize: 104, lineHeight: 0.92, letterSpacing: '-0.055em', color: P.ink }}>It reads your words.</div></Reveal>
-      <Reveal at={F(0.5 + 1.66)}><div style={{ fontFamily: grot, fontWeight: 900, fontSize: 104, lineHeight: 0.92, letterSpacing: '-0.055em', color: P.white }}>Never your feed.</div></Reveal>
-      <div style={{ marginTop: 50 }}>
-        {bullets.map((t, i) => <Reveal key={t} at={at[i]} style={{ borderTop: `2px solid ${P.ink}`, padding: '18px 0' }}>
-          <div style={{ fontFamily: grot, fontWeight: 700, fontSize: 34, color: P.ink, letterSpacing: '-0.02em' }}>{t}</div>
+  const bullets: [string, number][] = [['The article, email or reply you’re on', at[0]], ['Never passwords, forms or ads', at[2] + 8], ['Questions, never verdicts', at[3]]];
+  return <AbsoluteFill>
+    <Glow x={70} y={55} size={45} opacity={0.12}/>
+    <Chrome left="Private by design" right="Only what’s in front of you"/>
+    <div style={{ position: 'absolute', left: 90, top: 190, width: 700 }}>
+      <Reveal at={4}><div style={{ ...H, fontSize: 96 }}>It reads what’s in front of you.</div></Reveal>
+      <Reveal at={F(0.4 + 3.9)} style={{ marginTop: 12 }}><div style={{ ...H, fontSize: 96 }}><Grad>Nothing else.</Grad></div></Reveal>
+      <div style={{ marginTop: 56 }}>
+        {bullets.map(([t, a], i) => <Reveal key={t} at={a} style={{ borderTop: `1px solid ${P.line}`, padding: '20px 0', display: 'flex', gap: 22, alignItems: 'baseline' }}>
+          <Label size={16} color={P.signal}>{String(i + 1).padStart(2, '0')}</Label>
+          <div style={{ fontFamily: grot, fontWeight: 600, fontSize: 32, color: P.white, letterSpacing: '-0.02em' }}>{t}</div>
         </Reveal>)}
       </div>
-      <Mono size={18} color={P.ink} style={{ marginTop: 26, opacity: lerp(frame, [at[2] + 12, at[2] + 22], [0, 1]) }}>Your Claude API key stays in the extension · block any site · mute any fallacy</Mono>
+      <Label size={15} style={{ marginTop: 26, color: P.dim, opacity: lerp(frame, [at[3] + 12, at[3] + 22], [0, 1]) }}>Your API key stays in the extension · Claude or GPT</Label>
     </div>
-    <BrowserFrame url="What Ember can see" width={W} style={{ left: 740, top: 190, transform: `translateX(${(1 - enter) * 200}px)` }}>
+    <BrowserFrame url="What Socrates reads" width={W} ext={false} style={{ left: 820, top: 220, transform: `translateX(${(1 - enter) * 120}px)`, opacity: Math.min(1, enter * 1.5) }}>
       <XRay/>
     </BrowserFrame>
+    <Vignette/>
   </AbsoluteFill>;
 }
 
-// ---------- 7. Who it's for ----------
-const WHO: [string, string][] = [['Students', 'Essays, discussion boards, group projects'], ['Work', 'Emails, docs, team threads'], ['Everyone online', 'Comments, posts, replies']];
-
+// ---------- Who it's for ----------
 function Impact() {
   const frame = useCurrentFrame();
   const at = M.who.map((t) => F(t - S.impact));
-  const p = [useSpr(at[0], 14, 160), useSpr(at[1], 14, 160), useSpr(at[2], 14, 160)];
   const twice = F(M.twice - S.impact);
-  return <AbsoluteFill style={{ background: P.night }}>
-    <Masthead left="05 — WHO IT’S FOR" right="ANYWHERE YOU TYPE" color={P.white}/>
-    <Reveal at={4} style={{ position: 'absolute', left: 64, top: 140 }}><div style={{ fontFamily: grot, fontWeight: 900, fontSize: 84, letterSpacing: '-0.05em', color: P.white, lineHeight: 1 }}>Everyone argues in writing now.<br/><span style={{ color: P.signal }}>Now everyone gets a partner.</span></div></Reveal>
-    <div style={{ position: 'absolute', left: 64, right: 64, top: 450, display: 'flex', gap: 24 }}>
-      {WHO.map(([k, v], i) => <div key={k} style={{ flex: 1, background: i === 2 ? P.slab : '#221E1D', border: `2px solid ${P.slab}`, padding: '34px 34px 40px', minHeight: 260, opacity: Math.min(1, p[i] * 1.5), transform: `translateY(${(1 - p[i]) * 60}px)` }}>
-        <Mono size={20} color={i === 2 ? P.ink : P.signal}>For</Mono>
-        <div style={{ fontFamily: grot, fontWeight: 900, fontSize: 68, letterSpacing: '-0.05em', color: i === 2 ? P.ink : P.white, marginTop: 8, whiteSpace: 'nowrap' }}>{k}</div>
-        <div style={{ fontFamily: grot, fontWeight: 600, fontSize: 30, color: i === 2 ? P.ink : '#CFC7BA', marginTop: 6 }}>{v}</div>
-      </div>)}
+  const out = ease(lerp(frame, [twice - 6, twice + 4], [0, 1]));
+  return <AbsoluteFill>
+    <Glow x={50} y={60} size={55} opacity={0.1 + 0.12 * lerp(frame, [twice, twice + 12], [0, 1])}/>
+    <Chrome left="Who it’s for" right="Anywhere you read and write"/>
+    <div style={{ position: 'absolute', left: 120, top: 220, opacity: 1 - out, transform: `translateY(${-50 * out}px)`, filter: `blur(${out * 12}px)` }}>
+      {['For students.', 'For families.', 'For anyone with an inbox.'].map((t, i) => <Reveal key={t} at={at[i]} style={{ marginTop: i ? 10 : 0 }}><div style={{ ...H, fontSize: 130 }}>{t}</div></Reveal>)}
     </div>
-    <div style={{ position: 'absolute', left: 64, right: 64, top: 800, borderTop: `2px solid ${P.grey}`, paddingTop: 24, display: 'flex', justifyContent: 'space-between', opacity: lerp(frame, [twice - 4, twice + 8], [0, 1]) }}>
-      <div style={{ fontFamily: serif, fontStyle: 'italic', fontSize: 50, color: P.white }}>Impact: every message becomes a chance to think twice.</div>
-      <Mono size={18} color={P.grey} style={{ alignSelf: 'center', textAlign: 'right' }}>Claude when you add a key<br/>built-in pattern checks when you don’t</Mono>
-    </div>
+    <Reveal at={twice + 2} style={{ position: 'absolute', left: 120, top: 380, width: 1700 }}><div style={{ ...H, fontSize: 118, lineHeight: 1.0 }}>Every headline becomes<br/><Grad>a chance to think twice.</Grad></div></Reveal>
+    <Label size={15} style={{ position: 'absolute', left: 120, bottom: 80, color: P.dim, opacity: lerp(frame, [twice + 14, twice + 24], [0, 1]) }}>Chrome extension · works with Claude or GPT · offline pattern checks without a key</Label>
+    <Vignette/>
   </AbsoluteFill>;
 }
 
@@ -612,24 +591,17 @@ function Impact() {
 function Outro() {
   const frame = useCurrentFrame();
   const len = F(S.end - S.outro);
-  const pop = useSpr(F(0.5), 10, 150);
-  const [l1, l2] = M.outroLines.map((t) => F(t - S.outro));
-  return <AbsoluteFill style={{ background: P.slab }}>
-    <TitleChrome/>
-    <div style={{ position: 'absolute', left: 200, top: 290, width: 600, height: 600, borderRadius: 300, background: P.ink, overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', left: 300 - 150, top: 130, transform: `scale(${0.6 + 0.4 * pop})` }}><WarnIcon size={300} glow={26 + 10 * Math.sin(frame / 6)}/></div>
-      <Embers at={F(0.6)} x={300} y={300} n={40} reach={240} k={1.6} seed="outro"/>
-    </div>
-    <PaperBits at={F(0.6)} x={500} y={520} count={50} spread={1.2}/>
-    <div style={{ position: 'absolute', left: 900, top: 340 }}>
-      <Reveal at={F(0.5)}><div style={{ fontFamily: grot, fontWeight: 900, fontSize: 268, letterSpacing: '-0.065em', color: P.ink, lineHeight: 0.86, marginLeft: -8 }}>EMBER</div></Reveal>
-      <Reveal at={l1} style={{ marginTop: 26 }}><div style={{ fontFamily: grot, fontWeight: 800, fontSize: 60, letterSpacing: '-0.035em', color: P.ink }}>Catch the fallacy.</div></Reveal>
-      <Reveal at={l2}><div style={{ fontFamily: grot, fontWeight: 800, fontSize: 60, letterSpacing: '-0.035em', color: P.white }}>Keep the argument.</div></Reveal>
-      <Reveal at={l2 + 14} style={{ marginTop: 34 }}><Mono size={22} color={P.ink}>Your critical thinking partner · Chrome extension<br/>Built with Claude</Mono></Reveal>
-      <Mono size={14} color={P.ink} style={{ marginTop: 24, opacity: 0.7 }}>Music: “Interloper”, “Inspired” by Kevin MacLeod (incompetech.com) · CC BY 4.0 · Voice: ElevenLabs</Mono>
-    </div>
-    <AbsoluteFill style={{ background: P.night, opacity: lerp(frame, [len - 14, len], [0, 1]) }}/>
+  const name = F(M.outroName - S.outro), line = F(M.outroLine - S.outro);
+  const ip = useSpr(4, 18, 90);
+  return <AbsoluteFill style={{ alignItems: 'center' }}>
+    <Glow x={50} y={36} size={40} opacity={0.3} color={P.orange}/>
+    <Motes n={50} seed="outro" opacity={0.45}/>
+    <div style={{ position: 'absolute', top: 190, transform: `scale(${0.9 + 0.1 * ip})`, opacity: ip }}><SocratesIcon size={220} glow={26 + 8 * Math.sin(frame / 7)}/></div>
+    <Reveal at={name} style={{ position: 'absolute', top: 450, width: '100%', textAlign: 'center' }}><Wordmark size={190} at={name}/></Reveal>
+    <Reveal at={line} style={{ position: 'absolute', top: 660, width: '100%', textAlign: 'center' }}><div style={{ ...H, fontSize: 58, letterSpacing: '-0.03em' }}><Grad>Critical thinking, built into your browser.</Grad></div></Reveal>
+    <Label size={14} style={{ position: 'absolute', bottom: 70, width: '100%', textAlign: 'center', color: P.dim, opacity: lerp(frame, [line + 10, line + 20], [0, 1]) }}>Music: “Interloper”, “Inspired” by Kevin MacLeod (incompetech.com) · CC BY 4.0 · Voice: ElevenLabs</Label>
+    <AbsoluteFill style={{ background: '#000', opacity: lerp(frame, [len - 16, len], [0, 1]) }}/>
   </AbsoluteFill>;
 }
 
-export { SENTENCE_1, tagAt };
+export { tagAt, poster };

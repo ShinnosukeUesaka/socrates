@@ -50,12 +50,12 @@ describe("Google Docs", () => {
   test("flags what you type, pinned to the text on the canvas; existing text is left alone", async () => {
     await page.click(".page");
     await page.keyboard.type("Honestly? Everyone is stupid.");
-    await waitFor(tagNamed("Sweeping generalisation"), { message: "sweeping generalisation tag", timeout: 8000 });
+    await waitFor(tagNamed("Possible hasty generalisation"), { message: "sweeping generalisation tag", timeout: 8000 });
     await sleep(500);
     const s = await overlayState(page);
     assert.deepEqual(
       s.tags.map((t) => t.label),
-      ["Sweeping generalisation"],
+      ["Possible hasty generalisation"],
       "pre-existing 'Everyone knows… prove me wrong' must not be flagged",
     );
     const expected = await page.evaluate(() => {
@@ -76,7 +76,7 @@ describe("Google Docs", () => {
   test("flags follow the document when the editor scrolls", async () => {
     await page.click(".page");
     await page.keyboard.type("Everyone is stupid.");
-    await waitFor(tagNamed("Sweeping generalisation"), { message: "tag", timeout: 8000 });
+    await waitFor(tagNamed("Possible hasty generalisation"), { message: "tag", timeout: 8000 });
     await sleep(600);
     const before = (await overlayState(page)).hls[0];
     await page.evaluate(() => document.querySelector(".kix-appview-editor").scrollBy(0, 50));
@@ -91,7 +91,7 @@ describe("Google Docs", () => {
     await sleep(100);
     await page.click(".page");
     await page.keyboard.type("We've already invested so much, so we have to keep going.");
-    await waitFor(tagNamed("Sunk-cost reasoning"), { message: "sunk cost tag", timeout: 8000 });
+    await waitFor(tagNamed("Possible sunk-cost reasoning"), { message: "sunk cost tag", timeout: 8000 });
     const sent = api.requests.map((r) => r.content).join("\n");
     assert.match(sent, /we have to keep going/);
     assert.doesNotMatch(sent, /Meeting notes|old system is perfect/);
@@ -118,10 +118,10 @@ describe("Gmail", () => {
 
   test("flags the reply you type, not the quoted message or signature", async () => {
     await typeInBody("We've already invested €20,000 in our startup, so we have to keep going or all that money will have been wasted.");
-    await waitFor(tagNamed("Sunk-cost reasoning"), { message: "sunk cost tag", timeout: 8000 });
+    await waitFor(tagNamed("Possible sunk-cost reasoning"), { message: "sunk cost tag", timeout: 8000 });
     await sleep(500);
     const s = await overlayState(page);
-    assert.deepEqual(s.tags.map((t) => t.label), ["Sunk-cost reasoning"]);
+    assert.deepEqual(s.tags.map((t) => t.label), ["Possible sunk-cost reasoning"]);
     const body = await page.$eval(".Am", (el) => el.getBoundingClientRect().toJSON());
     assert.ok(s.hls.every((h) => h.top >= body.top && h.bottom <= body.bottom + 2), "highlights inside the message body");
 
@@ -138,7 +138,7 @@ describe("Gmail", () => {
     await setSettings(browser.worker, { apiKey: "sk-test-openai", apiBaseUrl: api.url });
     await sleep(100);
     await typeInBody("You're either with us or against us on this.");
-    await waitFor(tagNamed("False dilemma"), { message: "false dilemma tag", timeout: 8000 });
+    await waitFor(tagNamed("Possible false dilemma"), { message: "false dilemma tag", timeout: 8000 });
     const sent = api.requests.map((r) => r.content).join("\n");
     assert.match(sent, /either with us or against us/);
     assert.doesNotMatch(sent, /Bob wrote|our plan is perfect|Sent with love/);

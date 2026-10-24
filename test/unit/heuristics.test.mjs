@@ -4,35 +4,28 @@ import { FALLACY_IDS } from "../../src/shared/fallacies.js";
 import { detectHeuristic } from "../../src/shared/heuristics.js";
 
 const POSITIVE = [
+  ["false_dilemma", "You're either with us or against us."],
+  ["false_dilemma", "There are only two options: ban it or accept chaos."],
+  ["unjustified_prediction", "If we allow remote work, next thing you know nobody will ever come to the office."],
+  ["unsupported_claim", "Everyone knows that this diet works."],
+  ["unsupported_claim", "Millions of fans can't be wrong."],
   ["ad_hominem", "You're an idiot, so nobody should listen to your plan."],
   ["ad_hominem", "What would you even know about economics?"],
   ["straw_man", "So you're saying we should just let criminals walk free?"],
-  ["false_dilemma", "You're either with us or against us."],
-  ["false_dilemma", "There are only two options: ban it or accept chaos."],
-  ["slippery_slope", "If we allow remote work, next thing you know nobody will ever come to the office."],
-  ["appeal_to_popularity", "Everyone knows that this diet works."],
-  ["appeal_to_popularity", "Millions of fans can't be wrong."],
-  ["appeal_to_authority", "Experts say it's safe, so stop worrying."],
-  ["appeal_to_authority", "We do it this way because I said so."],
-  ["appeal_to_tradition", "We've always done it this way and it works fine."],
-  ["appeal_to_nature", "It's natural, so it can't hurt you."],
-  ["tu_quoque", "Look who's talking, you eat meat too."],
-  ["no_true_scotsman", "No true programmer would ever use tabs."],
-  ["burden_of_proof", "Aliens built the pyramids, prove me wrong."],
-  ["appeal_to_ignorance", "Nobody has ever proven ghosts don't exist, so they must be real."],
-  ["appeal_to_emotion", "Think of the children before you vote for this."],
-  ["anecdotal_evidence", "My grandpa smoked every day and he lived to 95."],
+  ["unsupported_claim", "Experts say it's safe, so stop worrying."],
+  ["unsupported_claim", "We do it this way because I said so."],
+  ["unsupported_claim", "Aliens built the pyramids, prove me wrong."],
+  ["unsupported_claim", "Nobody has ever proven ghosts don't exist, so they must be real."],
+  ["unrepresentative_evidence", "My grandpa smoked every day and he lived to 95."],
   ["hasty_generalization", "I met two rude tourists from there, so they are all like that."],
+  ["hasty_generalization", "Everyone is stupid."],
+  ["hasty_generalization", "Honestly, people are so lazy these days."],
   ["circular_reasoning", "The book is true because the book says so."],
   ["sunk_cost", "We've already spent two years on this, we can't quit now."],
-  ["loaded_question", "Have you stopped lying to your customers?"],
-  ["middle_ground", "The truth is somewhere in the middle, as always."],
-  ["false_cause", "Ever since we got the new manager sales dropped, so clearly she's the problem."],
   ["sunk_cost", "We've already invested €20,000 in our startup, so we have to keep going or all that money will have been wasted."],
-  ["sweeping_generalization", "Everyone is stupid."],
   ["sunk_cost", "We spent so much time on this project, we cannot quit now."],
-  ["sweeping_generalization", "Honestly, people are so lazy these days."],
-  ["unjustified_certainty", "There's no doubt that this is the right call."],
+  ["false_cause", "Ever since we got the new manager sales dropped, so clearly she's the problem."],
+  ["overconfidence", "There's no doubt that this is the right call."],
   ["overconfidence", "Relax, this plan can't fail."],
   ["confirmation_bias", "I only read sources that agree with me, and they all say I'm right."],
 ];
@@ -72,7 +65,7 @@ for (const text of NEGATIVE) {
 test("results carry sentence offsets, catalog text and known types", () => {
   const text = "Fine weather today. Everyone knows that vaccines are a hoax.";
   const [f] = detectHeuristic(text);
-  assert.equal(f.type, "appeal_to_popularity");
+  assert.equal(f.type, "unsupported_claim");
   assert.equal(text.slice(f.start, f.end), "Everyone knows that vaccines are a hoax.");
   assert.equal(f.quote, "Everyone knows that vaccines are a hoax.");
   assert.ok(f.explanation.length > 10 && f.question.length > 10);
@@ -85,5 +78,5 @@ test("caps flags per sentence", () => {
 });
 
 test("handles curly apostrophes", () => {
-  assert.equal(detectHeuristic("We’ve always done it this way.")[0]?.type, "appeal_to_tradition");
+  assert.equal(detectHeuristic("We’ve already spent two years on this, we can’t quit now.")[0]?.type, "sunk_cost");
 });

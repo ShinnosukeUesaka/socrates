@@ -114,27 +114,27 @@ describe("reading only what the user writes", () => {
     assert.equal((await overlayState(page)).tags.length, 0, "prefilled fallacy must not be flagged");
 
     await typeInto("#prefilled", " You're either with us or against us.");
-    await waitFor(tagNamed("False dilemma"), { message: "false dilemma tag" });
+    await waitFor(tagNamed("Possible false dilemma"), { message: "false dilemma tag" });
     await sleep(400);
     const s = await overlayState(page);
-    assert.deepEqual(s.tags.map((t) => t.label), ["False dilemma"]);
+    assert.deepEqual(s.tags.map((t) => t.label), ["Possible false dilemma"]);
   });
 
   test("pasted text is skipped unless enabled", async () => {
     await browser.context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: site.url });
-    await page.evaluate(() => navigator.clipboard.writeText("Look who's talking, you did it too."));
+    await page.evaluate(() => navigator.clipboard.writeText("Everyone knows it works."));
     await page.click("#ta");
     await page.keyboard.press("ControlOrMeta+V");
-    await waitFor(() => page.$eval("#ta", (t) => t.value.includes("Look who")), { message: "paste landed" });
+    await waitFor(() => page.$eval("#ta", (t) => t.value.includes("Everyone knows")), { message: "paste landed" });
     await sleep(1200);
     assert.equal((await overlayState(page)).tags.length, 0);
 
     await setSettings(browser.worker, { checkPastes: true });
-    await page.evaluate(() => navigator.clipboard.writeText("You're one to talk, you do it all the time."));
+    await page.evaluate(() => navigator.clipboard.writeText("You're either with us or against us."));
     await sleep(100);
     await page.keyboard.type(" ");
     await page.keyboard.press("ControlOrMeta+V");
-    await waitFor(tagNamed("Tu quoque"), { message: "tu quoque after enabling pastes" });
+    await waitFor(tagNamed("Possible false dilemma"), { message: "false dilemma after enabling pastes" });
     const s = await overlayState(page);
     assert.equal(s.tags.length, 1, "the earlier, unchecked paste stays unflagged");
   });
@@ -146,9 +146,9 @@ describe("flagging", () => {
     const fallacy = "If we allow remote work, next thing you know nobody will come to the office.";
     await typeInto("#ta", first + fallacy);
 
-    const peak = await watchEffects(async (s) => s.tags.some((t) => t.label === "Slippery slope" && !t.pending));
+    const peak = await watchEffects(async (s) => s.tags.some((t) => t.label === "Possible unjustified prediction" && !t.pending));
     assert.ok(peak.stamps >= 1, "stamp slammed down");
-    assert.match(peak.stampText, /Slippery slope\?/i);
+    assert.match(peak.stampText, /Possible unjustified prediction\?/i);
     assert.ok(peak.embers >= 10, "embers burst");
     assert.ok(peak.vignettes >= 1, "screen flashed");
     assert.ok(peak.fieldAnimated, "field shook");
@@ -178,9 +178,9 @@ describe("flagging", () => {
   });
 
   test("contenteditable: highlight matches the DOM range of the fallacy", async () => {
-    const fallacy = "No true programmer would ever use tabs.";
+    const fallacy = "Everyone knows tabs are better than spaces.";
     await typeInto("#ce", `Here is my take. ${fallacy}`);
-    await waitFor(tagNamed("No true Scotsman"), { message: "no true scotsman tag", timeout: 7000 });
+    await waitFor(tagNamed("Possible unsupported factual claim"), { message: "unsupported claim tag", timeout: 7000 });
     const expected = await page.evaluate((needle) => {
       const ce = document.querySelector("#ce");
       const walker = document.createTreeWalker(ce, NodeFilter.SHOW_TEXT);
@@ -209,7 +209,7 @@ describe("flagging", () => {
     await sleep(100);
     await typeInto("#ta", "Everyone knows it works.");
     const start = Date.now();
-    await waitFor(tagNamed("Bandwagon"), { message: "tag after sentence end", timeout: 4000 });
+    await waitFor(tagNamed("Possible unsupported factual claim"), { message: "tag after sentence end", timeout: 4000 });
     assert.ok(Date.now() - start < 3500, "didn't wait for the 5s pause");
   });
 
@@ -224,13 +224,13 @@ describe("flagging", () => {
         await sleep(150);
       }
     })();
-    await waitFor(tagNamed("Bandwagon"), { message: "tag while still typing", timeout: 5000 });
+    await waitFor(tagNamed("Possible unsupported factual claim"), { message: "tag while still typing", timeout: 5000 });
     await typing;
   });
 
   test("single-line input gets flagged inside its box", async () => {
     await typeInto("#single", "Everyone knows cats are better than dogs.");
-    await waitFor(tagNamed("Bandwagon"), { message: "bandwagon tag" });
+    await waitFor(tagNamed("Possible unsupported factual claim"), { message: "bandwagon tag" });
     const box = await page.$eval("#single", (el) => el.getBoundingClientRect().toJSON());
     const hl = (await overlayState(page)).hls[0];
     assert.ok(hl.left >= box.left && hl.right <= box.right + 2 && hl.top >= box.top && hl.bottom <= box.bottom + 2, "highlight inside the input");
@@ -238,7 +238,7 @@ describe("flagging", () => {
 
   test("flags follow the text when the page scrolls", async () => {
     await typeInto("#ta", "Everyone knows this is the best approach.");
-    await waitFor(tagNamed("Bandwagon"), { message: "tag" });
+    await waitFor(tagNamed("Possible unsupported factual claim"), { message: "tag" });
     await sleep(700); // let the tag's pop-in animation settle before measuring
     const { tags: [tag], hls: [hl] } = await overlayState(page);
     await page.evaluate(() => window.scrollBy(0, 60));
@@ -255,7 +255,7 @@ describe("flagging", () => {
   test("fixing the fallacy removes the flag with a celebration", async () => {
     const fallacy = "Everyone knows it works.";
     await typeInto("#ta", `We should ship this today. ${fallacy}`);
-    await waitFor(tagNamed("Bandwagon"), { message: "tag" });
+    await waitFor(tagNamed("Possible unsupported factual claim"), { message: "tag" });
     for (let i = 0; i < fallacy.length; i++) await page.keyboard.press("Backspace");
     await page.keyboard.type("The tests pass.");
     await waitFor(async () => (await overlayState(page)).fixed > 0, { message: "fixed celebration" });
@@ -264,7 +264,7 @@ describe("flagging", () => {
 
   test("clearing the field (message sent) removes flags silently", async () => {
     await typeInto("#ta", "Everyone knows it works.");
-    await waitFor(tagNamed("Bandwagon"), { message: "tag" });
+    await waitFor(tagNamed("Possible unsupported factual claim"), { message: "tag" });
     await page.evaluate(() => {
       document.querySelector("#ta").value = "";
     });
@@ -274,10 +274,10 @@ describe("flagging", () => {
 
   test("tag opens an explanation card; Got it dismisses for good", async () => {
     await typeInto("#ta", "My grandpa smoked every day and he lived to 95.");
-    await waitFor(tagNamed("Anecdotal evidence"), { message: "tag" });
+    await waitFor(tagNamed("Possible unrepresentative evidence"), { message: "tag" });
     await page.locator("ctp-overlay .ctp-tag").click();
     const card = (await overlayState(page)).card;
-    assert.match(card, /Possible anecdotal evidence/);
+    assert.match(card, /Possible unrepresentative evidence/);
     assert.match(card, /Socrates asks/);
     assert.match(card, /My grandpa smoked/);
     await page.screenshot({ path: `${SHOTS}/card.png` });
@@ -290,16 +290,16 @@ describe("flagging", () => {
 
   test("muting a fallacy type from the card", async () => {
     await typeInto("#ta", "Everyone knows it works.");
-    await waitFor(tagNamed("Bandwagon"), { message: "tag" });
+    await waitFor(tagNamed("Possible unsupported factual claim"), { message: "tag" });
     await page.locator("ctp-overlay .ctp-tag").click();
     await page.locator("ctp-overlay .ctp-card button[data-action=mute]").click();
     await waitFor(async () => (await overlayState(page)).tags.length === 0, { message: "muted" });
     const { mutedTypes } = await getSettings(browser.worker, ["mutedTypes"]);
-    assert.deepEqual(mutedTypes, ["appeal_to_popularity"]);
+    assert.deepEqual(mutedTypes, ["unsupported_claim"]);
   });
 
   test("several fallacies get separate, non-overlapping tags", async () => {
-    await typeInto("#ta", "Everyone knows it works. You're either with us or against us. We've always done it this way.");
+    await typeInto("#ta", "Everyone knows it works. You're either with us or against us. We've already spent two years on this, we can't quit now.");
     await waitFor(async () => (await overlayState(page)).tags.filter((t) => !t.pending).length === 3, { message: "three tags", timeout: 9000 });
     const tags = (await overlayState(page)).tags;
     for (let i = 0; i < tags.length; i++) {
@@ -329,7 +329,7 @@ describe("flagging", () => {
 
   test("turning Socrates off clears flags and stops checking", async () => {
     await typeInto("#ta", "Everyone knows it works.");
-    await waitFor(tagNamed("Bandwagon"), { message: "tag" });
+    await waitFor(tagNamed("Possible unsupported factual claim"), { message: "tag" });
     await setSettings(browser.worker, { enabled: false });
     await waitFor(async () => (await overlayState(page)).tags.length === 0, { message: "cleared" });
     await typeInto("#ta", " Prove me wrong.");
@@ -355,7 +355,7 @@ describe("Claude engine (mock API)", () => {
     await typeInto("#pw", "hunter2 everyone knows");
     await typeInto("#prefilled", " Short.");
     await typeInto("#ta", "I disagree with the proposal. If we allow this, next thing you know everyone quits.");
-    await waitFor(tagNamed("Slippery slope"), { message: "claude tag" });
+    await waitFor(tagNamed("Possible unjustified prediction"), { message: "claude tag" });
 
     assert.ok(api.requests.length >= 1);
     const req = api.requests.at(-1);
@@ -376,18 +376,18 @@ describe("Claude engine (mock API)", () => {
 
     await page.locator("ctp-overlay .ctp-tag").click();
     const card = (await overlayState(page)).card;
-    assert.match(card, /Mock anthropic explanation for slippery_slope/);
+    assert.match(card, /Mock anthropic explanation for unjustified_prediction/);
     assert.match(card, /Clear case · checked by Claude Opus 5\.5/);
   });
 
   test("unchanged paragraphs are cached and not re-sent", async () => {
     await typeInto("#ta", "Everyone knows it works.");
-    await waitFor(tagNamed("Bandwagon"), { message: "first tag" });
+    await waitFor(tagNamed("Possible unsupported factual claim"), { message: "first tag" });
     const before = api.requests.length;
     await page.keyboard.press("Enter");
     await page.keyboard.press("Enter");
     await page.keyboard.type("You're either with us or against us.");
-    await waitFor(tagNamed("False dilemma"), { message: "second tag" });
+    await waitFor(tagNamed("Possible false dilemma"), { message: "second tag" });
     const later = api.requests.slice(before).map((r) => r.content).join("\n");
     assert.match(later, /either with us/);
     assert.doesNotMatch(later, /Everyone knows it works/, "first paragraph served from cache");
@@ -399,7 +399,7 @@ describe("Claude engine (mock API)", () => {
     await sleep(100);
     // A sentence no earlier test used, so it can't come from the result cache.
     await typeInto("#ta", "Millions of fans can't be wrong about this band.");
-    await waitFor(tagNamed("Bandwagon"), { message: "fallback tag" });
+    await waitFor(tagNamed("Possible unsupported factual claim"), { message: "fallback tag" });
     assert.equal(api.requests.at(-1).apiKey, "sk-ant-bad-key");
     const s = await overlayState(page);
     assert.match(s.status, /Claude unavailable/);
@@ -410,8 +410,8 @@ describe("OpenAI engine (mock API)", () => {
   test("an OpenAI key routes analysis to the Responses API with a strict schema", async () => {
     await setSettings(browser.worker, { apiKey: "sk-proj-test-openai", apiBaseUrl: api.url });
     await sleep(100);
-    await typeInto("#ta", "I like it. We've always done it this way, so there's no reason to change.");
-    await waitFor(tagNamed("Appeal to tradition"), { message: "openai tag" });
+    await typeInto("#ta", "I like it. We've already spent two years on this, we can't quit now.");
+    await waitFor(tagNamed("Possible sunk-cost reasoning"), { message: "openai tag" });
 
     const req = api.requests.at(-1);
     assert.equal(req.url, "/v1/responses");
@@ -421,13 +421,13 @@ describe("OpenAI engine (mock API)", () => {
     assert.equal(req.body.text.format.type, "json_schema");
     assert.equal(req.body.text.format.strict, true);
     assert.match(req.body.instructions, /Socrates/);
-    assert.match(req.content, /We've always done it this way/);
+    assert.match(req.content, /we can't quit now/);
     assert.doesNotMatch(req.content, /moon landing/);
 
     await sleep(600);
     await page.locator("ctp-overlay .ctp-tag").click();
     const card = (await overlayState(page)).card;
-    assert.match(card, /Mock openai explanation for appeal_to_tradition/);
+    assert.match(card, /Mock openai explanation for sunk_cost/);
     assert.match(card, /checked by GPT-5\.5/);
   });
 
@@ -435,7 +435,7 @@ describe("OpenAI engine (mock API)", () => {
     await setSettings(browser.worker, { apiKey: "sk-bad-openai", apiBaseUrl: api.url });
     await sleep(100);
     await typeInto("#ta", "Millions of voters can't be wrong about this.");
-    await waitFor(tagNamed("Bandwagon"), { message: "fallback tag" });
+    await waitFor(tagNamed("Possible unsupported factual claim"), { message: "fallback tag" });
     assert.match((await overlayState(page)).status, /OpenAI unavailable/);
   });
 });

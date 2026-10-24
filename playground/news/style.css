@@ -1,0 +1,44 @@
+/* The Daily Certainty: a fictional tabloid for demoing Socrates. */
+:root {
+  --ink: #141414;
+  --muted: #666;
+  --rule: #e2ddd5;
+  --paper: #fffdf8;
+  --red: #c8102e;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 19px/1.65 Georgia, "Times New Roman", serif; }
+a { color: inherit; }
+.masthead { border-bottom: 3px double var(--ink); text-align: center; padding: 18px 16px 10px; }
+.masthead .date { font: 12px/1 Arial, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.masthead h1 { margin: 6px 0 4px; font: 900 54px/1 "Times New Roman", Georgia, serif; letter-spacing: -0.01em; }
+.masthead h1 a { text-decoration: none; }
+.masthead .tagline { font: italic 15px/1.3 Georgia, serif; color: var(--muted); }
+nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px 22px; padding: 10px 16px; border-bottom: 1px solid var(--rule); font: 700 13px/1 Arial, sans-serif; letter-spacing: 0.06em; text-transform: uppercase; }
+nav a { text-decoration: none; }
+.breaking { background: var(--red); color: #fff; font: 700 13px/1.4 Arial, sans-serif; padding: 8px 16px; text-align: center; }
+.page { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 48px; max-width: 1080px; margin: 0 auto; padding: 32px 16px 80px; }
+@media (max-width: 860px) { .page { grid-template-columns: 1fr; } }
+article h2.headline { margin: 0 0 10px; font: 900 40px/1.12 "Times New Roman", Georgia, serif; }
+article .dek { margin: 0 0 16px; font: italic 21px/1.45 Georgia, serif; color: #333; }
+.byline { margin: 0 0 22px; font: 13px/1.4 Arial, sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+figure { margin: 0 0 24px; }
+figure .photo { aspect-ratio: 16 / 8; background: linear-gradient(135deg, #d8d2c8, #b9b1a4); }
+figcaption { margin-top: 6px; font: 13px/1.4 Arial, sans-serif; color: var(--muted); }
+article p { margin: 0 0 20px; }
+article h3 { margin: 32px 0 10px; font: 700 24px/1.25 Georgia, serif; }
+blockquote.pull { margin: 28px 0; padding: 0 0 0 20px; border-left: 4px solid var(--red); font: italic 25px/1.4 Georgia, serif; }
+aside.sidebar { font: 15px/1.5 Arial, sans-serif; }
+aside.sidebar h4 { margin: 0 0 10px; padding-bottom: 6px; border-bottom: 2px solid var(--ink); font: 800 13px/1 Arial, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; }
+aside.sidebar ol { margin: 0 0 28px; padding-left: 18px; }
+aside.sidebar li { margin: 0 0 10px; }
+.ad { display: grid; place-items: center; height: 250px; margin-bottom: 28px; background: repeating-linear-gradient(45deg, #f1ede6, #f1ede6 10px, #ebe6dd 10px, #ebe6dd 20px); color: #9a9488; font: 12px/1.4 Arial, sans-serif; text-align: center; padding: 16px; }
+.newsletter { padding: 16px; background: #141414; color: #fff; margin-bottom: 28px; }
+.comments { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--rule); font: 15px/1.5 Arial, sans-serif; color: var(--muted); }
+footer { border-top: 1px solid var(--rule); padding: 24px 16px 40px; text-align: center; font: 13px/1.5 Arial, sans-serif; color: var(--muted); }
+.fronts { max-width: 1080px; margin: 0 auto; padding: 32px 16px 80px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 32px; }
+.card { border-top: 2px solid var(--ink); padding-top: 12px; }
+.card .kicker { font: 800 12px/1 Arial, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); }
+.card h2 { margin: 8px 0; font: 900 28px/1.15 "Times New Roman", Georgia, serif; }
+.card h2 a { text-decoration: none; }
+.card p { margin: 0; font-size: 16px; color: #333; }

@@ -16,6 +16,8 @@ const CHUNK_CHARS = 5000;
 // a long draft doesn't re-send paragraphs that haven't changed.
 const cache = new Map();
 const inflight = new Map();
+// Counters for tests and debugging (read from the service worker console).
+globalThis.socratesStats = { analyses: 0, modelCalls: 0, passages: 0, inFlight: 0 };
 
 function cacheGet(key) {
   if (!cache.has(key)) return undefined;
@@ -54,6 +56,8 @@ function chunk(passages) {
 // mode: "read" for text the user is reading, "write" for their own writing.
 async function analyze(passages, mode = "write") {
   const settings = await loadSettings();
+  socratesStats.analyses++;
+  socratesStats.passages += passages.length;
   if (!usesAI(settings)) {
     return { engine: "patterns", fallacies: heuristicResults(passages) };
   }
@@ -75,7 +79,13 @@ async function analyze(passages, mode = "write") {
     try {
       const client = provider.createClient(settings);
       const batch = Promise.all(
-        chunk(missing).map((part) => provider.analyze({ client, model, effort: settings.effort, passages: part, mode })),
+        chunk(missing).map((part) => {
+          socratesStats.modelCalls++;
+          socratesStats.inFlight++;
+          return provider
+            .analyze({ client, model, effort: settings.effort, passages: part, mode })
+            .finally(() => socratesStats.inFlight--);
+        }),
       ).then((results) => results.flat());
       // Overlapping checks (the user keeps typing) share requests for the
       // same passage instead of paying for it twice.
