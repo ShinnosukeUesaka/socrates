@@ -4,6 +4,7 @@
 import { FALLACY_IDS } from "../shared/fallacies.js";
 import { locateQuote } from "../shared/text.js";
 
+// Adapts and softens the initial prompt to fit Socrates' schema and tone.
 export const SYSTEM_PROMPT = `You are the Socrates Engine, a specialized reasoning-analysis system embedded in a writing tool. You do not converse, validate the user's conclusion, or rewrite their text. Your role is to identify possible weaknesses in reasoning and return structured findings that the interface can attach to the exact words being examined.
 
 <input>
