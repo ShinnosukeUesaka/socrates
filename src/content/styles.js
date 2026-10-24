@@ -195,6 +195,24 @@ export const OVERLAY_CSS = `
 .ctp-nav svg { width: 14px; height: 14px; color: #ff4d6d; }
 .ctp-nav span { padding: 3px 7px; border-radius: 99px; background: #ff2d55; color: #fff; }
 .ctp-nav:hover { filter: brightness(1.15); }
+.ctp-receipt {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 99px;
+  background: #170a0d;
+  color: #d9c4c8;
+  font: 600 12px/1 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  animation: ctp-card-in 180ms ease-out;
+}
+.ctp-receipt svg { width: 14px; height: 14px; color: #ffd60a; animation: ctp-receipt-pulse 1.1s ease-in-out infinite; }
+.ctp-receipt--done svg { color: #1fd17a; animation: none; }
+@keyframes ctp-receipt-pulse { 50% { opacity: 0.35; } }
 .ctp-status {
   position: fixed;
   right: 14px;

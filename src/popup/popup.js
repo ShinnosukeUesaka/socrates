@@ -16,6 +16,40 @@ async function render() {
   $("engineDot").title = ai ? `Analyzing with ${model}` : "Add an OpenAI or Anthropic API key in Settings for context-aware analysis";
 }
 
+const NOUNS = { email: "this email", article: "this article", docs: "this document", page: "this page", selection: "your selection", input: "what you type" };
+
+// Asks the page what Socrates is doing there.
+async function renderPageStatus() {
+  const el = $("pageStatus");
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  let status = null;
+  try {
+    status = tab?.id ? await chrome.tabs.sendMessage(tab.id, { type: "ctp:status" }) : null;
+  } catch {
+    status = null;
+  }
+  if (!status) {
+    el.textContent = "Socrates isn't running on this tab yet. Reload the tab (it can't run on browser pages like chrome://).";
+    return;
+  }
+  if (!status.active) {
+    el.textContent = "Socrates is off for this site.";
+    return;
+  }
+  const reading = status.sources.filter((s) => s.mode === "read");
+  if (!reading.length) {
+    el.textContent = "Nothing to read here automatically. Use “Check this page now”, or select text and right-click “Ask Socrates about this”.";
+    return;
+  }
+  el.textContent = reading
+    .map((s) => {
+      const what = NOUNS[s.source] ?? "this page";
+      if (!s.checked) return `Reading ${what}…`;
+      return s.questions ? `${s.questions} question${s.questions === 1 ? "" : "s"} about ${what}.` : `Read ${what}: nothing to question.`;
+    })
+    .join(" ");
+}
+
 $("enabled").addEventListener("change", (e) => chrome.storage.local.set({ enabled: e.target.checked }));
 $("sound").addEventListener("change", (e) => chrome.storage.local.set({ sound: e.target.checked }));
 $("intensity").addEventListener("click", (e) => {
@@ -33,3 +67,4 @@ $("checkPage").addEventListener("click", async () => {
 $("settings").addEventListener("click", () => chrome.runtime.openOptionsPage());
 chrome.storage.onChanged.addListener(render);
 render();
+renderPageStatus();

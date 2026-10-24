@@ -245,6 +245,7 @@ export class Overlay {
       this.navEl = null;
       return;
     }
+    this.receiptEl?.remove();
     if (!this.navEl) {
       this.navEl = document.createElement("button");
       this.navEl.type = "button";
@@ -260,8 +261,26 @@ export class Overlay {
     }
   }
 
+  // A quiet pill in the navigator's spot saying what Socrates is doing with
+  // the page ("reading this email…", "read this article, nothing to
+  // question"), so silence never looks like it isn't working.
+  receipt(text, { done = false } = {}) {
+    this.mount();
+    if (this.navEl) return;
+    this.receiptEl?.remove();
+    const el = document.createElement("div");
+    el.className = `ctp-receipt${done ? " ctp-receipt--done" : ""}`;
+    el.innerHTML = ICON_SVG;
+    el.append(text);
+    this.layer.appendChild(el);
+    this.receiptEl = el;
+    clearTimeout(this.receiptTimer);
+    if (done) this.receiptTimer = setTimeout(() => el.remove(), 5000);
+  }
+
   clear() {
     for (const id of [...this.views.keys()]) this.removeView(id);
     this.navigator(0);
+    this.receiptEl?.remove();
   }
 }

@@ -11,11 +11,13 @@ export function isGmail() {
   return location.hostname === "mail.google.com";
 }
 
-// Opened message bodies in Gmail; never the compose box.
+// Opened message bodies in Gmail; never the compose box. Gmail's body
+// container has long been div.a3s inside div.ii.gt; the latter is the
+// fallback in case the inner class changes.
 export function gmailMessages() {
-  return [...document.querySelectorAll("div.a3s")].filter(
-    (el) => !el.isContentEditable && !el.closest("[contenteditable=true]") && el.getClientRects().length > 0,
-  );
+  const bodies = [...document.querySelectorAll("div.ii.gt")].map((gt) => gt.querySelector("div.a3s") ?? gt);
+  for (const el of document.querySelectorAll("div.a3s")) if (!bodies.includes(el)) bodies.push(el);
+  return bodies.filter((el) => !el.isContentEditable && !el.closest("[contenteditable=true]") && el.getClientRects().length > 0);
 }
 
 // Elements to leave out when reading an article.

@@ -32,9 +32,19 @@ before(async () => {
   site = await startPageServer();
   browser = await launchWithExtension();
   const fixture = (name) => readFile(new URL(`./fixtures/${name}`, import.meta.url), "utf8");
-  const [article, inbox, docs] = await Promise.all([fixture("article.html"), fixture("gmail-inbox.html"), fixture("gdocs.html")]);
+  const [article, inbox, cliche, docs] = await Promise.all([
+    fixture("article.html"),
+    fixture("gmail-inbox.html"),
+    fixture("gmail-cliche.html"),
+    fixture("gdocs.html"),
+  ]);
+  // ?view=cliche serves a neutral email; ?view=noa3s drops Gmail's inner body class.
   await browser.context.route("https://news.example.com/**", (r) => r.fulfill({ contentType: "text/html", body: article }));
-  await browser.context.route("https://mail.google.com/**", (r) => r.fulfill({ contentType: "text/html", body: inbox }));
+  await browser.context.route("https://mail.google.com/**", (r) => {
+    const view = new URL(r.request().url()).searchParams.get("view");
+    const body = view === "cliche" ? cliche : view === "noa3s" ? inbox.replace('class="a3s aiL"', 'class="body"') : inbox;
+    return r.fulfill({ contentType: "text/html", body });
+  });
   await browser.context.route("https://docs.google.com/document/**", (r) => r.fulfill({ contentType: "text/html", body: docs }));
 });
 
@@ -142,6 +152,29 @@ describe("emails you open", () => {
     const card = (await overlayState(page)).card;
     assert.match(card, /Unsupported assumption/);
     assert.match(card, /Possible unsupported factual claim/);
+  });
+
+  test("an email with nothing to question says so, so silence isn't ambiguous", async () => {
+    await page.goto("https://mail.google.com/mail/u/0/?view=cliche");
+    await waitFor(async () => /Socrates read this email: nothing to question/.test((await overlayState(page)).receipt ?? ""), {
+      message: "read receipt",
+      timeout: 8000,
+    });
+    assert.equal((await overlayState(page)).tags.length, 0);
+    await page.bringToFront();
+    const status = await browser.worker.evaluate(async () => {
+      const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+      return chrome.tabs.sendMessage(tab.id, { type: "ctp:status" });
+    });
+    assert.deepEqual(
+      status.sources.map(({ source, mode, checked, questions }) => ({ source, mode, checked, questions })),
+      [{ source: "email", mode: "read", checked: true, questions: 0 }],
+    );
+  });
+
+  test("still finds the message body if Gmail renames its inner class", async () => {
+    await page.goto("https://mail.google.com/mail/u/0/?view=noa3s");
+    await waitFor(hasTag("Possible unsupported factual claim"), { message: "flag via .ii.gt fallback", timeout: 8000 });
   });
 
   test("emails are skipped when that source is off", async () => {

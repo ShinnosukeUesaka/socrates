@@ -36,6 +36,7 @@ const DISCOVER_MS = 1500;
 const STAGGER_MS = 650;
 // Screen flash, shake and sound at most this often; other flags just stamp.
 const LEAD_COOLDOWN_MS = 5000;
+const NOUNS = { email: "email", article: "article", docs: "document" };
 
 let settings = { ...DEFAULT_SETTINGS };
 const fields = new Map();
@@ -224,6 +225,7 @@ async function analyze(field) {
     return;
   }
   if (explicit) overlay.status("Socrates is reading…");
+  else if (field.mode === "read" && !field.receipted) overlay.receipt(`Socrates is reading this ${NOUNS[field.source] ?? "page"}…`);
   let response;
   try {
     response = await chrome.runtime.sendMessage({
@@ -253,6 +255,11 @@ async function analyze(field) {
     if (loc) results.push({ ...f, ...loc });
   }
   applyResults(field, results, response.engine === "ai" ? response.modelName : null);
+  if (field.mode === "read" && !explicit && !field.receipted) {
+    field.receipted = true;
+    const noun = NOUNS[field.source] ?? "page";
+    if (field.flags.size === 0) overlay.receipt(`Socrates read this ${noun}: nothing to question`, { done: true });
+  }
   if (explicit) {
     const n = field.flags.size;
     overlay.status(n ? `Socrates has ${n} question${n === 1 ? "" : "s"} about this.` : "Nothing here that Socrates would question.");
@@ -556,6 +563,20 @@ function checkSelection() {
   ensureField(el, { kind: "ce", mode: "read", source: "selection", range: [from, Math.max(from, to)] });
 }
 
+// What Socrates is doing on this page, for the popup.
+function pageStatus() {
+  return {
+    active: active(),
+    sources: [...fields.values()].map((f) => ({
+      source: f.source,
+      mode: f.mode,
+      chars: f.text.length,
+      checked: Boolean(f.appliedSeq),
+      questions: f.flags.size,
+    })),
+  };
+}
+
 function poll() {
   // Docs must be hooked up before the first keystroke, so check every tick.
   if (active() && isGoogleDocs()) attachDocs();
@@ -579,7 +600,11 @@ function start() {
   window.addEventListener("resize", requestRender, { passive: true });
   setInterval(poll, POLL_MS);
 
-  chrome.runtime.onMessage.addListener((msg) => {
+  chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+    if (msg?.type === "ctp:status" && window === window.top) {
+      sendResponse(pageStatus());
+      return;
+    }
     if (!active()) return;
     if (msg?.type === "ctp:checkSelection") checkSelection();
     if (msg?.type === "ctp:checkPage" && window === window.top) checkPage();
